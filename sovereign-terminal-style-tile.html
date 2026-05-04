@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>LaunchHPC — Sovereign Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Base — deep teal-black from screenshot */
+    --bg:        #011619;
+    --surface:   #0A2125;
+    --elevated:  #143034;
+    --hover:     #1A3A40;
+    --border:    #1E3A40;
+    --border-2:  #284C53;
+    --rule:      #1E3A40;
+
+    /* Text — cool paper, high contrast */
+    --fg:        #DCE8E6;
+    --fg-dim:    #8AA6A4;
+    --fg-muted:  #54706E;
+    --fg-faint:  #2A4448;
+
+    /* Brand — primary aqua/teal scale from screenshot */
+    --aqua:      #A9F4EA;     /* top button - light aqua */
+    --teal:      #2ECEC0;     /* mid button - vivid teal */
+    --teal-deep: #1F908A;     /* deep button - desaturated teal */
+
+    /* Status — calm signal palette tuned to teal base */
+    --st-ok:       #0DC378;    /* healthy — vivid sea green */
+    --st-run:      #69B1E8;    /* running — soft sky blue */
+    --st-warn:     #C99A3F;    /* warn — warm gold */
+    --st-crit:     #C8533B;    /* critical — dull brick */
+    --st-idle:     #3E5A5E;    /* idle — cold neutral */
+    --st-queue:    #8EA0C9;    /* queued — dusty periwinkle */
+
+    /* Data-viz accents */
+    --viz-magenta: #D11A6E;
+    --viz-amber:   #E5C739;
+    --viz-violet:  #9988C2;
+
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-variant-ligatures: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  .tile { max-width: 1280px; margin: 0 auto; padding: 56px 56px 96px; }
+
+  /* ============ STATUS-LINE HEADER ============ */
+  .statusbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    gap: 24px;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    margin-bottom: 32px;
+    font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .statusbar .mark {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--fg); font-weight: 600; letter-spacing: 0.04em;
+  }
+  .statusbar .mark .dot { width: 8px; height: 8px; background: var(--teal); display: inline-block; box-shadow: 0 0 0 2px rgba(46,206,192,0.18); }
+  .statusbar .path { color: var(--fg-dim); }
+  .statusbar .path .sep { color: var(--fg-muted); }
+  .statusbar .path .active { color: var(--fg); }
+  .statusbar .pill { padding: 3px 10px; background: var(--bg); border: 1px solid var(--border-2); color: var(--fg-dim); }
+  .statusbar .pill.ok { color: var(--st-ok); border-color: rgba(79,176,136,0.35); }
+  .statusbar .ts { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+
+  /* ============ MASTHEAD ============ */
+  .masthead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--border-2);
+    margin-bottom: 56px;
+  }
+  .masthead .label {
+    font-size: 11px; color: var(--fg-muted);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .masthead h1 {
+    margin: 0;
+    font-size: 48px; line-height: 1; font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+  .masthead h1 .accent { color: var(--teal); }
+  .masthead h1 .cursor {
+    display: inline-block; width: 14px; height: 38px;
+    background: var(--teal); margin-left: 6px;
+    vertical-align: -4px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .masthead .meta {
+    text-align: right;
+    font-size: 10px; color: var(--fg-muted);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    line-height: 2;
+  }
+  .masthead .meta b { color: var(--fg-dim); font-weight: 500; }
+
+  /* ============ SECTION ============ */
+  .sec { margin-top: 64px; }
+  .sec-head {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 16px; align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-2);
+  }
+  .sec-head .num {
+    font-size: 10px; color: var(--teal-deep);
+    letter-spacing: 0.12em;
+  }
+  .sec-head .name {
+    font-size: 14px; font-weight: 600; color: var(--fg);
+    letter-spacing: -0.005em;
+  }
+  .sec-head .desc {
+    font-size: 11px; color: var(--fg-muted);
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============ 1. METRIC ============ */
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border-2); }
+  .metric-cell {
+    padding: 22px 24px 20px;
+    border-right: 1px solid var(--border-2);
+    background: var(--surface);
+    position: relative;
+  }
+  .metric-cell:last-child { border-right: none; }
+  .metric-cell .lbl {
+    font-size: 10px; color: var(--fg-muted);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex; justify-content: space-between;
+  }
+  .metric-cell .lbl .tag { color: var(--teal-deep); }
+  .metric-cell .val {
+    font-size: 38px; font-weight: 600; line-height: 1;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .metric-cell .val .u { font-size: 18px; color: var(--fg-dim); margin-left: 2px; }
+  .metric-cell .trend {
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--fg-muted);
+    display: flex; gap: 6px; align-items: center;
+    letter-spacing: 0.04em;
+  }
+  .metric-cell .delta { font-weight: 600; }
+  .metric-cell .delta.up { color: var(--st-ok); }
+  .metric-cell .delta.dn { color: var(--st-crit); }
+  .metric-cell .delta.warn { color: var(--st-warn); }
+  .metric-cell .spark {
+    position: absolute; right: 14px; bottom: 14px;
+    width: 60px; height: 18px;
+  }
+  .metric-cell .spark path { fill: none; stroke: var(--teal); stroke-width: 1.25; opacity: 0.7; }
+
+  /* ============ 2. STATUS ROW ============ */
+  .statrow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+  }
+  .stat {
+    padding: 18px 22px;
+    border-right: 1px solid var(--border-2);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .stat:last-child { border-right: none; }
+  .stat .row1 {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 10px; color: var(--fg-dim);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .stat .glyph {
+    width: 14px; height: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--fg-muted);
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .stat.run .glyph  { color: var(--st-run); }
+  .stat.ok .glyph   { color: var(--st-ok); }
+  .stat.warn .glyph { color: var(--st-warn); }
+  .stat.crit .glyph { color: var(--st-crit); }
+  .stat.idle .glyph { color: var(--fg-muted); }
+  .stat .count {
+    font-size: 28px; font-weight: 700;
+    line-height: 1; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .stat .count .u {
+    font-size: 10px; color: var(--fg-muted);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    font-weight: 400;
+  }
+  .stat .bar {
+    height: 2px; width: 100%;
+    background: var(--st-idle);
+  }
+  .stat.run .bar  { background: var(--st-run); }
+  .stat.ok .bar   { background: var(--st-ok); }
+  .stat.warn .bar { background: var(--st-warn); }
+  .stat.crit .bar { background: var(--st-crit); }
+
+  /* ============ 3. TABLE ============ */
+  .table { border: 1px solid var(--border-2); }
+  .thead, .trow {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 0.9fr 1.2fr 0.9fr 36px;
+    align-items: center;
+    padding: 0 18px;
+    height: 32px;
+    background: var(--surface);
+  }
+  .thead {
+    background: var(--bg);
+    color: var(--teal-deep);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    height: 28px;
+    border-bottom: 1px solid var(--border-2);
+  }
+  .trow { border-top: 1px solid var(--rule); font-size: 12px; }
+  .trow:first-child { border-top: none; }
+  .trow:hover { background: var(--hover); }
+  .cell-id { color: var(--fg); font-size: 12px; }
+  .cell-id .pre { color: var(--fg-muted); }
+  .cell-st {
+    font-size: 11px;
+    color: var(--st-run);
+    letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cell-st::before { content:""; width: 6px; height: 6px; background: currentColor; }
+  .cell-st.ok   { color: var(--st-ok); }
+  .cell-st.warn { color: var(--st-warn); }
+  .cell-st.crit { color: var(--st-crit); }
+  .cell-st.queue{ color: var(--st-queue); }
+  .cell-st.idle { color: var(--fg-muted); }
+  .cell-res { color: var(--fg); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .cell-res .u { color: var(--fg-muted); }
+  .cell-ten { color: var(--fg-dim); font-size: 12px; }
+  .cell-ts  { color: var(--fg-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .cell-more{ color: var(--fg-muted); text-align: right; }
+
+  /* ============ 4. NAV TABS ============ */
+  .tabs {
+    display: inline-flex; align-items: center; gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+  }
+  .tab {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 18px;
+    font-size: 11px;
+    color: var(--fg-dim);
+    text-decoration: none;
+    border-right: 1px solid var(--border-2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--fg); background: var(--hover); }
+  .tab.active {
+    color: var(--bg);
+    background: var(--teal);
+    font-weight: 600;
+  }
+  .tab .tcount {
+    font-size: 10px;
+    color: var(--fg-muted);
+    background: var(--bg);
+    padding: 1px 6px;
+    border: 1px solid var(--border-2);
+  }
+  .tab.active .tcount { color: var(--bg); background: rgba(1,22,25,0.20); border-color: rgba(1,22,25,0.30); }
+
+  /* ============ 5. BUTTONS ============ */
+  .button-row { display:flex; gap: 10px; align-items: center; padding: 8px 0; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 36px; padding: 0 18px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; border: 1px solid transparent; background: transparent;
+  }
+  .btn.primary {
+    background: var(--aqua); color: var(--bg);
+    box-shadow: 0 0 0 1px var(--aqua), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .btn.primary:hover { background: #C0FCEF; }
+  .btn.secondary {
+    color: var(--bg); background: var(--teal);
+  }
+  .btn.secondary:hover { background: #45D9CD; }
+  .btn.tertiary {
+    color: var(--fg); background: transparent;
+    border: 1px solid var(--teal-deep);
+  }
+  .btn.tertiary:hover { background: rgba(31,144,138,0.12); }
+  .btn.ghost {
+    color: var(--st-crit);
+    background: transparent;
+  }
+  .btn.ghost:hover { background: rgba(200,83,59,0.10); }
+  .btn kbd {
+    font-family: var(--mono); font-size: 9px; font-weight: 500;
+    color: rgba(1,22,25,0.65);
+    background: rgba(1,22,25,0.18);
+    padding: 1px 5px; letter-spacing: 0;
+  }
+  .btn.tertiary kbd, .btn.ghost kbd { color: var(--fg-muted); background: rgba(255,255,255,0.04); }
+  .btn-spec { margin-left: auto; font-size: 10px; color: var(--fg-muted); letter-spacing: 0.10em; text-transform: uppercase; }
+
+  /* ============ 6. POLICY ============ */
+  .policy {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-left: 2px solid var(--teal);
+    padding: 22px 26px;
+  }
+  .policy-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--border-2);
+  }
+  .policy-head .title {
+    font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+  .policy-head .id {
+    font-size: 10px;
+    color: var(--teal-deep);
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+  }
+  .policy-head .chip {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 10px; color: var(--st-ok);
+    padding: 3px 10px;
+    background: rgba(79,176,136,0.10);
+    border: 1px solid rgba(79,176,136,0.30);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .policy-head .chip::before { content:""; width:6px; height:6px; background: var(--st-ok); }
+
+  .policy-body { display: grid; grid-template-columns: auto 1fr; column-gap: 18px; row-gap: 8px; font-size: 12px; }
+  .policy-body .k {
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    font-size: 10px;
+    padding-top: 3px;
+  }
+  .policy-body .v { color: var(--fg); }
+  .policy-body .v code {
+    color: var(--teal);
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+    padding: 1px 6px;
+    font-size: 11px;
+  }
+  .policy-desc {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border-2);
+    font-size: 12px; color: var(--fg-dim); line-height: 1.7;
+    max-width: 78ch;
+  }
+  .policy-desc code {
+    color: var(--fg); background: var(--bg);
+    border: 1px solid var(--border-2);
+    padding: 1px 6px; font-size: 11px;
+  }
+
+  /* ============ 7. SIGNATURE: LIVE LOG ============ */
+  .log {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    overflow: hidden;
+  }
+  .log-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-2);
+    font-size: 10px;
+    color: var(--fg-dim);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .log-head .traffic { display:flex; gap: 6px; margin-right: 4px; }
+  .log-head .traffic span { width: 8px; height: 8px; background: var(--border-2); }
+  .log-head .traffic span.live { background: var(--st-ok); box-shadow: 0 0 6px rgba(79,176,136,0.6); }
+  .log-head .right { margin-left: auto; color: var(--fg-muted); }
+  .log-body {
+    padding: 14px 18px;
+    font-size: 12px; line-height: 1.8;
+    color: var(--fg);
+  }
+  .log-line {
+    display: grid;
+    grid-template-columns: 80px 64px 1fr;
+    gap: 16px;
+  }
+  .log-line .t { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+  .log-line .lvl {
+    color: var(--fg-dim); letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .log-line.info .lvl { color: var(--st-run); }
+  .log-line.warn .lvl { color: var(--st-warn); }
+  .log-line.ok .lvl { color: var(--st-ok); }
+  .log-line.crit .lvl { color: var(--st-crit); }
+  .log-line .msg { color: var(--fg); }
+  .log-line .msg .k { color: var(--teal-deep); }
+  .log-line .msg code {
+    color: var(--teal); background: var(--bg); border: 1px solid var(--border-2);
+    padding: 0 5px; font-size: 11px;
+  }
+  .log-line .msg .muted { color: var(--fg-muted); }
+
+  /* ============ 8. COLOR ============ */
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; border: 1px solid var(--border-2); }
+  .sw {
+    padding: 14px;
+    background: var(--surface);
+    border-right: 1px solid var(--border-2);
+    border-bottom: 1px solid var(--border-2);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .sw:nth-child(6n) { border-right: none; }
+  .sw:nth-last-child(-n+6) { border-bottom: none; }
+  .sw .sq { width: 100%; aspect-ratio: 4/1; }
+  .sw .name {
+    font-size: 10px; color: var(--fg);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    font-weight: 500;
+  }
+  .sw .hex {
+    font-size: 11px; color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .sw.bordered .sq { outline: 1px solid var(--border-2); outline-offset: -1px; }
+
+  /* ============ 9. TYPE ============ */
+  .type-grid { border: 1px solid var(--border-2); background: var(--surface); }
+  .type-row {
+    display: grid; grid-template-columns: 110px 1fr 240px;
+    gap: 24px; padding: 16px 22px;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-row .role {
+    font-size: 10px; color: var(--teal-deep);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .type-row .spec {
+    font-size: 10px; color: var(--fg-muted);
+    text-align: right; letter-spacing: 0.04em;
+  }
+  .t-display { font-size: 48px; font-weight: 700; letter-spacing: -0.025em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .t-title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .t-prim { font-size: 13px; }
+  .t-sec { font-size: 11px; color: var(--fg-dim); }
+  .t-mono { font-size: 12px; color: var(--fg); }
+  .t-caps { font-size: 10px; color: var(--fg-muted); letter-spacing: 0.16em; text-transform: uppercase; }
+
+  footer {
+    margin-top: 80px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border-2);
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--fg-muted);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="tile">
+
+  <!-- STATUS LINE -->
+  <div class="statusbar">
+    <span class="mark"><span class="dot"></span>AMALGAMY · LAUNCHHPC</span>
+    <span class="path">launchhpc <span class="sep">/</span> cluster-a <span class="sep">/</span> <span class="active">fleet</span></span>
+    <span class="pill ok">● connected</span>
+    <span class="pill">api.launchhpc.io</span>
+    <span class="ts">14:32:01 UTC−05</span>
+  </div>
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div>
+      <div class="label">Style Tile · 07 — Sovereign Terminal</div>
+      <h1>sovereign<span class="accent">_</span>terminal<span class="cursor"></span></h1>
+    </div>
+    <div class="meta">
+      <div><b>BASE</b> RUNTIME</div>
+      <div><b>INK</b> AQUA · TEAL</div>
+      <div><b>MODE</b> DARK</div>
+      <div><b>REV</b> 0.1</div>
+    </div>
+  </header>
+
+  <!-- 1. METRIC -->
+  <section class="sec">
+    <div class="sec-head">
+      <span class="num">[01]</span>
+      <span class="name">Metric Display</span>
+      <span></span>
+      <span class="desc">cell · spark · semantic delta</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-cell">
+        <div class="lbl">GPU Util <span class="tag">cluster-a</span></div>
+        <div class="val">97.4<span class="u">%</span></div>
+        <div class="trend"><span class="delta up">+2.1pp</span><span>VS LAST WEEK</span></div>
+        <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 14 L8 12 L14 13 L20 9 L26 10 L32 6 L38 7 L44 4 L50 5 L60 2"/></svg>
+      </div>
+      <div class="metric-cell">
+        <div class="lbl">Jobs <span class="tag">24h</span></div>
+        <div class="val">18,402</div>
+        <div class="trend"><span class="delta up">+312</span><span>VS YESTERDAY</span></div>
+        <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 12 L8 10 L14 13 L20 8 L26 9 L32 5 L38 7 L44 4 L50 6 L60 3"/></svg>
+      </div>
+      <div class="metric-cell">
+        <div class="lbl">Queue <span class="tag">p95</span></div>
+        <div class="val">1,247</div>
+        <div class="trend"><span class="delta warn">+184</span><span>VS LAST HOUR</span></div>
+        <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 14 L8 12 L14 11 L20 13 L26 9 L32 8 L38 10 L44 6 L50 7 L60 4"/></svg>
+      </div>
+      <div class="metric-cell">
+        <div class="lbl">SLA <span class="tag">30d</span></div>
+        <div class="val">99.98<span class="u">%</span></div>
+        <div class="trend"><span class="delta dn">−0.01pp</span><span>VS 30D</span></div>
+        <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 4 L8 5 L14 4 L20 6 L26 5 L32 4 L38 6 L44 5 L50 7 L60 6"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. STATUS ROW -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[02]</span><span class="name">Status Row</span><span></span><span class="desc">glyph · count · sentinel bar</span></div>
+    <div class="statrow">
+      <div class="stat run">
+        <div class="row1"><span class="glyph">▶</span>RUNNING</div>
+        <div class="count">2,184<span class="u">jobs</span></div>
+        <div class="bar"></div>
+      </div>
+      <div class="stat ok">
+        <div class="row1"><span class="glyph">●</span>HEALTHY</div>
+        <div class="count">48<span class="u">nodes</span></div>
+        <div class="bar"></div>
+      </div>
+      <div class="stat warn">
+        <div class="row1"><span class="glyph">◭</span>WARNING</div>
+        <div class="count">12<span class="u">nodes</span></div>
+        <div class="bar"></div>
+      </div>
+      <div class="stat crit">
+        <div class="row1"><span class="glyph">✕</span>CRITICAL</div>
+        <div class="count">3<span class="u">nodes</span></div>
+        <div class="bar"></div>
+      </div>
+      <div class="stat idle">
+        <div class="row1"><span class="glyph">∅</span>IDLE</div>
+        <div class="count">126<span class="u">jobs</span></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. TABLE -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[03]</span><span class="name">Dense Table</span><span></span><span class="desc">32px row · sentinel state · zebra-free</span></div>
+    <div class="table">
+      <div class="thead">
+        <div>JOB ID</div><div>STATE</div><div>RES</div><div>TENANT</div><div>STARTED</div><div></div>
+      </div>
+      <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a1</div><div class="cell-st">running</div><div class="cell-res">512 <span class="u">gpu</span></div><div class="cell-ten">texas_tech</div><div class="cell-ts">14:32:01</div><div class="cell-more">⋯</div></div>
+      <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a2</div><div class="cell-st queue">queued</div><div class="cell-res">128 <span class="u">gpu</span></div><div class="cell-ten">helix_bio</div><div class="cell-ts">14:31:58</div><div class="cell-more">⋯</div></div>
+      <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a3</div><div class="cell-st ok">done</div><div class="cell-res">64 <span class="u">gpu</span></div><div class="cell-ten">nrel</div><div class="cell-ts">14:28:44</div><div class="cell-more">⋯</div></div>
+      <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a4</div><div class="cell-st crit">failed</div><div class="cell-res">256 <span class="u">gpu</span></div><div class="cell-ten">anduril</div><div class="cell-ts">14:22:19</div><div class="cell-more">⋯</div></div>
+      <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a5</div><div class="cell-st warn">throttled</div><div class="cell-res">1,024 <span class="u">gpu</span></div><div class="cell-ten">texas_tech</div><div class="cell-ts">14:18:07</div><div class="cell-more">⋯</div></div>
+      <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a6</div><div class="cell-st idle">idle</div><div class="cell-res">32 <span class="u">cpu</span></div><div class="cell-ten">meridian</div><div class="cell-ts">14:02:33</div><div class="cell-more">⋯</div></div>
+    </div>
+  </section>
+
+  <!-- 4. NAV TABS -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[04]</span><span class="name">Navigation Tabs</span><span></span><span class="desc">hard-edged · aqua active</span></div>
+    <div class="tabs">
+      <a class="tab active" href="#">Fleet <span class="tcount">48</span></a>
+      <a class="tab" href="#">Jobs <span class="tcount">2,184</span></a>
+      <a class="tab" href="#">Policies <span class="tcount">37</span></a>
+      <a class="tab" href="#">Reports</a>
+      <a class="tab" href="#">Audit</a>
+    </div>
+  </section>
+
+  <!-- 5. BUTTONS -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[05]</span><span class="name">Button Set</span><span></span><span class="desc">aqua · teal · outline · ghost</span></div>
+    <div class="button-row">
+      <button class="btn primary">Submit <kbd>⏎</kbd></button>
+      <button class="btn secondary">Buttons <kbd>B</kbd></button>
+      <button class="btn tertiary">View Logs <kbd>L</kbd></button>
+      <button class="btn ghost">cancel</button>
+      <span class="btn-spec">PRIMARY · SECONDARY · TERTIARY · GHOST</span>
+    </div>
+  </section>
+
+  <!-- 6. POLICY -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[06]</span><span class="name">Policy Rule</span><span></span><span class="desc">structured clause · 2px brand spine</span></div>
+    <div class="policy">
+      <div class="policy-head">
+        <span class="title">priority_cap.texas_tech</span>
+        <span class="id">RULE_9F2C · REV 3</span>
+        <span class="chip">● active · 14d</span>
+      </div>
+      <div class="policy-body">
+        <span class="k">WHEN</span><span class="v"><code>job.submit</code></span>
+        <span class="k">AND</span><span class="v"><code>tenant = "texas_tech"</code></span>
+        <span class="k">THEN</span><span class="v"><code>clamp(priority ≤ medium)</code></span>
+        <span class="k">SCOPE</span><span class="v">all queues</span>
+      </div>
+      <div class="policy-desc">
+        A maximum priority of <code>medium</code> applies to every job submitted under this tenant. The rule evaluates at submit-time and does not preempt in-flight workloads. Overrides require the role <code>admin:policy.override</code>.
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. SIGNATURE: LIVE LOG -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[07]</span><span class="name">Live Log — Scheduler Decision</span><span></span><span class="desc">tail -f · structured</span></div>
+    <div class="log">
+      <div class="log-head">
+        <span class="traffic"><span class="live"></span><span></span><span></span></span>
+        scheduler.log <span style="color:var(--fg-muted)">·</span> <span style="color:var(--teal-deep)">tail -f</span>
+        <span class="right">job-8842a1 · 14:32:01 utc-05</span>
+      </div>
+      <div class="log-body">
+        <div class="log-line info">
+          <span class="t">14:32:01.04</span><span class="lvl">SUBMIT</span>
+          <span class="msg"><span class="muted">request</span> priority=<code>high</code> tenant=<code>texas_tech</code> gpus=<code>512</code></span>
+        </div>
+        <div class="log-line warn">
+          <span class="t">14:32:01.07</span><span class="lvl">MATCH</span>
+          <span class="msg">rule <code>priority_cap.texas_tech</code> <span class="muted">— active 14d, 214 hits/24h</span></span>
+        </div>
+        <div class="log-line info">
+          <span class="t">14:32:01.09</span><span class="lvl">APPLY</span>
+          <span class="msg"><code>clamp(priority ≤ medium)</code> <span class="muted">→</span> field updated <code>high</code> <span class="muted">→</span> <code>medium</code></span>
+        </div>
+        <div class="log-line ok">
+          <span class="t">14:32:01.12</span><span class="lvl">QUEUE</span>
+          <span class="msg">position <code>4</code> <span class="muted">— expected start</span> <code>00:04:12</code> <span class="muted">— three jobs ahead</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. COLOR -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[08]</span><span class="name">Color Palette</span><span></span><span class="desc">deep teal base · aqua brand · muted signal</span></div>
+    <div class="swatches">
+      <div class="sw bordered"><div class="sq" style="background:#011619"></div><div class="name">Background</div><div class="hex">#011619</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#0A2125"></div><div class="name">Surface</div><div class="hex">#0A2125</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#143034"></div><div class="name">Elevated</div><div class="hex">#143034</div></div>
+      <div class="sw"><div class="sq" style="background:#A9F4EA"></div><div class="name">Aqua / Brand</div><div class="hex">#A9F4EA</div></div>
+      <div class="sw"><div class="sq" style="background:#2ECEC0"></div><div class="name">Teal</div><div class="hex">#2ECEC0</div></div>
+      <div class="sw"><div class="sq" style="background:#1F908A"></div><div class="name">Teal Deep</div><div class="hex">#1F908A</div></div>
+
+      <div class="sw"><div class="sq" style="background:#69B1E8"></div><div class="name">Running</div><div class="hex" data-hex="run">#69B1E8</div></div>
+      <div class="sw"><div class="sq" style="background:#0DC378"></div><div class="name">Healthy</div><div class="hex" data-hex="ok">#0DC378</div></div>
+      <div class="sw"><div class="sq" style="background:#C99A3F"></div><div class="name">Warning</div><div class="hex">#C99A3F</div></div>
+      <div class="sw"><div class="sq" style="background:#C8533B"></div><div class="name">Critical</div><div class="hex">#C8533B</div></div>
+      <div class="sw"><div class="sq" style="background:#8EA0C9"></div><div class="name">Queued</div><div class="hex">#8EA0C9</div></div>
+      <div class="sw"><div class="sq" style="background:#3E5A5E"></div><div class="name">Idle</div><div class="hex">#3E5A5E</div></div>
+
+      <div class="sw"><div class="sq" style="background:#DCE8E6"></div><div class="name">Text</div><div class="hex">#DCE8E6</div></div>
+      <div class="sw"><div class="sq" style="background:#8AA6A4"></div><div class="name">Text-2</div><div class="hex">#8AA6A4</div></div>
+      <div class="sw"><div class="sq" style="background:#54706E"></div><div class="name">Text-3</div><div class="hex">#54706E</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#284C53"></div><div class="name">Border</div><div class="hex">#284C53</div></div>
+      <div class="sw"><div class="sq" style="background:#D11A6E"></div><div class="name">Viz Magenta</div><div class="hex">#D11A6E</div></div>
+      <div class="sw"><div class="sq" style="background:#E5C739"></div><div class="name">Viz Amber</div><div class="hex">#E5C739</div></div>
+    </div>
+  </section>
+
+  <!-- 9. TYPE -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">[09]</span><span class="name">Typography</span><span></span><span class="desc">JetBrains Mono · single family</span></div>
+    <div class="type-grid">
+      <div class="type-row"><span class="role">Display</span><span class="t-display">97.4%</span><span class="spec">JBM · 48/700 · -0.025em</span></div>
+      <div class="type-row"><span class="role">Title</span><span class="t-title">priority_cap.texas_tech</span><span class="spec">JBM · 22/600 · -0.01em</span></div>
+      <div class="type-row"><span class="role">Primary</span><span class="t-prim">A maximum priority of medium applies to every job submitted under this tenant.</span><span class="spec">JBM · 13/400</span></div>
+      <div class="type-row"><span class="role">Secondary</span><span class="t-sec">evaluated at submit-time · does not preempt in-flight workloads</span><span class="spec">JBM · 11/400</span></div>
+      <div class="type-row"><span class="role">Mono</span><span class="t-mono">14:32:01 · clamp(priority ≤ medium) · job-8842a1</span><span class="spec">JBM · 12/400</span></div>
+      <div class="type-row"><span class="role">Caps</span><span class="t-caps">SCHEDULER · POLICY · TENANT · QUEUE</span><span class="spec">JBM · 10/500 · 0.16em</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>AMALGAMY · LAUNCHHPC</span>
+    <span>SOVEREIGN TERMINAL · STYLE TILE 07</span>
+    <span>v0.1 · 2026—05—04</span>
+  </footer>
+
+</div>
+<!-- ============ TWEAKS ============ -->
+<style>
+  /* Density — drives spacing/type rhythm. Default = standard */
+  html[data-density="compact"]  { --d: 0.78; }
+  html[data-density="standard"] { --d: 1.00; }
+  html[data-density="spacious"] { --d: 1.28; }
+  .tile      { padding: calc(56px * var(--d, 1)) calc(56px * var(--d, 1)) calc(96px * var(--d, 1)) !important; }
+  .statusbar { padding: calc(12px * var(--d, 1)) calc(18px * var(--d, 1)) !important;
+               margin-bottom: calc(32px * var(--d, 1)) !important; }
+  .masthead  { padding: calc(32px * var(--d, 1)) 0 calc(28px * var(--d, 1)) !important;
+               margin-bottom: calc(56px * var(--d, 1)) !important; }
+  .masthead h1 { font-size: calc(48px * var(--d, 1)) !important; }
+  .masthead h1 .cursor { height: calc(38px * var(--d, 1)) !important; }
+  .sec       { margin-top: calc(64px * var(--d, 1)) !important; }
+  body       { font-size: calc(12px * var(--ft, 1)) !important;
+               line-height: calc(1.4 + 0.15 * var(--ft, 1)) !important; }
+  html[data-density="compact"]  body { --ft: 0.92; }
+  html[data-density="spacious"] body { --ft: 1.08; }
+
+  /* Atmosphere — drives glow, grid, scanlines via --atm 0..1 */
+  body { --atm: 0; }
+  body {
+    background-image:
+      linear-gradient(rgba(255,255,255, calc(0.012 + 0.030 * var(--atm))) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255, calc(0.012 + 0.030 * var(--atm))) 1px, transparent 1px) !important;
+  }
+  /* Scanlines layer (only visible when atm > 0) */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(46,206,192, calc(0.022 * var(--atm))) 0 1px,
+      transparent 1px 3px
+    );
+    mix-blend-mode: screen;
+    opacity: var(--atm);
+  }
+  /* Bloom on accent glyphs */
+  .masthead h1 .accent,
+  .masthead h1 .cursor {
+    text-shadow: 0 0 calc(18px * var(--atm)) rgba(46,206,192, calc(0.55 * var(--atm)));
+  }
+  .masthead h1 .cursor { box-shadow: 0 0 calc(18px * var(--atm)) rgba(46,206,192, calc(0.55 * var(--atm))); }
+  .stat .glyph,
+  .cell-st,
+  .log-line.ok .lvl, .log-line.warn .lvl, .log-line.info .lvl, .log-line.crit .lvl {
+    text-shadow: 0 0 calc(8px * var(--atm)) currentColor;
+  }
+  .stat .bar,
+  .log-head .traffic span.live {
+    box-shadow: 0 0 calc(10px * var(--atm)) currentColor !important;
+  }
+
+  /* ───────── PANEL ───────── */
+  .twk{position:fixed;right:16px;bottom:16px;z-index:9999;width:280px;display:none;flex-direction:column;
+    background:#0A2125;color:#DCE8E6;border:1px solid #284C53;
+    font:11px/1.5 'JetBrains Mono',ui-monospace,monospace;
+    box-shadow:0 12px 40px rgba(0,0,0,.5);max-height:calc(100vh - 32px);overflow:hidden}
+  .twk.on{display:flex}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;
+    border-bottom:1px solid #284C53;background:#011619;cursor:move;user-select:none}
+  .twk-hd b{font-size:11px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:#2ECEC0}
+  .twk-x{background:none;border:1px solid #284C53;color:#8AA6A4;width:22px;height:22px;
+    cursor:pointer;font-family:inherit;font-size:11px}
+  .twk-x:hover{color:#DCE8E6;border-color:#2ECEC0}
+  .twk-bd{padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+  .twk-sect{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#54706E;
+    padding-top:8px;border-top:1px dashed #1E3A40;font-weight:600}
+  .twk-sect:first-child{padding-top:0;border-top:0}
+  .twk-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
+  .twk-row label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#8AA6A4}
+  .twk-row .ctrl{display:flex;align-items:center;gap:8px}
+  .twk-row input[type=color]{width:28px;height:22px;background:transparent;border:1px solid #284C53;
+    cursor:pointer;padding:0}
+  .twk-row input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+  .twk-row input[type=color]::-webkit-color-swatch{border:0}
+  .twk-row .hex{font-size:10px;color:#54706E;font-variant-numeric:tabular-nums;width:64px}
+  .twk-row select{background:#011619;color:#DCE8E6;border:1px solid #284C53;
+    font:inherit;padding:3px 6px;outline:none}
+  .twk-row .reset{background:none;border:1px solid #284C53;color:#8AA6A4;
+    padding:4px 10px;font:inherit;cursor:pointer;font-size:10px;letter-spacing:.10em;text-transform:uppercase}
+  .twk-row .reset:hover{color:#2ECEC0;border-color:#2ECEC0}
+
+  /* Segmented control */
+  .twk-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0;
+    border:1px solid #284C53;background:#011619}
+  .twk-seg button{appearance:none;background:transparent;color:#8AA6A4;border:0;
+    padding:7px 4px;font:inherit;font-size:10px;letter-spacing:.10em;text-transform:uppercase;
+    cursor:pointer;border-right:1px solid #284C53}
+  .twk-seg button:last-child{border-right:0}
+  .twk-seg button:hover{color:#DCE8E6}
+  .twk-seg button.on{background:#143034;color:#2ECEC0}
+  .twk-seg.col2{grid-template-columns:1fr 1fr}
+  .twk-seg.col4{grid-template-columns:repeat(4,1fr)}
+
+  /* Slider */
+  .twk-slider{display:flex;flex-direction:column;gap:6px}
+  .twk-slider .head{display:flex;justify-content:space-between;align-items:baseline}
+  .twk-slider .head label{font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:#8AA6A4}
+  .twk-slider .head .v{font-size:10px;color:#2ECEC0;font-variant-numeric:tabular-nums}
+  .twk-slider input[type=range]{appearance:none;width:100%;height:2px;background:#284C53;outline:none;margin:8px 0}
+  .twk-slider input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;
+    background:#2ECEC0;border:0;cursor:pointer}
+  .twk-slider input[type=range]::-moz-range-thumb{width:12px;height:12px;background:#2ECEC0;border:0;cursor:pointer}
+
+  /* Mood preview chip */
+  .twk-mood-chip{display:flex;height:18px;border:1px solid #284C53;margin-top:2px}
+  .twk-mood-chip span{flex:1}
+
+  .twk-block{display:flex;flex-direction:column;gap:8px}
+  .twk-cap{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#54706E;font-weight:600}
+  .twk-hint{font-size:10px;color:#54706E;line-height:1.5;font-style:italic}
+</style>
+
+<div class="twk" id="twk">
+  <div class="twk-hd" id="twk-hd">
+    <b>Tweaks</b>
+    <button class="twk-x" id="twk-x">×</button>
+  </div>
+  <div class="twk-bd">
+
+    <div class="twk-block">
+      <div class="twk-cap">Mood</div>
+      <div class="twk-seg col4" id="seg-mood">
+        <button data-v="terminal">Term</button>
+        <button data-v="phosphor">Phos</button>
+        <button data-v="arctic">Arc</button>
+        <button data-v="vault">Vault</button>
+      </div>
+      <div class="twk-mood-chip" id="mood-chip"></div>
+      <div class="twk-hint">Re-keys palette: surface, accent, status, borders.</div>
+    </div>
+
+    <div class="twk-block">
+      <div class="twk-cap">Density</div>
+      <div class="twk-seg col4" id="seg-density">
+        <button data-v="compact">Compact</button>
+        <button data-v="standard">Standard</button>
+        <button data-v="spacious">Spacious</button>
+      </div>
+      <div class="twk-hint">Rescales rhythm — padding, gaps, type, headline.</div>
+    </div>
+
+    <div class="twk-slider">
+      <div class="head">
+        <label>Atmosphere</label>
+        <span class="v" id="atm-v">0%</span>
+      </div>
+      <input type="range" id="atm" min="0" max="100" step="1">
+      <div class="twk-hint">Clinical → CRT bloom: grid, scanlines, accent glow.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var DEFAULTS = /*EDITMODE-BEGIN*/{
+    "mood": "terminal",
+    "density": "spacious",
+    "atmosphere": 38
+  }/*EDITMODE-END*/;
+
+  // Each mood is a coordinated re-key of base + brand + status + viz.
+  // These cascade through every component because they only set CSS vars.
+  var MOODS = {
+    terminal: {
+      label: 'Terminal',
+      preview: ['#011619','#0A2125','#2ECEC0','#A9F4EA','#0DC378'],
+      vars: {
+        '--bg':'#011619','--surface':'#0A2125','--elevated':'#143034','--hover':'#1A3A40',
+        '--border':'#1E3A40','--border-2':'#284C53','--rule':'#1E3A40',
+        '--fg':'#DCE8E6','--fg-dim':'#8AA6A4','--fg-muted':'#54706E','--fg-faint':'#2A4448',
+        '--aqua':'#A9F4EA','--teal':'#2ECEC0','--teal-deep':'#1F908A',
+        '--st-ok':'#0DC378','--st-run':'#69B1E8','--st-warn':'#C99A3F','--st-crit':'#C8533B',
+        '--st-idle':'#3E5A5E','--st-queue':'#8EA0C9',
+        '--viz-magenta':'#D11A6E','--viz-amber':'#E5C739','--viz-violet':'#9988C2'
+      }
+    },
+    phosphor: {
+      label: 'Phosphor',
+      preview: ['#0A0500','#1A0D00','#FFB347','#FFE08A','#7CD17C'],
+      vars: {
+        '--bg':'#0A0500','--surface':'#1A0D00','--elevated':'#2A1A05','--hover':'#3A2408',
+        '--border':'#3A2408','--border-2':'#5A3A12','--rule':'#3A2408',
+        '--fg':'#FFD9A8','--fg-dim':'#C49770','--fg-muted':'#7E6044','--fg-faint':'#3D2D1C',
+        '--aqua':'#FFE8A8','--teal':'#FFB347','--teal-deep':'#C2701C',
+        '--st-ok':'#7CD17C','--st-run':'#FFE08A','--st-warn':'#FF9A2A','--st-crit':'#E04A2A',
+        '--st-idle':'#5A4028','--st-queue':'#C29A6A',
+        '--viz-magenta':'#FF5A6E','--viz-amber':'#FFD23F','--viz-violet':'#D8A06A'
+      }
+    },
+    arctic: {
+      label: 'Arctic',
+      preview: ['#08111A','#10202E','#7DB6FF','#D4E4FF','#7AD7C2'],
+      vars: {
+        '--bg':'#08111A','--surface':'#10202E','--elevated':'#1A3144','--hover':'#234055',
+        '--border':'#1F384C','--border-2':'#2F526B','--rule':'#1F384C',
+        '--fg':'#E2ECF5','--fg-dim':'#9AB0C2','--fg-muted':'#5E748A','--fg-faint':'#2C4058',
+        '--aqua':'#D4E4FF','--teal':'#7DB6FF','--teal-deep':'#3F7BC2',
+        '--st-ok':'#7AD7C2','--st-run':'#A0C8FF','--st-warn':'#E0B870','--st-crit':'#E07A8A',
+        '--st-idle':'#3F586F','--st-queue':'#A8B6D0',
+        '--viz-magenta':'#C880D9','--viz-amber':'#E8D070','--viz-violet':'#A099D8'
+      }
+    },
+    vault: {
+      label: 'Vault',
+      preview: ['#15110B','#1F1A12','#C9A463','#F2DCAA','#9BB37A'],
+      vars: {
+        '--bg':'#15110B','--surface':'#1F1A12','--elevated':'#2C251A','--hover':'#3A3022',
+        '--border':'#2E2618','--border-2':'#4A3E2A','--rule':'#2E2618',
+        '--fg':'#EFE6D2','--fg-dim':'#B8A98A','--fg-muted':'#7A6B50','--fg-faint':'#3A3220',
+        '--aqua':'#F2DCAA','--teal':'#C9A463','--teal-deep':'#8E6F36',
+        '--st-ok':'#9BB37A','--st-run':'#B89A6A','--st-warn':'#D89240','--st-crit':'#B8543A',
+        '--st-idle':'#4A4030','--st-queue':'#A8956A',
+        '--viz-magenta':'#B85470','--viz-amber':'#D8B040','--viz-violet':'#9A85A0'
+      }
+    }
+  };
+
+  var state = Object.assign({}, DEFAULTS);
+  var root = document.documentElement;
+  var body = document.body;
+
+  function applyMood(name){
+    var m = MOODS[name] || MOODS.terminal;
+    Object.keys(m.vars).forEach(function(k){ root.style.setProperty(k, m.vars[k]); });
+    // Refresh segmented state
+    document.querySelectorAll('#seg-mood button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.v === name);
+    });
+    // Build mini preview chip
+    var chip = document.getElementById('mood-chip');
+    chip.innerHTML = '';
+    m.preview.forEach(function(c){
+      var s = document.createElement('span');
+      s.style.background = c; chip.appendChild(s);
+    });
+  }
+  function applyDensity(name){
+    root.setAttribute('data-density', name);
+    document.querySelectorAll('#seg-density button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.v === name);
+    });
+  }
+  function applyAtmosphere(v){
+    var n = Math.max(0, Math.min(100, +v||0));
+    body.style.setProperty('--atm', (n/100).toFixed(3));
+    document.getElementById('atm-v').textContent = n + '%';
+    document.getElementById('atm').value = n;
+  }
+  function setKey(k, v){
+    state[k] = v;
+    if (k === 'mood')        applyMood(v);
+    if (k === 'density')     applyDensity(v);
+    if (k === 'atmosphere')  applyAtmosphere(v);
+    try{ window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[k]:v}}, '*'); }catch(e){}
+  }
+
+  // Wire segmented controls
+  document.querySelectorAll('#seg-mood button').forEach(function(b){
+    b.addEventListener('click', function(){ setKey('mood', b.dataset.v); });
+  });
+  document.querySelectorAll('#seg-density button').forEach(function(b){
+    b.addEventListener('click', function(){ setKey('density', b.dataset.v); });
+  });
+  document.getElementById('atm').addEventListener('input', function(e){
+    setKey('atmosphere', +e.target.value);
+  });
+
+  // Initial paint
+  applyMood(state.mood);
+  applyDensity(state.density);
+  applyAtmosphere(state.atmosphere);
+
+  // Panel show/hide
+  var panel = document.getElementById('twk');
+  window.addEventListener('message', function(e){
+    var d = e.data || {};
+    if(d.type === '__activate_edit_mode')   panel.classList.add('on');
+    if(d.type === '__deactivate_edit_mode') panel.classList.remove('on');
+  });
+  document.getElementById('twk-x').addEventListener('click', function(){
+    panel.classList.remove('on');
+    try{ window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); }catch(e){}
+  });
+  try{ window.parent.postMessage({type:'__edit_mode_available'}, '*'); }catch(e){}
+
+  // Drag
+  var hd = document.getElementById('twk-hd'), dx=0, dy=0, drag=false;
+  hd.addEventListener('mousedown', function(e){
+    drag = true;
+    var r = panel.getBoundingClientRect();
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+    panel.style.right='auto'; panel.style.bottom='auto';
+  });
+  window.addEventListener('mousemove', function(e){
+    if(!drag) return;
+    panel.style.left = (e.clientX - dx) + 'px';
+    panel.style.top  = (e.clientY - dy) + 'px';
+  });
+  window.addEventListener('mouseup', function(){ drag=false; });
+})();
+</script>
+
+</body>
+</html>

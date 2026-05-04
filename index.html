@@ -1,0 +1,1526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>Amalgamy · Design System Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+   * AMALGAMY · DESIGN SYSTEM INDEX
+   * Self-contained reference page. Mirrors tokens/amalgamy-reset.css
+   * exactly so the page is itself a specimen of the system.
+   * ============================================================ */
+
+  :root {
+    /* SURFACE */
+    --color-bg:               #011619;
+    --color-surface-1:        #0A2125;
+    --color-surface-2:        #143034;
+    --color-surface-3:        #1A3A40;
+
+    /* BORDER */
+    --color-border-subtle:    #1E3A40;
+    --color-border-default:   #284C53;
+    --color-border-strong:    #284C53;
+
+    /* TEXT */
+    --color-text-primary:     #DCE8E6;
+    --color-text-secondary:   #8AA6A4;
+    --color-text-tertiary:    #54706E;
+    --color-text-faint:       #2A4448;
+    --color-text-inverse:     #011619;
+
+    /* BRAND */
+    --color-accent:           #2ECEC0;
+    --color-accent-hover:     #45D9CD;
+    --color-accent-subtle:    #1F908A;
+    --color-accent-secondary: #A9F4EA;
+
+    /* STATUS */
+    --color-success:          #0DC378;
+    --color-success-text:     #2CC988;
+    --color-warning:          #C99A3F;
+    --color-warning-text:     #CCA658;
+    --color-danger:           #C8533B;
+    --color-danger-text:      #CB6955;
+    --color-info:             #69B1E8;
+    --color-info-text:        #7AB9E8;
+    --color-status-queued:    #8EA0C9;
+    --color-neutral:          #3E5A5E;
+    --color-neutral-text:     #8AA6A4;
+
+    /* VIZ */
+    --color-viz-1:            #D11A6E;
+    --color-viz-2:            #E5C739;
+    --color-viz-3:            #9988C2;
+
+    /* TYPOGRAPHY */
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-variant-ligatures: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.020) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.020) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  /* Subtle scanline overlay */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(46,206,192,0.008) 0 1px,
+      transparent 1px 3px
+    );
+    mix-blend-mode: screen;
+  }
+
+  /* ───────── LAYOUT ───────── */
+  .page {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ───────── SIDE NAV ───────── */
+  .nav {
+    position: sticky; top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--color-surface-1);
+    border-right: 1px solid var(--color-border-strong);
+    padding: 32px 0;
+    z-index: 10;
+  }
+  .nav-mark {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--color-border-strong);
+    margin-bottom: 16px;
+  }
+  .nav-mark .row {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; letter-spacing: 0.04em;
+    color: var(--color-text-primary);
+    font-size: 11px;
+  }
+  .nav-mark .row .dot {
+    width: 8px; height: 8px;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(46,206,192,0.18);
+  }
+  .nav-mark .sub {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+
+  .nav-section {
+    padding: 16px 24px 6px;
+    font-size: 9px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 24px;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    letter-spacing: 0;
+    border-left: 2px solid transparent;
+  }
+  .nav a:hover { color: var(--color-text-primary); background: var(--color-surface-2); }
+  .nav a.active {
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+    background: var(--color-surface-2);
+  }
+  .nav a .num {
+    color: var(--color-text-tertiary);
+    font-size: 10px;
+    letter-spacing: 0.10em;
+  }
+  .nav a:hover .num { color: var(--color-accent-subtle); }
+
+  /* ───────── MAIN ───────── */
+  .main { min-width: 0; }
+  .container { max-width: 1100px; padding: 56px 56px 96px; }
+
+  /* ───────── STATUS BAR ───────── */
+  .statusbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    gap: 24px;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+    margin-bottom: 32px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+  .statusbar .mark {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--color-text-primary); font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .statusbar .mark .dot {
+    width: 8px; height: 8px;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(46,206,192,0.18);
+  }
+  .statusbar .path { color: var(--color-text-secondary); }
+  .statusbar .path .sep { color: var(--color-text-tertiary); }
+  .statusbar .path .active { color: var(--color-text-primary); }
+  .statusbar .pill {
+    padding: 3px 10px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-secondary);
+  }
+  .statusbar .pill.ok {
+    color: var(--color-success-text);
+    border-color: rgba(13,195,120,0.35);
+  }
+  .statusbar .ts {
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ───────── MASTHEAD ───────── */
+  .masthead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--color-border-strong);
+    margin-bottom: 56px;
+  }
+  .masthead .label {
+    font-size: 11px; color: var(--color-text-tertiary);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .masthead h1 {
+    margin: 0;
+    font-size: 48px; line-height: 1; font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+  }
+  .masthead h1 .accent { color: var(--color-accent); }
+  .masthead h1 .cursor {
+    display: inline-block; width: 14px; height: 38px;
+    background: var(--color-accent); margin-left: 6px;
+    vertical-align: -4px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .masthead .meta {
+    text-align: right;
+    font-size: 10px; color: var(--color-text-tertiary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    line-height: 2;
+  }
+  .masthead .meta b { color: var(--color-text-secondary); font-weight: 500; }
+
+  .lede {
+    max-width: 78ch;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    margin: 0 0 56px;
+  }
+  .lede strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+  .lede a {
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-accent-subtle);
+  }
+  .lede a:hover { border-bottom-color: var(--color-accent); }
+
+  /* ───────── SECTIONS ───────── */
+  .sec { margin-top: 64px; scroll-margin-top: 24px; }
+  .sec-head {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 16px; align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--color-border-default);
+  }
+  .sec-head .num {
+    font-size: 10px;
+    color: var(--color-accent-subtle);
+    letter-spacing: 0.12em;
+  }
+  .sec-head .name {
+    font-size: 14px; font-weight: 600;
+    color: var(--color-text-primary);
+    letter-spacing: -0.005em;
+  }
+  .sec-head .desc {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  .note {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 78ch;
+    margin: 0 0 24px;
+  }
+  .note code {
+    color: var(--color-accent);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    padding: 1px 6px;
+    font-size: 11px;
+  }
+  .note + .note { margin-top: -16px; }
+
+  /* ───────── TOKEN GRIDS ───────── */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--color-border-strong);
+  }
+  .sw {
+    padding: 16px;
+    background: var(--color-surface-1);
+    border-right: 1px solid var(--color-border-strong);
+    border-bottom: 1px solid var(--color-border-strong);
+    display: flex; flex-direction: column; gap: 12px;
+    cursor: pointer;
+    transition: background 100ms;
+    position: relative;
+  }
+  .sw:hover { background: var(--color-surface-2); }
+  .sw:nth-child(4n) { border-right: none; }
+  .sw .sq {
+    width: 100%;
+    aspect-ratio: 5/2;
+  }
+  .sw.bordered .sq {
+    outline: 1px solid var(--color-border-strong);
+    outline-offset: -1px;
+  }
+  .sw .var {
+    font-size: 10px;
+    color: var(--color-text-primary);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    word-break: break-all;
+  }
+  .sw .hex {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .sw .hint {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    line-height: 1.5;
+  }
+  .sw .copied {
+    position: absolute;
+    top: 8px; right: 8px;
+    font-size: 9px;
+    color: var(--color-accent);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+  .sw.flash .copied { opacity: 1; }
+
+  /* Trim trailing borders for the bottom row of each grid */
+  .swatches[data-rows="2"] .sw:nth-last-child(-n+4) { border-bottom: none; }
+  .swatches[data-rows="3"] .sw:nth-last-child(-n+4) { border-bottom: none; }
+  .swatches[data-rows="auto"] .sw:nth-last-child(-n+4) { border-bottom: none; }
+
+  /* ───────── TYPE TABLE ───────── */
+  .type-grid {
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 240px;
+    gap: 24px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--color-border-subtle);
+    align-items: baseline;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-row .role {
+    font-size: 10px;
+    color: var(--color-accent-subtle);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .type-row .spec {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+  .role-display     { font-family: var(--font-mono); font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .role-title       { font-family: var(--font-mono); font-size: 22px; font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; }
+  .role-heading     { font-family: var(--font-mono); font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .role-body        { font-family: var(--font-mono); font-size: 13px; font-weight: 400; line-height: 1.5; }
+  .role-body-sm     { font-family: var(--font-mono); font-size: 12px; font-weight: 400; line-height: 1.5; }
+  .role-secondary   { font-family: var(--font-mono); font-size: 11px; font-weight: 400; line-height: 1.5; color: var(--color-text-secondary); }
+  .role-metric-display { font-family: var(--font-mono); font-size: 38px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .role-metric-value   { font-family: var(--font-mono); font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .role-label       { font-family: var(--font-mono); font-size: 10px; font-weight: 500; line-height: 1.5; letter-spacing: 0.10em; text-transform: uppercase; }
+  .role-caps        { font-family: var(--font-mono); font-size: 10px; font-weight: 500; line-height: 1.5; letter-spacing: 0.16em; text-transform: uppercase; }
+  .role-button      { font-family: var(--font-mono); font-size: 11px; font-weight: 600; line-height: 1.1; letter-spacing: 0.04em; text-transform: uppercase; }
+  .role-code        { font-family: var(--font-mono); font-size: 11px; font-weight: 400; line-height: 1.5; }
+  .role-kbd         { font-family: var(--font-mono); font-size: 9px;  font-weight: 500; line-height: 1.1; }
+  .role-narrative   { font-family: var(--font-sans); font-size: 14px; font-weight: 400; line-height: 1.7; }
+  .role-narrative-lg{ font-family: var(--font-sans); font-size: 16px; font-weight: 400; line-height: 1.7; }
+
+  /* ───────── COMPONENT SHOWCASE ───────── */
+  .panel {
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+  }
+  .panel-frame {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .panel-spec {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+  .panel-spec .right {
+    color: var(--color-accent-subtle);
+  }
+
+  /* Metric grid */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--color-border-strong);
+  }
+  .metric-cell {
+    padding: 22px 24px 20px;
+    border-right: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+    position: relative;
+  }
+  .metric-cell:last-child { border-right: none; }
+  .metric-cell .lbl {
+    font-size: 10px; color: var(--color-text-tertiary);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex; justify-content: space-between;
+  }
+  .metric-cell .lbl .tag { color: var(--color-accent-subtle); }
+  .metric-cell .val {
+    font-size: 38px; font-weight: 600; line-height: 1;
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .metric-cell .val .u {
+    font-size: 18px; color: var(--color-text-secondary);
+    margin-left: 2px;
+  }
+  .metric-cell .trend {
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    display: flex; gap: 6px; align-items: center;
+    letter-spacing: 0.04em;
+  }
+  .metric-cell .delta { font-weight: 600; }
+  .metric-cell .delta.up { color: var(--color-success-text); }
+  .metric-cell .delta.dn { color: var(--color-danger-text); }
+  .metric-cell .delta.warn { color: var(--color-warning-text); }
+  .metric-cell .spark {
+    position: absolute; right: 14px; bottom: 14px;
+    width: 60px; height: 18px;
+  }
+  .metric-cell .spark path {
+    fill: none; stroke: var(--color-accent);
+    stroke-width: 1.25; opacity: 0.7;
+  }
+
+  /* Status row */
+  .statrow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+  }
+  .stat {
+    padding: 18px 22px;
+    border-right: 1px solid var(--color-border-strong);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .stat:last-child { border-right: none; }
+  .stat .row1 {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 10px; color: var(--color-text-secondary);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .stat .glyph {
+    width: 14px; height: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+  }
+  .stat.run .glyph  { color: var(--color-info); }
+  .stat.ok .glyph   { color: var(--color-success); }
+  .stat.warn .glyph { color: var(--color-warning); }
+  .stat.crit .glyph { color: var(--color-danger); }
+  .stat.idle .glyph { color: var(--color-text-tertiary); }
+  .stat .count {
+    font-size: 28px; font-weight: 700;
+    line-height: 1; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-primary);
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .stat .count .u {
+    font-size: 10px; color: var(--color-text-tertiary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    font-weight: 400;
+  }
+  .stat .bar { height: 2px; width: 100%; background: var(--color-neutral); }
+  .stat.run .bar  { background: var(--color-info); }
+  .stat.ok .bar   { background: var(--color-success); }
+  .stat.warn .bar { background: var(--color-warning); }
+  .stat.crit .bar { background: var(--color-danger); }
+
+  /* Table */
+  .table { border: 1px solid var(--color-border-strong); }
+  .thead, .trow {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 0.9fr 1.2fr 0.9fr 36px;
+    align-items: center;
+    padding: 0 18px;
+    height: 32px;
+    background: var(--color-surface-1);
+  }
+  .thead {
+    background: var(--color-bg);
+    color: var(--color-accent-subtle);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    height: 28px;
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+  .trow {
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: 12px;
+    transition: background 100ms;
+  }
+  .trow:first-child { border-top: none; }
+  .trow:hover { background: var(--color-surface-3); }
+  .cell-id { color: var(--color-text-primary); font-size: 12px; }
+  .cell-id .pre { color: var(--color-text-tertiary); }
+  .cell-st {
+    font-size: 11px;
+    color: var(--color-info);
+    letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cell-st::before {
+    content: ""; width: 6px; height: 6px; background: currentColor;
+  }
+  .cell-st.ok    { color: var(--color-success); }
+  .cell-st.warn  { color: var(--color-warning); }
+  .cell-st.crit  { color: var(--color-danger); }
+  .cell-st.queue { color: var(--color-status-queued); }
+  .cell-st.idle  { color: var(--color-text-tertiary); }
+  .cell-res { color: var(--color-text-primary); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .cell-res .u { color: var(--color-text-tertiary); }
+  .cell-ten { color: var(--color-text-secondary); font-size: 12px; }
+  .cell-ts { color: var(--color-text-tertiary); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .cell-more { color: var(--color-text-tertiary); text-align: right; }
+
+  /* Buttons */
+  .button-row {
+    display: flex; gap: 10px; align-items: center;
+    flex-wrap: wrap;
+    padding: 22px 24px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 36px; padding: 0 18px;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-primary);
+  }
+  .btn.primary {
+    background: var(--color-accent-secondary);
+    color: var(--color-text-inverse);
+    box-shadow: 0 0 0 1px var(--color-accent-secondary), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .btn.primary:hover { background: #C0FCEF; }
+  .btn.secondary {
+    color: var(--color-text-inverse);
+    background: var(--color-accent);
+  }
+  .btn.secondary:hover { background: var(--color-accent-hover); }
+  .btn.tertiary {
+    color: var(--color-text-primary);
+    background: transparent;
+    border: 1px solid var(--color-accent-subtle);
+  }
+  .btn.tertiary:hover { background: rgba(31,144,138,0.12); }
+  .btn.ghost {
+    color: var(--color-danger-text);
+    background: transparent;
+  }
+  .btn.ghost:hover { background: rgba(200,83,59,0.10); }
+  .btn kbd {
+    font-family: var(--font-mono);
+    font-size: 9px; font-weight: 500;
+    color: rgba(1,22,25,0.65);
+    background: rgba(1,22,25,0.18);
+    padding: 1px 5px;
+    letter-spacing: 0;
+  }
+  .btn.tertiary kbd, .btn.ghost kbd {
+    color: var(--color-text-tertiary);
+    background: rgba(255,255,255,0.04);
+  }
+  .btn-spec {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+
+  /* Live log (signature) */
+  .log {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+    overflow: hidden;
+  }
+  .log-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 18px;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border-strong);
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .log-head .traffic { display: flex; gap: 6px; margin-right: 4px; }
+  .log-head .traffic span {
+    width: 8px; height: 8px;
+    background: var(--color-border-strong);
+  }
+  .log-head .traffic span.live {
+    background: var(--color-success);
+    box-shadow: 0 0 6px rgba(13,195,120,0.6);
+  }
+  .log-head .right { margin-left: auto; color: var(--color-text-tertiary); }
+  .log-head .accent { color: var(--color-accent-subtle); }
+  .log-body {
+    padding: 14px 18px;
+    font-size: 12px; line-height: 1.8;
+    color: var(--color-text-primary);
+  }
+  .log-line {
+    display: grid;
+    grid-template-columns: 80px 64px 1fr;
+    gap: 16px;
+  }
+  .log-line .t {
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  .log-line .lvl {
+    color: var(--color-text-secondary);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .log-line.info .lvl { color: var(--color-info-text); }
+  .log-line.warn .lvl { color: var(--color-warning-text); }
+  .log-line.ok .lvl   { color: var(--color-success-text); }
+  .log-line.crit .lvl { color: var(--color-danger-text); }
+  .log-line .msg { color: var(--color-text-primary); }
+  .log-line .msg .k { color: var(--color-accent-subtle); }
+  .log-line .msg code {
+    color: var(--color-accent);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    padding: 0 5px; font-size: 11px;
+  }
+  .log-line .msg .muted { color: var(--color-text-tertiary); }
+
+  /* ───────── DOC LINKS / FILE GRID ───────── */
+  .files {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1px solid var(--color-border-strong);
+  }
+  .file {
+    padding: 18px 20px;
+    background: var(--color-surface-1);
+    border-right: 1px solid var(--color-border-strong);
+    border-bottom: 1px solid var(--color-border-strong);
+    display: flex; flex-direction: column; gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 100ms;
+  }
+  .file:hover { background: var(--color-surface-2); }
+  .file:nth-child(2n) { border-right: none; }
+  .file:nth-last-child(-n+2) { border-bottom: none; }
+  .file .head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px;
+    color: var(--color-accent-subtle);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .file .head .ext {
+    color: var(--color-text-tertiary);
+    border: 1px solid var(--color-border-default);
+    padding: 1px 6px;
+  }
+  .file .name {
+    font-size: 14px; font-weight: 600;
+    color: var(--color-text-primary);
+    letter-spacing: -0.005em;
+  }
+  .file .desc {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    flex: 1;
+  }
+  .file .path {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ───────── RULES BOX ───────── */
+  .rules {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+    border-left: 2px solid var(--color-accent);
+    padding: 22px 26px;
+  }
+  .rules-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--color-border-default);
+    font-size: 16px; font-weight: 600;
+    color: var(--color-text-primary);
+    letter-spacing: -0.01em;
+  }
+  .rules-head .id {
+    font-size: 10px;
+    color: var(--color-accent-subtle);
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+  }
+  .rules-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 18px;
+    row-gap: 12px;
+    font-size: 12px;
+  }
+  .rules-list .k {
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    font-size: 10px;
+    padding-top: 3px;
+  }
+  .rules-list .v { color: var(--color-text-primary); line-height: 1.6; }
+  .rules-list .v code {
+    color: var(--color-accent);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    padding: 1px 6px;
+    font-size: 11px;
+  }
+
+  /* ───────── FOOTER ───────── */
+  footer {
+    margin-top: 96px;
+    padding: 16px 0;
+    border-top: 1px solid var(--color-border-strong);
+    display: flex; justify-content: space-between;
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+
+  /* ───────── RESPONSIVE FALLBACK ───────── */
+  @media (max-width: 980px) {
+    .page { grid-template-columns: 1fr; }
+    .nav { position: relative; height: auto; }
+    .container { padding: 32px 24px 64px; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    .metric-cell:nth-child(2) { border-right: none; }
+    .metric-cell:nth-child(-n+2) { border-bottom: 1px solid var(--color-border-strong); }
+    .statrow { grid-template-columns: repeat(2, 1fr); }
+    .stat { border-right: 1px solid var(--color-border-strong); border-bottom: 1px solid var(--color-border-strong); }
+    .stat:nth-child(2n) { border-right: none; }
+    .swatches { grid-template-columns: repeat(2, 1fr); }
+    .sw:nth-child(2n) { border-right: none; }
+    .files { grid-template-columns: 1fr; }
+    .file { border-right: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════════ NAV ═══════════════ -->
+  <aside class="nav">
+    <div class="nav-mark">
+      <div class="row"><span class="dot"></span>AMALGAMY · DESIGN</div>
+      <div class="sub">Sovereign Terminal · v0.1</div>
+    </div>
+
+    <div class="nav-section">Foundation</div>
+    <a href="#overview"><span class="num">[01]</span>Overview</a>
+    <a href="#color"><span class="num">[02]</span>Color</a>
+    <a href="#status-color"><span class="num">[03]</span>Status</a>
+    <a href="#typography"><span class="num">[04]</span>Typography</a>
+
+    <div class="nav-section">Components</div>
+    <a href="#metrics"><span class="num">[05]</span>Metrics</a>
+    <a href="#status-row"><span class="num">[06]</span>Status Row</a>
+    <a href="#table"><span class="num">[07]</span>Dense Table</a>
+    <a href="#buttons"><span class="num">[08]</span>Buttons</a>
+    <a href="#log"><span class="num">[09]</span>Live Log</a>
+
+    <div class="nav-section">System</div>
+    <a href="#rules"><span class="num">[10]</span>Invariants</a>
+    <a href="#files"><span class="num">[11]</span>Files</a>
+  </aside>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main class="main">
+    <div class="container">
+
+      <!-- STATUS BAR -->
+      <div class="statusbar">
+        <span class="mark"><span class="dot"></span>AMALGAMY · DESIGN SYSTEM</span>
+        <span class="path">amalgamy <span class="sep">/</span> design <span class="sep">/</span> <span class="active">index</span></span>
+        <span class="pill ok">● synced</span>
+        <span class="pill">v0.1</span>
+        <span class="ts" id="clock">—</span>
+      </div>
+
+      <!-- MASTHEAD -->
+      <header class="masthead">
+        <div>
+          <div class="label">Design System · Index</div>
+          <h1>sovereign<span class="accent">_</span>terminal<span class="cursor"></span></h1>
+        </div>
+        <div class="meta">
+          <div><b>BASE</b> RUNTIME</div>
+          <div><b>INK</b> AQUA · TEAL</div>
+          <div><b>MODE</b> DARK</div>
+          <div><b>REV</b> 0.1</div>
+        </div>
+      </header>
+
+      <p class="lede">
+        This is the <strong>visual reference</strong> for every Amalgamy LaunchHPC prototype. The system is dark, monospace-led, terminal-derived. Hard edges, no shadows; surfaces step in discrete depths; brand presence is carried by a two-color hierarchy of aqua and teal. Use this page to find a token, copy a hex, or look up the canonical shape of a component. For the rules and the why, see <a href="patterns/visual-language.md">visual-language.md</a>; for Claude Code skills, see the <a href="SKILL.md">foundation SKILL.md</a> and <a href="components/metrics-SKILL.md">component skills</a>.
+      </p>
+
+      <!-- ═══ [01] OVERVIEW ═══ -->
+      <section class="sec" id="overview">
+        <div class="sec-head">
+          <span class="num">[01]</span>
+          <span class="name">Overview</span><span></span>
+          <span class="desc">5 stances · 1 voice</span>
+        </div>
+
+        <p class="note">
+          Five stances hold across every Amalgamy prototype. They're stated as constraints because each one cuts off a large family of decisions that would otherwise need to be re-debated on every screen.
+        </p>
+
+        <div class="rules">
+          <div class="rules-head">
+            Five Stances
+            <span class="id">SOV_TERM · REV 0.1</span>
+          </div>
+          <div class="rules-list">
+            <span class="k">01</span><span class="v"><strong>Hard edges, never soft.</strong> No <code>border-radius</code>. No <code>box-shadow</code> for elevation. No gradients. Surfaces stack via discrete steps and 1px borders.</span>
+            <span class="k">02</span><span class="v"><strong>Monospace as voice.</strong> JetBrains Mono everywhere. Inter only for executive narrative prose (<code>role-narrative</code>). Never on the same line.</span>
+            <span class="k">03</span><span class="v"><strong>Stepped surfaces.</strong> Four depths from <code>--color-bg</code> to <code>--color-surface-3</code>. Movement up the stack is one step plus a 1px border — never a shadow.</span>
+            <span class="k">04</span><span class="v"><strong>Two accents, one hierarchy.</strong> Aqua = the single primary CTA on a screen. Teal = everything else brand-present. Teal-deep = structurally important text. Not interchangeable.</span>
+            <span class="k">05</span><span class="v"><strong>Density and atmosphere are global.</strong> One density per prototype. One atmosphere per prototype. They're product modes, not theming gimmicks.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [02] COLOR ═══ -->
+      <section class="sec" id="color">
+        <div class="sec-head">
+          <span class="num">[02]</span>
+          <span class="name">Color · Surface · Border · Text</span><span></span>
+          <span class="desc">click any swatch to copy</span>
+        </div>
+
+        <p class="note"><strong>Surface.</strong> Page background and three elevation steps. Higher number = closer to the eye.</p>
+
+        <div class="swatches" data-rows="auto">
+          <div class="sw bordered" data-copy="--color-bg">
+            <div class="sq" style="background:#011619"></div>
+            <div class="var">--color-bg</div>
+            <div class="hex">#011619</div>
+            <div class="hint">Page · recessed containers</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw bordered" data-copy="--color-surface-1">
+            <div class="sq" style="background:#0A2125"></div>
+            <div class="var">--color-surface-1</div>
+            <div class="hex">#0A2125</div>
+            <div class="hint">Default panel surface</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw bordered" data-copy="--color-surface-2">
+            <div class="sq" style="background:#143034"></div>
+            <div class="var">--color-surface-2</div>
+            <div class="hex">#143034</div>
+            <div class="hint">Elevated · selected · modal</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw bordered" data-copy="--color-surface-3">
+            <div class="sq" style="background:#1A3A40"></div>
+            <div class="var">--color-surface-3</div>
+            <div class="hex">#1A3A40</div>
+            <div class="hint">Top-of-stack · row hover</div>
+            <span class="copied">copied</span>
+          </div>
+        </div>
+
+        <p class="note" style="margin-top: 32px;"><strong>Border.</strong> Subtle for internal/dashed dividers, default and strong (same hex) for outer panel borders.</p>
+
+        <div class="swatches" data-rows="auto">
+          <div class="sw" data-copy="--color-border-subtle">
+            <div class="sq" style="background:#1E3A40"></div>
+            <div class="var">--color-border-subtle</div>
+            <div class="hex">#1E3A40</div>
+            <div class="hint">Internal · dashed dividers</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-border-default">
+            <div class="sq" style="background:#284C53"></div>
+            <div class="var">--color-border-default</div>
+            <div class="hex">#284C53</div>
+            <div class="hint">Standard divider</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-border-strong">
+            <div class="sq" style="background:#284C53"></div>
+            <div class="var">--color-border-strong</div>
+            <div class="hex">#284C53</div>
+            <div class="hint">Outer panel border</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="">
+            <div class="sq" style="background:transparent;"></div>
+            <div class="var" style="color:var(--color-text-tertiary)">— no shadows —</div>
+            <div class="hex">&nbsp;</div>
+            <div class="hint">Elevation by stepping only</div>
+          </div>
+        </div>
+
+        <p class="note" style="margin-top: 32px;"><strong>Text.</strong> A 4-step hierarchy plus an inverse for text on aqua/teal buttons.</p>
+
+        <div class="swatches" data-rows="auto">
+          <div class="sw" data-copy="--color-text-primary">
+            <div class="sq" style="background:#DCE8E6"></div>
+            <div class="var">--color-text-primary</div>
+            <div class="hex">#DCE8E6</div>
+            <div class="hint">Body · headings</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-text-secondary">
+            <div class="sq" style="background:#8AA6A4"></div>
+            <div class="var">--color-text-secondary</div>
+            <div class="hex">#8AA6A4</div>
+            <div class="hint">Meta · captions</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-text-tertiary">
+            <div class="sq" style="background:#54706E"></div>
+            <div class="var">--color-text-tertiary</div>
+            <div class="hex">#54706E</div>
+            <div class="hint">Timestamps · faint</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw bordered" data-copy="--color-text-inverse">
+            <div class="sq" style="background:#011619"></div>
+            <div class="var">--color-text-inverse</div>
+            <div class="hex">#011619</div>
+            <div class="hint">On aqua/teal buttons</div>
+            <span class="copied">copied</span>
+          </div>
+        </div>
+
+        <p class="note" style="margin-top: 32px;"><strong>Brand.</strong> The two-accent hierarchy. Aqua = single primary CTA. Teal = secondary, links, brand presence. Teal-deep = structural labels.</p>
+
+        <div class="swatches" data-rows="auto">
+          <div class="sw" data-copy="--color-accent-secondary">
+            <div class="sq" style="background:#A9F4EA"></div>
+            <div class="var">--color-accent-secondary</div>
+            <div class="hex">#A9F4EA</div>
+            <div class="hint">Primary CTA · ONLY</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-accent">
+            <div class="sq" style="background:#2ECEC0"></div>
+            <div class="var">--color-accent</div>
+            <div class="hex">#2ECEC0</div>
+            <div class="hint">Secondary CTA · links</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-accent-hover">
+            <div class="sq" style="background:#45D9CD"></div>
+            <div class="var">--color-accent-hover</div>
+            <div class="hex">#45D9CD</div>
+            <div class="hint">Accent hover state</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-accent-subtle">
+            <div class="sq" style="background:#1F908A"></div>
+            <div class="var">--color-accent-subtle</div>
+            <div class="hex">#1F908A</div>
+            <div class="hint">Labels · IDs · code text</div>
+            <span class="copied">copied</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [03] STATUS COLOR ═══ -->
+      <section class="sec" id="status-color">
+        <div class="sec-head">
+          <span class="num">[03]</span>
+          <span class="name">Status · Data Viz</span><span></span>
+          <span class="desc">named by intent</span>
+        </div>
+
+        <p class="note">Status colors carry product-specific meaning. Use them by intent (running, queued, idle, healthy, warning, critical), not by hue. <code>-text</code> variants are tuned for legibility at small sizes on dark surfaces.</p>
+
+        <div class="swatches" data-rows="auto">
+          <div class="sw" data-copy="--color-info">
+            <div class="sq" style="background:#69B1E8"></div>
+            <div class="var">--color-info</div>
+            <div class="hex">#69B1E8</div>
+            <div class="hint">running</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-success">
+            <div class="sq" style="background:#0DC378"></div>
+            <div class="var">--color-success</div>
+            <div class="hex">#0DC378</div>
+            <div class="hint">healthy · done</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-warning">
+            <div class="sq" style="background:#C99A3F"></div>
+            <div class="var">--color-warning</div>
+            <div class="hex">#C99A3F</div>
+            <div class="hint">warn · throttled</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-danger">
+            <div class="sq" style="background:#C8533B"></div>
+            <div class="var">--color-danger</div>
+            <div class="hex">#C8533B</div>
+            <div class="hint">critical · failed</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-status-queued">
+            <div class="sq" style="background:#8EA0C9"></div>
+            <div class="var">--color-status-queued</div>
+            <div class="hex">#8EA0C9</div>
+            <div class="hint">queued</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-neutral">
+            <div class="sq" style="background:#3E5A5E"></div>
+            <div class="var">--color-neutral</div>
+            <div class="hex">#3E5A5E</div>
+            <div class="hint">idle</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-viz-1">
+            <div class="sq" style="background:#D11A6E"></div>
+            <div class="var">--color-viz-1</div>
+            <div class="hex">#D11A6E</div>
+            <div class="hint">viz · magenta</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-viz-2">
+            <div class="sq" style="background:#E5C739"></div>
+            <div class="var">--color-viz-2</div>
+            <div class="hex">#E5C739</div>
+            <div class="hint">viz · amber</div>
+            <span class="copied">copied</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [04] TYPOGRAPHY ═══ -->
+      <section class="sec" id="typography">
+        <div class="sec-head">
+          <span class="num">[04]</span>
+          <span class="name">Typography Roles</span><span></span>
+          <span class="desc">15 roles · 1 mono family · Inter for narrative</span>
+        </div>
+
+        <p class="note">Each role composes 5 primitives (family · size · weight · line-height · letter-spacing) and matches one Figma text style. Prefer the utility classes — they bake in <code>tabular-nums</code> on metrics and <code>text-transform: uppercase</code> on labels/caps/buttons.</p>
+
+        <div class="type-grid">
+          <div class="type-row">
+            <span class="role">.role-display</span>
+            <span class="role-display">97.4%</span>
+            <span class="spec">JBM · 48 / 700 · −0.025em</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-title</span>
+            <span class="role-title">priority_cap.texas_tech</span>
+            <span class="spec">JBM · 22 / 600 · −0.01em</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-heading</span>
+            <span class="role-heading">Section Header</span>
+            <span class="spec">JBM · 14 / 600</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-metric-display</span>
+            <span class="role-metric-display">847,290</span>
+            <span class="spec">JBM · 38 / 700 · tabular</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-metric-value</span>
+            <span class="role-metric-value">2,184</span>
+            <span class="spec">JBM · 28 / 700 · tabular</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-body</span>
+            <span class="role-body">A maximum priority of medium applies to every job submitted under this tenant.</span>
+            <span class="spec">JBM · 13 / 400</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-body-sm</span>
+            <span class="role-body-sm">evaluated at submit-time · does not preempt in-flight workloads</span>
+            <span class="spec">JBM · 12 / 400</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-secondary</span>
+            <span class="role-secondary">214 hits in the last 24 hours</span>
+            <span class="spec">JBM · 11 / 400</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-label</span>
+            <span class="role-label">GPU Utilization</span>
+            <span class="spec">JBM · 10 / 500 · 0.10em · UPPER</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-caps</span>
+            <span class="role-caps">scheduler · policy · tenant · queue</span>
+            <span class="spec">JBM · 10 / 500 · 0.16em · UPPER</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-button</span>
+            <span class="role-button">Submit Job</span>
+            <span class="spec">JBM · 11 / 600 · 0.04em · UPPER</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-code</span>
+            <span class="role-code">clamp(priority ≤ medium)</span>
+            <span class="spec">JBM · 11 / 400</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-kbd</span>
+            <span class="role-kbd">⌘K</span>
+            <span class="spec">JBM · 9 / 500</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-narrative</span>
+            <span class="role-narrative">Q3 utilization climbed steadily across the texas_tech and helix_bio tenancies, with a brief throttling event on cluster-a during the mid-September capacity test.</span>
+            <span class="spec">Inter · 14 / 400 · 1.7</span>
+          </div>
+          <div class="type-row">
+            <span class="role">.role-narrative-lg</span>
+            <span class="role-narrative-lg">Sovereign means the customer owns the silicon, the rules, and the audit trail. We provide the runtime.</span>
+            <span class="spec">Inter · 16 / 400 · 1.7</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [05] METRICS ═══ -->
+      <section class="sec" id="metrics">
+        <div class="sec-head">
+          <span class="num">[05]</span>
+          <span class="name">Metric Display</span><span></span>
+          <span class="desc">cell · spark · semantic delta</span>
+        </div>
+
+        <p class="note">Four-up grid is the canonical layout. Each cell carries label (with optional teal-deep tag), large tabular value, optional trend line, optional sparkline. <a href="components/metrics-SKILL.md" style="color: var(--color-accent); border-bottom: 1px solid var(--color-accent-subtle); text-decoration: none;">See full skill</a>.</p>
+
+        <div class="panel-frame">
+          <div class="metric-grid">
+            <div class="metric-cell">
+              <div class="lbl">GPU Util <span class="tag">cluster-a</span></div>
+              <div class="val">97.4<span class="u">%</span></div>
+              <div class="trend"><span class="delta up">+2.1pp</span><span>VS LAST WEEK</span></div>
+              <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 14 L8 12 L14 13 L20 9 L26 10 L32 6 L38 7 L44 4 L50 5 L60 2"/></svg>
+            </div>
+            <div class="metric-cell">
+              <div class="lbl">Jobs <span class="tag">24h</span></div>
+              <div class="val">18,402</div>
+              <div class="trend"><span class="delta up">+312</span><span>VS YESTERDAY</span></div>
+              <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 12 L8 10 L14 13 L20 8 L26 9 L32 5 L38 7 L44 4 L50 6 L60 3"/></svg>
+            </div>
+            <div class="metric-cell">
+              <div class="lbl">Queue <span class="tag">p95</span></div>
+              <div class="val">1,247</div>
+              <div class="trend"><span class="delta warn">+184</span><span>VS LAST HOUR</span></div>
+              <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 14 L8 12 L14 11 L20 13 L26 9 L32 8 L38 10 L44 6 L50 7 L60 4"/></svg>
+            </div>
+            <div class="metric-cell">
+              <div class="lbl">SLA <span class="tag">30d</span></div>
+              <div class="val">99.98<span class="u">%</span></div>
+              <div class="trend"><span class="delta dn">−0.01pp</span><span>VS 30D</span></div>
+              <svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><path d="M0 4 L8 5 L14 4 L20 6 L26 5 L32 4 L38 6 L44 5 L50 7 L60 6"/></svg>
+            </div>
+          </div>
+          <div class="panel-spec">
+            <span>4-up grid · 22/24/20px padding · zero gap · cell dividers</span>
+            <span class="right">components/metrics-SKILL.md</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [06] STATUS ROW ═══ -->
+      <section class="sec" id="status-row">
+        <div class="sec-head">
+          <span class="num">[06]</span>
+          <span class="name">Status Row</span><span></span>
+          <span class="desc">glyph · count · sentinel bar</span>
+        </div>
+
+        <p class="note">Five-up grid showing fleet-wide state counts. Each cell pairs a status glyph (▶ ● ◭ ✕ ∅) with a large tabular count and a 2px sentinel bar tinted by the same status color.</p>
+
+        <div class="panel-frame">
+          <div class="statrow">
+            <div class="stat run">
+              <div class="row1"><span class="glyph">▶</span>RUNNING</div>
+              <div class="count">2,184<span class="u">jobs</span></div>
+              <div class="bar"></div>
+            </div>
+            <div class="stat ok">
+              <div class="row1"><span class="glyph">●</span>HEALTHY</div>
+              <div class="count">48<span class="u">nodes</span></div>
+              <div class="bar"></div>
+            </div>
+            <div class="stat warn">
+              <div class="row1"><span class="glyph">◭</span>WARNING</div>
+              <div class="count">12<span class="u">nodes</span></div>
+              <div class="bar"></div>
+            </div>
+            <div class="stat crit">
+              <div class="row1"><span class="glyph">✕</span>CRITICAL</div>
+              <div class="count">3<span class="u">nodes</span></div>
+              <div class="bar"></div>
+            </div>
+            <div class="stat idle">
+              <div class="row1"><span class="glyph">∅</span>IDLE</div>
+              <div class="count">126<span class="u">jobs</span></div>
+              <div class="bar"></div>
+            </div>
+          </div>
+          <div class="panel-spec">
+            <span>5-up · row1 (glyph + label) → count → 2px bar</span>
+            <span class="right">future: status-displays-SKILL.md</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [07] TABLE ═══ -->
+      <section class="sec" id="table">
+        <div class="sec-head">
+          <span class="num">[07]</span>
+          <span class="name">Dense Table</span><span></span>
+          <span class="desc">32px row · sentinel state · zebra-free</span>
+        </div>
+
+        <p class="note">32px row height, no zebra striping. Header on <code>--color-bg</code> (recessed). Status cells use a 6×6px square in the status color followed by lowercase status text. Hover lifts the row to <code>--color-surface-3</code>.</p>
+
+        <div class="panel-frame">
+          <div class="table">
+            <div class="thead">
+              <div>JOB ID</div><div>STATE</div><div>RES</div><div>TENANT</div><div>STARTED</div><div></div>
+            </div>
+            <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a1</div><div class="cell-st">running</div><div class="cell-res">512 <span class="u">gpu</span></div><div class="cell-ten">texas_tech</div><div class="cell-ts">14:32:01</div><div class="cell-more">⋯</div></div>
+            <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a2</div><div class="cell-st queue">queued</div><div class="cell-res">128 <span class="u">gpu</span></div><div class="cell-ten">helix_bio</div><div class="cell-ts">14:31:58</div><div class="cell-more">⋯</div></div>
+            <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a3</div><div class="cell-st ok">done</div><div class="cell-res">64 <span class="u">gpu</span></div><div class="cell-ten">nrel</div><div class="cell-ts">14:28:44</div><div class="cell-more">⋯</div></div>
+            <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a4</div><div class="cell-st crit">failed</div><div class="cell-res">256 <span class="u">gpu</span></div><div class="cell-ten">anduril</div><div class="cell-ts">14:22:19</div><div class="cell-more">⋯</div></div>
+            <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a5</div><div class="cell-st warn">throttled</div><div class="cell-res">1,024 <span class="u">gpu</span></div><div class="cell-ten">texas_tech</div><div class="cell-ts">14:18:07</div><div class="cell-more">⋯</div></div>
+            <div class="trow"><div class="cell-id"><span class="pre">job-</span>8842a6</div><div class="cell-st idle">idle</div><div class="cell-res">32 <span class="u">cpu</span></div><div class="cell-ten">meridian</div><div class="cell-ts">14:02:33</div><div class="cell-more">⋯</div></div>
+          </div>
+          <div class="panel-spec">
+            <span>32px row · header on bg · status: 6×6px square + lowercase</span>
+            <span class="right">future: tables-SKILL.md</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [08] BUTTONS ═══ -->
+      <section class="sec" id="buttons">
+        <div class="sec-head">
+          <span class="num">[08]</span>
+          <span class="name">Button Set</span><span></span>
+          <span class="desc">aqua · teal · outline · ghost</span>
+        </div>
+
+        <p class="note">Four tiers, ordered by importance. <strong>Primary</strong> (aqua) is the single most important action. <strong>Secondary</strong> (teal) is the next-most-important. <strong>Tertiary</strong> (outline) is supplementary. <strong>Ghost</strong> (danger) is destructive-secondary — cancel, dismiss, delete.</p>
+
+        <div class="panel-frame">
+          <div class="button-row">
+            <button class="btn primary">Submit <kbd>⏎</kbd></button>
+            <button class="btn secondary">View Logs <kbd>L</kbd></button>
+            <button class="btn tertiary">Configure <kbd>C</kbd></button>
+            <button class="btn ghost">Cancel</button>
+            <span class="btn-spec">PRIMARY · SECONDARY · TERTIARY · GHOST</span>
+          </div>
+          <div class="panel-spec">
+            <span>36px · 11px / 600 · 0.04em · UPPER · inline kbd</span>
+            <span class="right">future: buttons-SKILL.md</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [09] LIVE LOG ═══ -->
+      <section class="sec" id="log">
+        <div class="sec-head">
+          <span class="num">[09]</span>
+          <span class="name">Live Log — Scheduler Decision</span><span></span>
+          <span class="desc">tail -f · structured · signature</span>
+        </div>
+
+        <p class="note">The strongest signature pattern in the system. Recessed header on <code>--color-bg</code> with square traffic-light dots (live = green, glowing). Body uses a 3-column grid: timestamp · level · message. Levels carry the status color vocabulary. Inline <code>code</code> wraps every system value.</p>
+
+        <div class="panel-frame">
+          <div class="log">
+            <div class="log-head">
+              <span class="traffic"><span class="live"></span><span></span><span></span></span>
+              scheduler.log <span style="color:var(--color-text-tertiary)">·</span> <span class="accent">tail -f</span>
+              <span class="right">job-8842a1 · 14:32:01 utc-05</span>
+            </div>
+            <div class="log-body">
+              <div class="log-line info">
+                <span class="t">14:32:01.04</span><span class="lvl">SUBMIT</span>
+                <span class="msg"><span class="muted">request</span> priority=<code>high</code> tenant=<code>texas_tech</code> gpus=<code>512</code></span>
+              </div>
+              <div class="log-line warn">
+                <span class="t">14:32:01.07</span><span class="lvl">MATCH</span>
+                <span class="msg">rule <code>priority_cap.texas_tech</code> <span class="muted">— active 14d, 214 hits/24h</span></span>
+              </div>
+              <div class="log-line info">
+                <span class="t">14:32:01.09</span><span class="lvl">APPLY</span>
+                <span class="msg"><code>clamp(priority ≤ medium)</code> <span class="muted">→</span> field updated <code>high</code> <span class="muted">→</span> <code>medium</code></span>
+              </div>
+              <div class="log-line ok">
+                <span class="t">14:32:01.12</span><span class="lvl">QUEUE</span>
+                <span class="msg">position <code>4</code> <span class="muted">— expected start</span> <code>00:04:12</code> <span class="muted">— three jobs ahead</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="panel-spec">
+            <span>recessed header · 3-col body · status-tinted level</span>
+            <span class="right">future: logs-SKILL.md</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [10] INVARIANTS ═══ -->
+      <section class="sec" id="rules">
+        <div class="sec-head">
+          <span class="num">[10]</span>
+          <span class="name">Rendering Invariants</span><span></span>
+          <span class="desc">do these by default</span>
+        </div>
+
+        <p class="note">Every component on this system follows these rules unless overridden for a deliberate reason.</p>
+
+        <div class="rules">
+          <div class="rules-head">
+            Rendering Defaults
+            <span class="id">RULE_INV · ALWAYS</span>
+          </div>
+          <div class="rules-list">
+            <span class="k">01</span><span class="v">Imports <code>tokens/amalgamy-reset.css</code> at the top, or inlines its full contents.</span>
+            <span class="k">02</span><span class="v">Uses role utility classes for type. <code>&lt;div class="role-metric-display"&gt;97.4%&lt;/div&gt;</code> over re-stating five primitives.</span>
+            <span class="k">03</span><span class="v">Uses CSS variables for all color and border values, never hex codes.</span>
+            <span class="k">04</span><span class="v">Hard-edged corners — <code>border-radius: 0</code>. The system has no radius tokens; that is intentional.</span>
+            <span class="k">05</span><span class="v">No drop shadows. Elevation is stepping plus a 1px border. Only exception: the inset highlight on primary buttons.</span>
+            <span class="k">06</span><span class="v">Tabular numerals on every metric, count, and timestamp. <code>role-metric-display</code> and <code>role-metric-value</code> bake this in.</span>
+            <span class="k">07</span><span class="v">Spec annotation in the corner of significant panels. The "this is a spec sheet, not a marketing page" voice.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [11] FILES ═══ -->
+      <section class="sec" id="files">
+        <div class="sec-head">
+          <span class="num">[11]</span>
+          <span class="name">Package Files</span><span></span>
+          <span class="desc">click to open</span>
+        </div>
+
+        <p class="note">Everything in the package, what it does, and where it lives.</p>
+
+        <div class="files">
+          <a class="file" href="SKILL.md">
+            <div class="head"><span>FOUNDATION</span><span class="ext">md</span></div>
+            <div class="name">SKILL.md</div>
+            <div class="desc">The entry point. Loaded by Claude Code before any component skill. Defines tokens, visual rules, rendering invariants. Read first.</div>
+            <div class="path">./SKILL.md</div>
+          </a>
+          <a class="file" href="patterns/visual-language.md">
+            <div class="head"><span>PATTERNS</span><span class="ext">md</span></div>
+            <div class="name">visual-language.md</div>
+            <div class="desc">The "why" behind the rules. Five stances, the two-accent hierarchy, when to depart. Reference for system decisions.</div>
+            <div class="path">./patterns/visual-language.md</div>
+          </a>
+          <a class="file" href="tokens/amalgamy-reset.css">
+            <div class="head"><span>TOKENS</span><span class="ext">css</span></div>
+            <div class="name">amalgamy-reset.css</div>
+            <div class="desc">All 70+ tokens, role utility classes, base reset. Single source of truth — mirrors the Figma variable collections name-for-name.</div>
+            <div class="path">./tokens/amalgamy-reset.css</div>
+          </a>
+          <a class="file" href="components/metrics-SKILL.md">
+            <div class="head"><span>COMPONENT</span><span class="ext">md</span></div>
+            <div class="name">metrics-SKILL.md</div>
+            <div class="desc">Worked example. KPI tiles, big-number readouts, sparkline-decorated cells, the four-up grid. Template for future component skills.</div>
+            <div class="path">./components/metrics-SKILL.md</div>
+          </a>
+          <a class="file" href="examples/sovereign-terminal-style-tile.html">
+            <div class="head"><span>EXAMPLE</span><span class="ext">html</span></div>
+            <div class="name">sovereign-terminal-style-tile.html</div>
+            <div class="desc">The canonical specimen. All components in one document with live mood, density, and atmosphere controls. Open in a browser.</div>
+            <div class="path">./examples/sovereign-terminal-style-tile.html</div>
+          </a>
+          <a class="file" href="README.md">
+            <div class="head"><span>TEAM</span><span class="ext">md</span></div>
+            <div class="name">README.md</div>
+            <div class="desc">How to install for the team, how teammates use it, how to extend it. The operational guide for the package itself.</div>
+            <div class="path">./README.md</div>
+          </a>
+        </div>
+      </section>
+
+      <footer>
+        <span>AMALGAMY · LAUNCHHPC</span>
+        <span>SOVEREIGN TERMINAL · INDEX</span>
+        <span>v0.1 · 2026—05—04</span>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  // Live clock in status bar
+  function tick() {
+    var d = new Date();
+    var h = String(d.getUTCHours()).padStart(2, '0');
+    var m = String(d.getUTCMinutes()).padStart(2, '0');
+    var s = String(d.getUTCSeconds()).padStart(2, '0');
+    var el = document.getElementById('clock');
+    if (el) el.textContent = h + ':' + m + ':' + s + ' UTC';
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Click-to-copy on swatches
+  document.querySelectorAll('.sw[data-copy]').forEach(function(sw) {
+    var v = sw.getAttribute('data-copy');
+    if (!v) return;
+    sw.addEventListener('click', function() {
+      var hex = (sw.querySelector('.hex') || {}).textContent || v;
+      // Prefer copying the var name + hex for paste-into-css convenience
+      var payload = 'var(' + v + ')  /* ' + hex.trim() + ' */';
+      navigator.clipboard.writeText(payload).then(function() {
+        sw.classList.add('flash');
+        setTimeout(function() { sw.classList.remove('flash'); }, 900);
+      }).catch(function() {});
+    });
+  });
+
+  // Active nav link based on scroll
+  var sections = Array.from(document.querySelectorAll('.sec[id], #overview'));
+  var navLinks = Array.from(document.querySelectorAll('.nav a[href^="#"]'));
+  function updateActive() {
+    var y = window.scrollY + 120;
+    var current = sections[0];
+    sections.forEach(function(s) {
+      if (s.offsetTop <= y) current = s;
+    });
+    navLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current.id);
+    });
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+</script>
+
+</body>
+</html>

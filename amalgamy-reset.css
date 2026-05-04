@@ -1,0 +1,382 @@
+/* ============================================================================
+ * Amalgamy LaunchHPC — Reset & Tokens
+ * Style direction: Sovereign Terminal
+ * Mode: Dark (Blueprint mode handled in Figma only)
+ *
+ * Mirrors the Figma Design File:
+ *   - Color collection (Dark mode)
+ *   - Typography collection (primitives + role aliases)
+ *   - role/* text styles → .role-* utility classes
+ *
+ * Note: JetBrains Mono SemiBold is unavailable in the rendering environment,
+ * so the "semibold" weight token resolves to 700 (Bold) — matching Figma.
+ * ============================================================================ */
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * TOKENS
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+
+  /* ═══ COLOR ════════════════════════════════════════════════════════════ */
+
+  /* Surface */
+  --color-bg:               #011619;
+  --color-surface-1:        #0A2125;
+  --color-surface-2:        #143034;
+  --color-surface-3:        #1A3A40;
+
+  /* Border */
+  --color-border-subtle:    #1E3A40;
+  --color-border-default:   #284C53;
+  --color-border-strong:    #284C53;
+
+  /* Text */
+  --color-text-primary:     #DCE8E6;
+  --color-text-secondary:   #8AA6A4;
+  --color-text-tertiary:    #54706E;
+  --color-text-faint:       #2A4448;
+  --color-text-inverse:     #011619;
+
+  /* Brand */
+  --color-accent:           #2ECEC0;  /* teal — secondary CTA, links, accents */
+  --color-accent-hover:     #45D9CD;
+  --color-accent-subtle:    #1F908A;  /* teal-deep — section labels, code, chips */
+  --color-accent-secondary: #A9F4EA;  /* aqua — primary CTA */
+
+  /* Status */
+  --color-success:          #0DC378;
+  --color-success-subtle:   #0BA96A;
+  --color-success-text:     #2CC988;
+
+  --color-warning:          #C99A3F;
+  --color-warning-subtle:   #AB8639;
+  --color-warning-text:     #CCA658;
+
+  --color-danger:           #C8533B;
+  --color-danger-subtle:    #AA4A36;
+  --color-danger-text:      #CB6955;
+
+  --color-info:             #69B1E8;  /* running */
+  --color-info-subtle:      #599AC9;
+  --color-info-text:        #7AB9E8;
+
+  --color-status-queued:    #8EA0C9;
+  --color-neutral:          #3E5A5E;  /* idle */
+  --color-neutral-text:     #8AA6A4;
+
+  /* Data viz */
+  --color-viz-1:            #D11A6E;  /* magenta */
+  --color-viz-2:            #E5C739;  /* amber */
+  --color-viz-3:            #9988C2;  /* violet */
+
+
+  /* ═══ TYPOGRAPHY — PRIMITIVES ═════════════════════════════════════════ */
+
+  /* Family */
+  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Size */
+  --font-size-9:   9px;
+  --font-size-10:  10px;
+  --font-size-11:  11px;
+  --font-size-12:  12px;
+  --font-size-13:  13px;
+  --font-size-14:  14px;
+  --font-size-16:  16px;
+  --font-size-22:  22px;
+  --font-size-28:  28px;
+  --font-size-38:  38px;
+  --font-size-48:  48px;
+
+  /* Weight — note: semibold = 700 (Bold) due to font availability */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 700;
+
+  /* Line height */
+  --line-height-tight:    1.1;
+  --line-height-normal:   1.5;
+  --line-height-relaxed:  1.7;
+
+  /* Letter spacing */
+  --letter-spacing-tight-2: -0.025em;
+  --letter-spacing-tight-1: -0.01em;
+  --letter-spacing-normal:   0;
+  --letter-spacing-wide-1:   0.04em;
+  --letter-spacing-wide-2:   0.10em;
+  --letter-spacing-caps:     0.16em;
+
+
+  /* ═══ TYPOGRAPHY — ROLE ALIASES ═══════════════════════════════════════ */
+  /* Each role composes 5 primitives. Use either the aliases below or the
+     .role-* utility classes — both resolve to the same values. */
+
+  /* role/display */
+  --role-display-family:         var(--font-family-mono);
+  --role-display-size:           var(--font-size-48);
+  --role-display-weight:         var(--font-weight-semibold);
+  --role-display-line-height:    var(--line-height-tight);
+  --role-display-letter-spacing: var(--letter-spacing-tight-2);
+
+  /* role/title */
+  --role-title-family:           var(--font-family-mono);
+  --role-title-size:             var(--font-size-22);
+  --role-title-weight:           var(--font-weight-semibold);
+  --role-title-line-height:      var(--line-height-tight);
+  --role-title-letter-spacing:   var(--letter-spacing-tight-1);
+
+  /* role/heading */
+  --role-heading-family:         var(--font-family-mono);
+  --role-heading-size:           var(--font-size-14);
+  --role-heading-weight:         var(--font-weight-semibold);
+  --role-heading-line-height:    var(--line-height-normal);
+  --role-heading-letter-spacing: var(--letter-spacing-normal);
+
+  /* role/body */
+  --role-body-family:            var(--font-family-mono);
+  --role-body-size:              var(--font-size-13);
+  --role-body-weight:            var(--font-weight-regular);
+  --role-body-line-height:       var(--line-height-normal);
+  --role-body-letter-spacing:    var(--letter-spacing-normal);
+
+  /* role/body-sm */
+  --role-body-sm-family:         var(--font-family-mono);
+  --role-body-sm-size:           var(--font-size-12);
+  --role-body-sm-weight:         var(--font-weight-regular);
+  --role-body-sm-line-height:    var(--line-height-normal);
+  --role-body-sm-letter-spacing: var(--letter-spacing-normal);
+
+  /* role/secondary */
+  --role-secondary-family:         var(--font-family-mono);
+  --role-secondary-size:           var(--font-size-11);
+  --role-secondary-weight:         var(--font-weight-regular);
+  --role-secondary-line-height:    var(--line-height-normal);
+  --role-secondary-letter-spacing: var(--letter-spacing-normal);
+
+  /* role/metric-display */
+  --role-metric-display-family:         var(--font-family-mono);
+  --role-metric-display-size:           var(--font-size-38);
+  --role-metric-display-weight:         var(--font-weight-semibold);
+  --role-metric-display-line-height:    var(--line-height-tight);
+  --role-metric-display-letter-spacing: var(--letter-spacing-tight-2);
+
+  /* role/metric-value */
+  --role-metric-value-family:         var(--font-family-mono);
+  --role-metric-value-size:           var(--font-size-28);
+  --role-metric-value-weight:         var(--font-weight-semibold);
+  --role-metric-value-line-height:    var(--line-height-tight);
+  --role-metric-value-letter-spacing: var(--letter-spacing-tight-1);
+
+  /* role/label */
+  --role-label-family:           var(--font-family-mono);
+  --role-label-size:             var(--font-size-10);
+  --role-label-weight:           var(--font-weight-medium);
+  --role-label-line-height:      var(--line-height-normal);
+  --role-label-letter-spacing:   var(--letter-spacing-wide-2);
+
+  /* role/caps */
+  --role-caps-family:            var(--font-family-mono);
+  --role-caps-size:              var(--font-size-10);
+  --role-caps-weight:            var(--font-weight-medium);
+  --role-caps-line-height:       var(--line-height-normal);
+  --role-caps-letter-spacing:    var(--letter-spacing-caps);
+
+  /* role/button */
+  --role-button-family:          var(--font-family-mono);
+  --role-button-size:            var(--font-size-11);
+  --role-button-weight:          var(--font-weight-semibold);
+  --role-button-line-height:     var(--line-height-tight);
+  --role-button-letter-spacing:  var(--letter-spacing-wide-1);
+
+  /* role/code */
+  --role-code-family:            var(--font-family-mono);
+  --role-code-size:              var(--font-size-11);
+  --role-code-weight:            var(--font-weight-regular);
+  --role-code-line-height:       var(--line-height-normal);
+  --role-code-letter-spacing:    var(--letter-spacing-normal);
+
+  /* role/kbd */
+  --role-kbd-family:             var(--font-family-mono);
+  --role-kbd-size:               var(--font-size-9);
+  --role-kbd-weight:             var(--font-weight-medium);
+  --role-kbd-line-height:        var(--line-height-tight);
+  --role-kbd-letter-spacing:     var(--letter-spacing-normal);
+
+  /* role/narrative — Inter, executive narrative screens only */
+  --role-narrative-family:         var(--font-family-sans);
+  --role-narrative-size:           var(--font-size-14);
+  --role-narrative-weight:         var(--font-weight-regular);
+  --role-narrative-line-height:    var(--line-height-relaxed);
+  --role-narrative-letter-spacing: var(--letter-spacing-normal);
+
+  /* role/narrative-lg — Inter */
+  --role-narrative-lg-family:         var(--font-family-sans);
+  --role-narrative-lg-size:           var(--font-size-16);
+  --role-narrative-lg-weight:         var(--font-weight-regular);
+  --role-narrative-lg-line-height:    var(--line-height-relaxed);
+  --role-narrative-lg-letter-spacing: var(--letter-spacing-normal);
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * ROLE UTILITY CLASSES
+ * One class per Figma text style. Apply directly:
+ *   <div class="role-metric-display">97.4%</div>
+ *   <span class="role-label">GPU UTIL</span>
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.role-display {
+  font-family:    var(--role-display-family);
+  font-size:      var(--role-display-size);
+  font-weight:    var(--role-display-weight);
+  line-height:    var(--role-display-line-height);
+  letter-spacing: var(--role-display-letter-spacing);
+}
+
+.role-title {
+  font-family:    var(--role-title-family);
+  font-size:      var(--role-title-size);
+  font-weight:    var(--role-title-weight);
+  line-height:    var(--role-title-line-height);
+  letter-spacing: var(--role-title-letter-spacing);
+}
+
+.role-heading {
+  font-family:    var(--role-heading-family);
+  font-size:      var(--role-heading-size);
+  font-weight:    var(--role-heading-weight);
+  line-height:    var(--role-heading-line-height);
+  letter-spacing: var(--role-heading-letter-spacing);
+}
+
+.role-body {
+  font-family:    var(--role-body-family);
+  font-size:      var(--role-body-size);
+  font-weight:    var(--role-body-weight);
+  line-height:    var(--role-body-line-height);
+  letter-spacing: var(--role-body-letter-spacing);
+}
+
+.role-body-sm {
+  font-family:    var(--role-body-sm-family);
+  font-size:      var(--role-body-sm-size);
+  font-weight:    var(--role-body-sm-weight);
+  line-height:    var(--role-body-sm-line-height);
+  letter-spacing: var(--role-body-sm-letter-spacing);
+}
+
+.role-secondary {
+  font-family:    var(--role-secondary-family);
+  font-size:      var(--role-secondary-size);
+  font-weight:    var(--role-secondary-weight);
+  line-height:    var(--role-secondary-line-height);
+  letter-spacing: var(--role-secondary-letter-spacing);
+}
+
+/* Tabular numerals are intent-bearing for metric tokens — bake them in. */
+.role-metric-display {
+  font-family:    var(--role-metric-display-family);
+  font-size:      var(--role-metric-display-size);
+  font-weight:    var(--role-metric-display-weight);
+  line-height:    var(--role-metric-display-line-height);
+  letter-spacing: var(--role-metric-display-letter-spacing);
+  font-variant-numeric: tabular-nums;
+}
+
+.role-metric-value {
+  font-family:    var(--role-metric-value-family);
+  font-size:      var(--role-metric-value-size);
+  font-weight:    var(--role-metric-value-weight);
+  line-height:    var(--role-metric-value-line-height);
+  letter-spacing: var(--role-metric-value-letter-spacing);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Label, caps, and button are nearly always uppercase in the system. Bake it
+   in here so designers don't repeat `text-transform: uppercase` everywhere.
+   Override on the element if you need mixed case. */
+.role-label {
+  font-family:    var(--role-label-family);
+  font-size:      var(--role-label-size);
+  font-weight:    var(--role-label-weight);
+  line-height:    var(--role-label-line-height);
+  letter-spacing: var(--role-label-letter-spacing);
+  text-transform: uppercase;
+}
+
+.role-caps {
+  font-family:    var(--role-caps-family);
+  font-size:      var(--role-caps-size);
+  font-weight:    var(--role-caps-weight);
+  line-height:    var(--role-caps-line-height);
+  letter-spacing: var(--role-caps-letter-spacing);
+  text-transform: uppercase;
+}
+
+.role-button {
+  font-family:    var(--role-button-family);
+  font-size:      var(--role-button-size);
+  font-weight:    var(--role-button-weight);
+  line-height:    var(--role-button-line-height);
+  letter-spacing: var(--role-button-letter-spacing);
+  text-transform: uppercase;
+}
+
+.role-code {
+  font-family:    var(--role-code-family);
+  font-size:      var(--role-code-size);
+  font-weight:    var(--role-code-weight);
+  line-height:    var(--role-code-line-height);
+  letter-spacing: var(--role-code-letter-spacing);
+}
+
+.role-kbd {
+  font-family:    var(--role-kbd-family);
+  font-size:      var(--role-kbd-size);
+  font-weight:    var(--role-kbd-weight);
+  line-height:    var(--role-kbd-line-height);
+  letter-spacing: var(--role-kbd-letter-spacing);
+}
+
+.role-narrative {
+  font-family:    var(--role-narrative-family);
+  font-size:      var(--role-narrative-size);
+  font-weight:    var(--role-narrative-weight);
+  line-height:    var(--role-narrative-line-height);
+  letter-spacing: var(--role-narrative-letter-spacing);
+}
+
+.role-narrative-lg {
+  font-family:    var(--role-narrative-lg-family);
+  font-size:      var(--role-narrative-lg-size);
+  font-weight:    var(--role-narrative-lg-weight);
+  line-height:    var(--role-narrative-lg-line-height);
+  letter-spacing: var(--role-narrative-lg-letter-spacing);
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * BASE
+ * ────────────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+body {
+  font-family:    var(--role-body-family);
+  font-size:      var(--role-body-size);
+  font-weight:    var(--role-body-weight);
+  line-height:    var(--role-body-line-height);
+  letter-spacing: var(--role-body-letter-spacing);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-ligatures: none;
+}
