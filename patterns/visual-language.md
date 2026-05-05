@@ -152,3 +152,64 @@ For any other deviation: reach for the patterns above first, then discuss with t
 ## Reference
 
 Canonical implementation: `examples/sovereign-terminal-style-tile.html`. Open in browser to see the language in motion with all four moods, three densities, and the atmosphere slider live.
+
+## First-Prompt Defaults
+
+When building any prototype for the first time without explicit direction on density, atmosphere, or layout treatment, use these defaults. Departures should be deliberate, not interpretive.
+
+### Density: standard
+
+Use standard density unless explicitly asked for compact or spacious.
+
+- Metric cells: `padding: 22px 24px 20px`
+- Status cells: `padding: 18px 22px`
+- Dense table rows: `height: 32px`
+- Section spacing: `64px`
+
+Do not invent additional whitespace because a screen "feels empty." The system reads as a console, not a marketing page.
+
+### Atmosphere: low (~0.012 grid opacity, no scanlines)
+
+CRT bloom is off by default.
+
+- Grid background opacity: `~0.012`
+- No scanline overlay
+- No accent glow
+
+Atmosphere is a deliberate dial a user can turn up, never the starting condition.
+
+### Status row: single sentinel bar
+
+Each status cell ends with one 2px sentinel bar across the full width in the matching status color.
+
+- Pattern: glyph + uppercase label -> large tabular count + unit -> 2px bar
+- Do not use dual bars, segmented progress, or split bars
+
+### Masthead: numbered label + meta block, not description
+
+Mastheads use a `[NN]` numbered tag in `--color-accent-subtle` above the title, with a right-aligned uppercase meta block on the right (for example: `BASE RUNTIME`, `INK AQUA · TEAL`, `MODE DARK`, `REV 0.1`).
+
+Do not add descriptive prose under the title. That is executive narrative voice and belongs elsewhere. Mastheads are spec-sheet headers, not marketing heroes.
+
+### Section headers: numbered + dashed underline
+
+Major sections in a prototype use:
+
+- `[01]` / `[02]` numbering convention
+- Section name in `role-heading`
+- Optional right-aligned spec annotation in `role-secondary` and tertiary text color
+- `1px dashed` underline in `--color-border-default`
+
+This frames each section as a numbered specimen and keeps the spec-sheet voice.
+
+### Code wrapping: liberal
+
+Wrap system values in `<code>` tags wherever they appear in prose or reference text:
+
+- IDs
+- Paths
+- Expressions
+- Status tokens
+- Reference timestamps
+
+Inline code styling remains: `--color-accent` text on `--color-bg` background with a 1px border. Inline code is part of the prose, not an exception.

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>LaunchHPC · Fleet Overview · cluster-a</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/amalgamy-reset.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-mono);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 56px 56px 96px;
+  }
+
+  .statusbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+    margin-bottom: 28px;
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-primary);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent);
+  }
+
+  .crumb {
+    color: var(--color-text-secondary);
+  }
+
+  .crumb .sep {
+    color: var(--color-text-tertiary);
+    padding: 0 2px;
+  }
+
+  .crumb .active {
+    color: var(--color-text-primary);
+  }
+
+  .pill {
+    padding: 3px 10px;
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg);
+    color: var(--color-success-text);
+  }
+
+  .ts {
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .title {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+    border-bottom: 1px solid var(--color-border-default);
+    margin-bottom: 32px;
+    padding: 32px 0 28px;
+  }
+
+  .title-left .num {
+    margin-bottom: 14px;
+    color: var(--color-accent-subtle);
+    letter-spacing: var(--letter-spacing-wide-2);
+  }
+
+  .title h1 {
+    margin: 0;
+    font-size: var(--font-size-22);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tight-1);
+  }
+
+  .title-meta {
+    text-align: right;
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--letter-spacing-wide-2);
+    text-transform: uppercase;
+    line-height: 2;
+  }
+
+  .title-meta b {
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--color-border-strong);
+    margin-bottom: 24px;
+  }
+
+  .metric-cell {
+    padding: 22px 24px 20px;
+    border-right: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+  }
+
+  .metric-cell:last-child { border-right: none; }
+
+  .metric-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .metric-head .role-label { color: var(--color-text-tertiary); }
+  .metric-head .role-secondary { color: var(--color-accent-subtle); }
+
+  .metric-value {
+    color: var(--color-text-primary);
+  }
+
+  .metric-value .unit {
+    font-size: var(--font-size-16);
+    color: var(--color-text-secondary);
+    margin-left: 2px;
+  }
+
+  .metric-trend {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--color-text-tertiary);
+  }
+
+  .metric-trend .up { color: var(--color-success-text); }
+  .metric-trend .warn { color: var(--color-warning-text); }
+  .metric-trend .dn { color: var(--color-danger-text); }
+
+  .status-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+    margin-bottom: 24px;
+  }
+
+  .status-card {
+    padding: 18px 22px;
+    border-right: 1px solid var(--color-border-strong);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .status-card:last-child { border-right: none; }
+
+  .status-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .glyph {
+    width: 14px;
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .status-card.run .glyph,
+  .status-card.run .role-label { color: var(--color-info); }
+  .status-card.ok .glyph,
+  .status-card.ok .role-label { color: var(--color-success); }
+  .status-card.warn .glyph,
+  .status-card.warn .role-label { color: var(--color-warning); }
+  .status-card.crit .glyph,
+  .status-card.crit .role-label { color: var(--color-danger); }
+  .status-card.idle .glyph,
+  .status-card.idle .role-label { color: var(--color-neutral); }
+
+  .status-card .role-metric-value {
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .status-card .unit {
+    color: var(--color-text-tertiary);
+    margin-left: 4px;
+  }
+
+  .bar {
+    height: 2px;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .status-card.run .bar { background: var(--color-info); }
+  .status-card.ok .bar { background: var(--color-success); }
+  .status-card.warn .bar { background: var(--color-warning); }
+  .status-card.crit .bar { background: var(--color-danger); }
+  .status-card.idle .bar { background: var(--color-neutral); }
+  .status-card .role-label {
+    background: transparent;
+  }
+
+  .table {
+    border: 1px solid var(--color-border-strong);
+  }
+
+  .thead,
+  .trow {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr .8fr 1fr .9fr 1fr 36px;
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  .thead {
+    height: 28px;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border-strong);
+    color: var(--color-accent-subtle);
+  }
+
+  .trow {
+    height: 32px;
+    background: var(--color-surface-1);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .trow:hover { background: var(--color-surface-3); }
+
+  .job-id .pre { color: var(--color-text-tertiary); }
+  .job-id { color: var(--color-text-primary); }
+
+  .state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .state::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+  }
+
+  .state.running { color: var(--color-info); }
+  .state.done { color: var(--color-success); }
+  .state.queued { color: var(--color-status-queued); }
+  .state.throttled { color: var(--color-warning); }
+  .state.failed { color: var(--color-danger); }
+  .state.idle { color: var(--color-neutral); }
+
+  .num, .dur, .started {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .num { color: var(--color-text-primary); }
+  .dur, .started, .tenant { color: var(--color-text-secondary); }
+  .more { color: var(--color-text-tertiary); text-align: right; }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header class="statusbar role-secondary">
+      <span class="mark role-button"><span class="dot"></span>AMALGAMY · LAUNCHHPC</span>
+      <span class="crumb">launchhpc <span class="sep">/</span> clusters <span class="sep">/</span> cluster-a <span class="sep">/</span> <span class="active">fleet-overview</span></span>
+      <span class="pill role-label">● connected</span>
+      <span class="ts" id="ts">--:--:-- UTC</span>
+    </header>
+
+    <section class="title">
+      <div class="title-left">
+        <div class="num role-secondary">[01]</div>
+        <h1>fleet_overview.cluster-a</h1>
+      </div>
+      <div class="title-meta role-caps">
+        <div><b>BASE</b> RUNTIME</div>
+        <div><b>INK</b> AQUA · TEAL</div>
+        <div><b>MODE</b> DARK</div>
+        <div><b>REV</b> 0.1</div>
+      </div>
+    </section>
+
+    <section class="metric-grid">
+      <article class="metric-cell">
+        <div class="metric-head">
+          <span class="role-label">GPU Utilization</span>
+          <span class="role-secondary">cluster-a</span>
+        </div>
+        <div class="metric-value role-metric-display">97.4<span class="unit">%</span></div>
+        <div class="metric-trend role-secondary"><span class="up">+1.8pp</span><span>vs previous hour</span></div>
+      </article>
+      <article class="metric-cell">
+        <div class="metric-head">
+          <span class="role-label">Active Jobs</span>
+          <span class="role-secondary">live</span>
+        </div>
+        <div class="metric-value role-metric-display">2,184</div>
+        <div class="metric-trend role-secondary"><span class="up">+126</span><span>vs 15m ago</span></div>
+      </article>
+      <article class="metric-cell">
+        <div class="metric-head">
+          <span class="role-label">Queue Depth</span>
+          <span class="role-secondary">global</span>
+        </div>
+        <div class="metric-value role-metric-display">1,247</div>
+        <div class="metric-trend role-secondary"><span class="warn">+93</span><span>awaiting GPU slots</span></div>
+      </article>
+      <article class="metric-cell">
+        <div class="metric-head">
+          <span class="role-label">SLA</span>
+          <span class="role-secondary">30d</span>
+        </div>
+        <div class="metric-value role-metric-display">99.98<span class="unit">%</span></div>
+        <div class="metric-trend role-secondary"><span class="dn">-0.01pp</span><span>vs trailing 30d</span></div>
+      </article>
+    </section>
+
+    <section class="status-row">
+      <article class="status-card run">
+        <div class="status-head"><span class="glyph">▶</span><span class="role-label">running</span></div>
+        <div class="role-metric-value">42<span class="unit role-secondary">nodes</span></div>
+        <div class="bar"></div>
+      </article>
+      <article class="status-card ok">
+        <div class="status-head"><span class="glyph">●</span><span class="role-label">healthy</span></div>
+        <div class="role-metric-value">55<span class="unit role-secondary">nodes</span></div>
+        <div class="bar"></div>
+      </article>
+      <article class="status-card warn">
+        <div class="status-head"><span class="glyph">◭</span><span class="role-label">warning</span></div>
+        <div class="role-metric-value">6<span class="unit role-secondary">nodes</span></div>
+        <div class="bar"></div>
+      </article>
+      <article class="status-card crit">
+        <div class="status-head"><span class="glyph">✕</span><span class="role-label">critical</span></div>
+        <div class="role-metric-value">1<span class="unit role-secondary">node</span></div>
+        <div class="bar"></div>
+      </article>
+      <article class="status-card idle">
+        <div class="status-head"><span class="glyph">∅</span><span class="role-label">idle</span></div>
+        <div class="role-metric-value">9<span class="unit role-secondary">nodes</span></div>
+        <div class="bar"></div>
+      </article>
+    </section>
+
+    <section class="table">
+      <div class="thead role-label">
+        <div>job id</div><div>state</div><div>gpus</div><div>tenant</div><div>duration</div><div>started</div><div></div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c41a</div><div class="state running">running</div><div class="num">512</div><div class="tenant">orion-labs</div><div class="dur">07:42:12</div><div class="started">14:08:19</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c41b</div><div class="state queued">queued</div><div class="num">128</div><div class="tenant">astrogrid</div><div class="dur">00:00:00</div><div class="started">14:32:41</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c41c</div><div class="state done">done</div><div class="num">64</div><div class="tenant">helix-bio</div><div class="dur">03:10:55</div><div class="started">11:20:06</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c41d</div><div class="state failed">failed</div><div class="num">256</div><div class="tenant">stategrid</div><div class="dur">00:18:40</div><div class="started">14:11:24</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c41e</div><div class="state throttled">throttled</div><div class="num">1024</div><div class="tenant">terraforge</div><div class="dur">12:54:01</div><div class="started">01:38:04</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c41f</div><div class="state idle">idle</div><div class="num">32</div><div class="tenant">ion-core</div><div class="dur">00:00:00</div><div class="started">14:33:02</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c420</div><div class="state running">running</div><div class="num">768</div><div class="tenant">nre-west</div><div class="dur">09:47:20</div><div class="started">04:45:10</div><div class="more">⋯</div>
+      </div>
+      <div class="trow role-body-sm">
+        <div class="job-id"><span class="pre">job-</span>99c421</div><div class="state queued">queued</div><div class="num">96</div><div class="tenant">deepwave</div><div class="dur">00:00:00</div><div class="started">14:34:09</div><div class="more">⋯</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function tick() {
+      var now = new Date();
+      var h = String(now.getUTCHours()).padStart(2, "0");
+      var m = String(now.getUTCMinutes()).padStart(2, "0");
+      var s = String(now.getUTCSeconds()).padStart(2, "0");
+      document.getElementById("ts").textContent = h + ":" + m + ":" + s + " UTC";
+    }
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
