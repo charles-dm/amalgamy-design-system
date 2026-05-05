@@ -636,6 +636,104 @@
     letter-spacing: 0.10em; text-transform: uppercase;
   }
 
+  /* Navigation patterns */
+  .tabs {
+    display: inline-flex; align-items: stretch;
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+  .tab {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-right: 1px solid var(--color-border-strong);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab:last-child { border-right: none; }
+  .tab:hover { color: var(--color-text-primary); }
+  .tab.active {
+    color: var(--color-text-primary);
+    font-weight: 500;
+    border-bottom-color: var(--color-accent);
+  }
+  .tab .tcount {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  .tab.active .tcount { color: var(--color-accent); }
+
+  .crumb {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+  .crumb .sep { color: var(--color-text-tertiary); }
+  .crumb .here { color: var(--color-text-primary); }
+
+  .chips {
+    display: inline-flex; gap: 4px;
+    padding: 4px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+  }
+  .chip {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .chip:hover { color: var(--color-text-primary); }
+  .chip.active {
+    color: var(--color-text-primary);
+    background: var(--color-surface-3);
+    border-color: var(--color-border-strong);
+  }
+  .chip .cnt {
+    color: var(--color-text-tertiary);
+    font-size: 10px;
+    letter-spacing: 0; text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .chip.active .cnt { color: var(--color-accent-subtle); }
+
+  .segmented {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+  }
+  .seg {
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--color-border-strong);
+    padding: 7px 22px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .seg:last-child { border-right: 0; }
+  .seg:hover { color: var(--color-text-primary); }
+  .seg.active {
+    background: var(--color-surface-2);
+    color: var(--color-accent);
+  }
+
   /* Live log (signature) */
   .log {
     background: var(--color-surface-1);
@@ -842,10 +940,11 @@
     <a href="#table"><span class="num">[07]</span>Dense Table</a>
     <a href="#buttons"><span class="num">[08]</span>Buttons</a>
     <a href="#log"><span class="num">[09]</span>Live Log</a>
+    <a href="#navigation"><span class="num">[10]</span>Navigation</a>
 
     <div class="nav-section">System</div>
-    <a href="#rules"><span class="num">[10]</span>Invariants</a>
-    <a href="#files"><span class="num">[11]</span>Files</a>
+    <a href="#rules"><span class="num">[11]</span>Invariants</a>
+    <a href="#files"><span class="num">[12]</span>Files</a>
   </aside>
 
   <!-- ═══════════════ MAIN ═══════════════ -->
@@ -1391,10 +1490,68 @@
         </div>
       </section>
 
-      <!-- ═══ [10] INVARIANTS ═══ -->
-      <section class="sec" id="rules">
+      <!-- ═══ [10] NAVIGATION ═══ -->
+      <section class="sec" id="navigation">
         <div class="sec-head">
           <span class="num">[10]</span>
+          <span class="name">Navigation</span><span></span>
+          <span class="desc">tabs · breadcrumb · sub-nav</span>
+        </div>
+
+        <p class="note">Four patterns, one family: <strong>tabs</strong> for sibling views, <strong>breadcrumb</strong> for hierarchy (status-bar resident), <strong>sidebar</strong> for full app shells, <strong>sub-nav</strong> (chips or segmented) for filtering inside a section. Most prototypes use exactly one of the first three. Sub-nav layers on top.</p>
+
+        <div class="panel-frame">
+          <nav class="tabs">
+            <a class="tab active" href="#">fleet <span class="tcount">48</span></a>
+            <a class="tab" href="#">jobs <span class="tcount">2,184</span></a>
+            <a class="tab" href="#">policies <span class="tcount">37</span></a>
+            <a class="tab" href="#">reports</a>
+            <a class="tab" href="#">audit</a>
+          </nav>
+          <div class="panel-spec">
+            <span>tabs · lowercase · 1px floor · 2px teal underline on active</span>
+            <span class="right">primary variant</span>
+          </div>
+        </div>
+
+        <div class="panel-frame">
+          <span class="crumb">launchhpc <span class="sep">/</span> cluster-a <span class="sep">/</span> <span class="here">fleet</span></span>
+          <div class="panel-spec">
+            <span>breadcrumb · monospace · slash-separated · brightens left → right</span>
+            <span class="right">status-bar resident</span>
+          </div>
+        </div>
+
+        <div class="panel-frame">
+          <div class="chips">
+            <button class="chip active">All <span class="cnt">2,184</span></button>
+            <button class="chip">Running <span class="cnt">1,847</span></button>
+            <button class="chip">Queued <span class="cnt">312</span></button>
+            <button class="chip">Failed <span class="cnt">25</span></button>
+          </div>
+          <div class="panel-spec">
+            <span>sub-nav chips · for filtering a list · count inline</span>
+            <span class="right">chip variant</span>
+          </div>
+        </div>
+
+        <div class="panel-frame">
+          <div class="segmented">
+            <button class="seg active">Table</button>
+            <button class="seg">Grid</button>
+            <button class="seg">Timeline</button>
+          </div>
+          <div class="panel-spec">
+            <span>sub-nav segmented · for mutually-exclusive view modes</span>
+            <span class="right">see <a href="examples/navigation-patterns.html" style="color:var(--color-accent);text-decoration:none;border-bottom:1px solid var(--color-accent-subtle);">navigation-patterns.html</a> for full set</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ [11] INVARIANTS ═══ -->
+      <section class="sec" id="rules">
+        <div class="sec-head">
+          <span class="num">[11]</span>
           <span class="name">Rendering Invariants</span><span></span>
           <span class="desc">do these by default</span>
         </div>
@@ -1418,10 +1575,10 @@
         </div>
       </section>
 
-      <!-- ═══ [11] FILES ═══ -->
+      <!-- ═══ [12] FILES ═══ -->
       <section class="sec" id="files">
         <div class="sec-head">
-          <span class="num">[11]</span>
+          <span class="num">[12]</span>
           <span class="name">Package Files</span><span></span>
           <span class="desc">click to open</span>
         </div>
@@ -1453,11 +1610,35 @@
             <div class="desc">Worked example. KPI tiles, big-number readouts, sparkline-decorated cells, the four-up grid. Template for future component skills.</div>
             <div class="path">./components/metrics-SKILL.md</div>
           </a>
+          <a class="file" href="components/navigation-SKILL.md">
+            <div class="head"><span>COMPONENT</span><span class="ext">md</span></div>
+            <div class="name">navigation-SKILL.md</div>
+            <div class="desc">Tabs, breadcrumbs, sidebars, and sub-navs. Four patterns plus composition rules for picking the right one.</div>
+            <div class="path">./components/navigation-SKILL.md</div>
+          </a>
           <a class="file" href="examples/sovereign-terminal-style-tile.html">
             <div class="head"><span>EXAMPLE</span><span class="ext">html</span></div>
             <div class="name">sovereign-terminal-style-tile.html</div>
             <div class="desc">The canonical specimen. All components in one document with live mood, density, and atmosphere controls. Open in a browser.</div>
             <div class="path">./examples/sovereign-terminal-style-tile.html</div>
+          </a>
+          <a class="file" href="examples/navigation-patterns.html">
+            <div class="head"><span>EXAMPLE</span><span class="ext">html</span></div>
+            <div class="name">navigation-patterns.html</div>
+            <div class="desc">Canonical reference for the four navigation patterns — tabs (default · numbered · full-width), breadcrumb depths, sidebar variants, sub-nav, and full-screen compositions.</div>
+            <div class="path">./examples/navigation-patterns.html</div>
+          </a>
+          <a class="file" href="examples/forms-directional-study.html">
+            <div class="head"><span>STUDY</span><span class="ext">html</span></div>
+            <div class="name">forms-directional-study.html</div>
+            <div class="desc">Five interpretations of the same form — CLI Prompt, Spec Sheet, Console Frame, Brand Spine, Field Tape — with a recommendation matrix mapping direction → use-case.</div>
+            <div class="path">./examples/forms-directional-study.html</div>
+          </a>
+          <a class="file" href="examples/fleet-overview-test.html">
+            <div class="head"><span>EXAMPLE</span><span class="ext">html</span></div>
+            <div class="name">fleet-overview-test.html</div>
+            <div class="desc">First-pass fleet overview prototype. Exercises the foundation defaults end-to-end: density, atmosphere, masthead, status row.</div>
+            <div class="path">./examples/fleet-overview-test.html</div>
           </a>
           <a class="file" href="README.md">
             <div class="head"><span>TEAM</span><span class="ext">md</span></div>
