@@ -70,9 +70,9 @@ With optional numbered prefixes (when the user provides them — see conventions
   color: var(--color-text-secondary);
   text-decoration: none;
   border-right: 1px solid var(--color-border-strong);
-  /* 2px space reserved for the active underline so layout doesn't shift */
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px; /* overlap the container's bottom border */
+  /* 2px space reserved for the active top indicator so layout doesn't shift */
+  border-top: 2px solid transparent;
+  background: transparent;
 }
 .tab:last-child { border-right: none; }
 
@@ -83,8 +83,9 @@ With optional numbered prefixes (when the user provides them — see conventions
 .tab.active {
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
-  border-bottom-color: var(--color-accent);
-  /* No fill, no surface change — the underline IS the active signal */
+  border-top-color: var(--color-accent);
+  /* Tinted teal-deep wash to lift the active cell off the page */
+  background: color-mix(in srgb, var(--color-accent-subtle) 10%, transparent);
 }
 
 /* Optional leading number — dim, mono, position-marker */
@@ -107,12 +108,12 @@ With optional numbered prefixes (when the user provides them — see conventions
 
 ### Conventions
 
-- **The underline IS the active signal.** Active state is a 2px `--color-accent` (teal) underline, full text-primary color, and a step up to `font-weight-medium`. No fill, no background change, no surface lift. Tabs are *page positions*, not buttons — the underline reads as a folder-edge metaphor (this is the page sticking up), not as an action affordance.
+- **The active signal is a 2px top indicator + a tinted background.** A 2px `--color-accent` (teal) line at the top of the active cell, plus a 10% `--color-accent-subtle` (teal-deep) wash filling the cell, plus full text-primary color, plus a step up to `font-weight-medium`. The active tab reads as a *lit panel* — the top indicator is the activation light, the wash is the warmth. Inactive tabs have a 2px transparent top reserve so layout doesn't shift on selection. Tabs are *page positions*, not buttons — this treatment looks deliberate and console-like, not like a button hover.
 - **Lowercase labels, regular weight.** Tabs are page labels, not button text. Skip `text-transform: uppercase` and the `role-button` styling. Reach for `--font-size-13` body-sized text in `--font-weight-regular`. The visual quietness is what tells the user "these aren't buttons."
 - **Optional leading numbers.** When the user provides numbered tabs (or the screen sequence has clear ordering — onboarding steps, a setup wizard), the leading `1` `2` `3` reinforces position-in-sequence semantics. The number is mono, dim (tertiary text), and at the same size as the label. Active state lifts the number to `--color-accent-subtle`. **Do not invent numbers** if the user doesn't provide them — for arbitrary sibling pages (Fleet · Jobs · Policies), numbers feel forced. They earn their place when the order is meaningful.
 - **Trailing count chips are bare numbers.** Skip the bordered-pill background — the count is meta, not a chip. Just the number in tertiary text, with `tabular-nums`. On the active tab, the count lifts to `--color-accent` (teal) — a small piece of brand presence to anchor the active position.
 - **Never use aqua on tabs.** Aqua (`--color-accent-secondary`) is reserved for primary CTAs only. Tabs are navigation, not action.
-- **Bottom border on the container holds the row together visually.** Without it, inactive tabs float without a baseline. The container's `border-bottom: 1px solid var(--color-border-strong)` is the floor; the active tab's 2px teal underline overlaps it (via `margin-bottom: -1px`) so the active tab visually breaks through.
+- **Bottom border on the container holds the row together visually.** Without it, inactive tabs float without a baseline. The container's `border-bottom: 1px solid var(--color-border-strong)` is the floor that anchors the row; vertical 1px separators between tabs (`border-right: 1px solid var(--color-border-strong)`) cell the row out. The active cell's 2px top indicator plus tinted fill announces the selection independently of the floor — no overlap trickery needed.
 
 ### Full-width tab variant
 

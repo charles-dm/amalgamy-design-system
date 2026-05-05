@@ -186,15 +186,16 @@
     color: var(--color-text-secondary);
     text-decoration: none;
     border-right: 1px solid var(--color-border-strong);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
+    border-top: 2px solid transparent;
+    background: transparent;
   }
   .tab:last-child { border-right: none; }
   .tab:hover { color: var(--color-text-primary); }
   .tab.active {
     color: var(--color-text-primary);
     font-weight: 500;
-    border-bottom-color: var(--color-accent);
+    border-top-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent-subtle) 10%, transparent);
   }
   .tab .tnum {
     color: var(--color-text-tertiary);
@@ -537,9 +538,9 @@
     <div class="sec-head">
       <span class="num">[01]</span>
       <span class="name">Horizontal Tabs</span><span></span>
-      <span class="desc">teal underline · lowercase · zebra-free</span>
+      <span class="desc">top indicator · tinted fill · lowercase · zebra-free</span>
     </div>
-    <p class="note">Default for switching between sibling views. Borderless container — tabs sit directly on the page with a 1px floor that the active tab's 2px teal underline overlaps. Lowercase labels at body size; the visual quietness is what tells users these aren't buttons. Active state uses underline + text-primary + medium weight; no fill, no surface change.</p>
+    <p class="note">Default for switching between sibling views. Borderless container — tabs sit directly on the page with a 1px floor and 1px vertical dividers between cells. The active tab carries a 2px <code>--color-accent</code> (teal) indicator at the top edge plus a 10% <code>--color-accent-subtle</code> (teal-deep) wash filling the cell. Lowercase labels at body size; the visual quietness is what tells users these aren't buttons. Active state: top indicator + tinted fill + text-primary + medium weight.</p>
 
     <div class="panel-frame">
       <nav class="tabs">

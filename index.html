@@ -649,15 +649,16 @@
     color: var(--color-text-secondary);
     text-decoration: none;
     border-right: 1px solid var(--color-border-strong);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
+    border-top: 2px solid transparent;
+    background: transparent;
   }
   .tab:last-child { border-right: none; }
   .tab:hover { color: var(--color-text-primary); }
   .tab.active {
     color: var(--color-text-primary);
     font-weight: 500;
-    border-bottom-color: var(--color-accent);
+    border-top-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent-subtle) 10%, transparent);
   }
   .tab .tcount {
     font-size: 11px;
@@ -1509,7 +1510,7 @@
             <a class="tab" href="#">audit</a>
           </nav>
           <div class="panel-spec">
-            <span>tabs · lowercase · 1px floor · 2px teal underline on active</span>
+            <span>tabs · lowercase · 1px floor · 2px top indicator + tinted fill on active</span>
             <span class="right">primary variant</span>
           </div>
         </div>
