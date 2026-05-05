@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>Amalgamy · Forms — Directional Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/amalgamy-reset.css">
+<style>
+  /* ─────────────────────────────────────────────────────────────────────
+     Token fallback — inlined so the page renders without resolving the
+     external stylesheet (preview panels often can't traverse `../`).
+     Mirrors tokens/amalgamy-reset.css :root, but only the subset this
+     study uses. The external link still loads when available.
+     ───────────────────────────────────────────────────────────────────── */
+  :root {
+    --color-bg:               #011619;
+    --color-surface-1:        #0A2125;
+    --color-surface-2:        #143034;
+    --color-surface-3:        #1A3A40;
+
+    --color-border-subtle:    #1E3A40;
+    --color-border-default:   #284C53;
+    --color-border-strong:    #284C53;
+
+    --color-text-primary:     #DCE8E6;
+    --color-text-secondary:   #8AA6A4;
+    --color-text-tertiary:    #54706E;
+    --color-text-faint:       #2A4448;
+    --color-text-inverse:     #011619;
+
+    --color-accent:           #2ECEC0;
+    --color-accent-hover:     #45D9CD;
+    --color-accent-subtle:    #1F908A;
+    --color-accent-secondary: #A9F4EA;
+
+    --color-success:          #0DC378;
+    --color-success-text:     #2CC988;
+    --color-warning:          #C99A3F;
+    --color-warning-text:     #CCA658;
+    --color-danger:           #C8533B;
+    --color-danger-text:      #CB6955;
+    --color-info:             #69B1E8;
+    --color-info-text:        #7AB9E8;
+    --color-neutral:          #3E5A5E;
+
+    --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Page chrome — mirrors the canonical style tile.
+     ───────────────────────────────────────────────────────────────────── */
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-variant-ligatures: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+  * { box-sizing: border-box; }
+
+  .tile { max-width: 1280px; margin: 0 auto; padding: 56px 56px 96px; }
+
+  /* status bar */
+  .statusbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    gap: 24px;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-strong);
+    margin-bottom: 32px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+  .statusbar .mark { display: inline-flex; align-items: center; gap: 8px; color: var(--color-text-primary); font-weight: 600; letter-spacing: 0.04em; }
+  .statusbar .mark .dot { width: 8px; height: 8px; background: var(--color-accent); display: inline-block; box-shadow: 0 0 0 2px rgba(46,206,192,0.18); }
+  .statusbar .path .sep { color: var(--color-text-tertiary); }
+  .statusbar .path .active { color: var(--color-text-primary); }
+  .statusbar .pill { padding: 3px 10px; background: var(--color-bg); border: 1px solid var(--color-border-strong); }
+  .statusbar .pill.ok { color: var(--color-success-text); border-color: rgba(13,195,120,0.35); }
+  .statusbar .ts { color: var(--color-text-tertiary); font-variant-numeric: tabular-nums; }
+
+  /* masthead */
+  .masthead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--color-border-strong);
+    margin-bottom: 40px;
+  }
+  .masthead .eyebrow {
+    font-size: 10px;
+    color: var(--color-accent-subtle);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .masthead h1 {
+    font-family: var(--font-family-mono);
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .masthead h1 .caret { display: inline-block; width: 0.45em; height: 0.85em; background: var(--color-accent); transform: translateY(0.08em); margin-left: 6px; }
+  .masthead .meta { color: var(--color-text-secondary); font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; text-align: right; line-height: 1.7; }
+  .masthead .meta b { color: var(--color-text-primary); font-weight: 600; }
+
+  /* preface */
+  .preface { max-width: 720px; margin: 0 0 64px; color: var(--color-text-secondary); font-size: 13px; line-height: 1.7; }
+  .preface p { margin: 0 0 12px; }
+  .preface p:last-child { margin-bottom: 0; }
+  .preface code { font-family: var(--font-family-mono); color: var(--color-accent); font-size: 12px; padding: 1px 6px; border: 1px solid var(--color-border-strong); background: var(--color-bg); }
+
+  /* section header used between directions */
+  .section-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: baseline;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-border-strong);
+    margin: 56px 0 28px;
+  }
+  .section-head .num {
+    font-size: 11px;
+    color: var(--color-accent-subtle);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .section-head .title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: -0.01em;
+  }
+  .section-head .spec {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .thesis {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    line-height: 1.7;
+    margin: 0 0 24px;
+    max-width: 760px;
+  }
+  .thesis b { color: var(--color-text-primary); font-weight: 600; }
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 24px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-1);
+  }
+  .pros-cons > div { padding: 14px 18px; }
+  .pros-cons > div + div { border-left: 1px dashed var(--color-border-default); }
+  .pros-cons .lbl { font-size: 9px; color: var(--color-accent-subtle); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+  .pros-cons ul { margin: 0; padding-left: 14px; color: var(--color-text-secondary); font-size: 12px; line-height: 1.7; }
+  .pros-cons li { margin-bottom: 4px; }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Shared form atoms (used and reskinned across directions).
+     ───────────────────────────────────────────────────────────────────── */
+  .form-shell { background: var(--color-surface-1); border: 1px solid var(--color-border-strong); padding: 28px; }
+  .form-shell.flush { padding: 0; }
+
+  /* default reset for form controls */
+  input, select, textarea, button {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { outline: 0; }
+  textarea { resize: vertical; line-height: 1.5; }
+  select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M0 0l5 6 5-6z' fill='%232ECEC0'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 28px; cursor: pointer; }
+
+  .field-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 18px;
+    margin-top: 18px;
+    border-top: 1px dashed var(--color-border-default);
+  }
+  .btn {
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .btn-primary {
+    background: var(--color-accent-secondary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-accent-secondary);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .btn-primary:hover { background: #BDF7EE; color: var(--color-text-inverse); }
+  .field-actions .kbd-hint { margin-left: auto; color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .field-actions .kbd-hint .kbd { font-family: var(--font-family-mono); padding: 2px 6px; border: 1px solid var(--color-border-strong); background: var(--color-bg); color: var(--color-text-secondary); margin: 0 2px; }
+
+  /* segmented control (shared) */
+  .segmented { display: inline-flex; border: 1px solid var(--color-border-strong); }
+  .segmented button {
+    padding: 7px 14px;
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    background: var(--color-bg);
+  }
+  .segmented button + button { border-left: 1px solid var(--color-border-strong); }
+  .segmented button.active { background: var(--color-accent); color: var(--color-text-inverse); }
+  .segmented button:hover:not(.active) { color: var(--color-accent); }
+
+  /* checkbox row (shared) */
+  .check-row { display: flex; gap: 18px; flex-wrap: wrap; }
+  .check {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    user-select: none;
+  }
+  .check .box {
+    width: 13px; height: 13px;
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .check.checked .box { background: var(--color-accent); border-color: var(--color-accent); }
+  .check.checked .box::before { content: ""; width: 6px; height: 6px; background: var(--color-text-inverse); }
+  .check.checked { color: var(--color-text-primary); }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     DIRECTION 01 — CLI PROMPT
+     Each field reads as a terminal prompt: a brand-colored prompt glyph,
+     a label, then a writable line with only a bottom rule. Closest to the
+     terminal-derived premise.
+     ═════════════════════════════════════════════════════════════════════ */
+  .d-cli .form-shell { padding: 28px 32px; background: var(--color-bg); border-color: var(--color-border-strong); }
+  .d-cli .row { display: grid; grid-template-columns: auto 140px 1fr; gap: 14px; align-items: baseline; padding: 10px 0; }
+  .d-cli .row + .row { border-top: 1px dashed var(--color-border-subtle); }
+  .d-cli .prompt { color: var(--color-accent); font-weight: 700; }
+  .d-cli .lbl { color: var(--color-accent-subtle); text-transform: lowercase; font-size: 12px; letter-spacing: 0; }
+  .d-cli .lbl::after { content: ":"; color: var(--color-text-tertiary); margin-left: 1px; }
+  .d-cli .ctl { position: relative; display: flex; align-items: baseline; gap: 8px; }
+  .d-cli input[type="text"], .d-cli input[type="number"], .d-cli select, .d-cli textarea {
+    width: 100%;
+    color: var(--color-text-primary);
+    padding: 4px 0 6px;
+    border-bottom: 1px solid var(--color-border-default);
+    font-size: 13px;
+  }
+  .d-cli input[type="text"]:focus, .d-cli input[type="number"]:focus, .d-cli select:focus, .d-cli textarea:focus {
+    border-bottom-color: var(--color-accent);
+  }
+  .d-cli .caret-cursor { display: inline-block; width: 7px; height: 14px; background: var(--color-accent); animation: blink 1.05s steps(2, start) infinite; transform: translateY(2px); margin-left: 2px; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .d-cli .unit { color: var(--color-text-tertiary); font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .d-cli .ghost { color: var(--color-text-tertiary); }
+  .d-cli textarea { min-height: 76px; padding-top: 4px; }
+  .d-cli .multi-row { grid-template-columns: auto 140px 1fr; align-items: start; }
+  .d-cli .check-row { padding-top: 2px; }
+  .d-cli .lead { color: var(--color-text-tertiary); font-size: 11px; padding: 6px 0 12px; border-bottom: 1px dashed var(--color-border-subtle); margin-bottom: 6px; letter-spacing: 0.04em; }
+  .d-cli .lead .accent { color: var(--color-accent); }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     DIRECTION 02 — SPEC SHEET
+     Two-column row table. Label cell is recessed; value cell is the
+     surface. Dashed dividers between rows; outer perimeter is solid.
+     This direction is closest to the system's voice.
+     ═════════════════════════════════════════════════════════════════════ */
+  .d-spec .form-shell { padding: 0; }
+  .d-spec .row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: stretch;
+  }
+  .d-spec .row + .row { border-top: 1px dashed var(--color-border-default); }
+  .d-spec .lbl-cell {
+    background: var(--color-bg);
+    padding: 14px 16px;
+    border-right: 1px solid var(--color-border-strong);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent-subtle);
+    font-weight: 600;
+  }
+  .d-spec .lbl-cell .req { color: var(--color-warning-text); margin-left: 4px; }
+  .d-spec .lbl-cell .meta { display: block; margin-top: 4px; color: var(--color-text-tertiary); font-weight: 400; letter-spacing: 0.06em; text-transform: none; font-size: 10px; }
+  .d-spec .val-cell { padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+  .d-spec .val-cell.tall { align-items: flex-start; padding-top: 14px; padding-bottom: 14px; }
+  .d-spec input[type="text"], .d-spec input[type="number"], .d-spec select, .d-spec textarea {
+    flex: 1;
+    padding: 7px 10px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-primary);
+    font-size: 13px;
+  }
+  .d-spec input:focus, .d-spec select:focus, .d-spec textarea:focus { border-color: var(--color-accent); }
+  .d-spec textarea { width: 100%; min-height: 84px; }
+  .d-spec .unit { color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .d-spec .actions-row { padding: 16px 18px; background: var(--color-bg); border-top: 1px solid var(--color-border-strong); display: flex; align-items: center; gap: 12px; }
+  .d-spec .actions-row .kbd-hint { margin-left: auto; color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .d-spec .actions-row .kbd { font-family: var(--font-family-mono); padding: 2px 6px; border: 1px solid var(--color-border-strong); background: var(--color-surface-1); color: var(--color-text-secondary); margin: 0 2px; }
+  .d-spec .num-with-unit { display: inline-flex; flex: 1; }
+  .d-spec .num-with-unit input { flex: 1; border-right: 0; }
+  .d-spec .num-with-unit .suffix { padding: 7px 12px; background: var(--color-bg); border: 1px solid var(--color-border-strong); color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     DIRECTION 03 — CONSOLE FRAME
+     Each field is its own panel: solid border, corner spec annotation,
+     dashed internal rule between header and value. Maximum chrome per
+     field. Reads as a sparse instrument cluster.
+     ═════════════════════════════════════════════════════════════════════ */
+  .d-frame .form-shell { background: transparent; border: 0; padding: 0; }
+  .d-frame .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .d-frame .grid .full { grid-column: 1 / -1; }
+  .d-frame .panel { background: var(--color-surface-1); border: 1px solid var(--color-border-strong); }
+  .d-frame .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px dashed var(--color-border-default);
+  }
+  .d-frame .panel-head .lbl {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent-subtle);
+    font-weight: 600;
+  }
+  .d-frame .panel-head .lbl .req { color: var(--color-warning-text); }
+  .d-frame .panel-head .spec { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-text-tertiary); }
+  .d-frame .panel-body { padding: 14px; display: flex; align-items: center; gap: 10px; }
+  .d-frame .panel-body.tall { display: block; }
+  .d-frame input[type="text"], .d-frame input[type="number"], .d-frame select, .d-frame textarea {
+    flex: 1;
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-primary);
+    font-size: 13px;
+  }
+  .d-frame input:focus, .d-frame select:focus, .d-frame textarea:focus { border-color: var(--color-accent); }
+  .d-frame textarea { min-height: 88px; }
+  .d-frame .num-display {
+    flex: 1;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    padding: 8px 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    color: var(--color-text-primary);
+  }
+  .d-frame .num-display .v { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .d-frame .num-display .unit { color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .d-frame .stepper { display: inline-flex; }
+  .d-frame .stepper button {
+    width: 28px; height: 28px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .d-frame .stepper button + button { border-left: 0; }
+  .d-frame .stepper button:hover { color: var(--color-accent); border-color: var(--color-accent); }
+  .d-frame .footer { margin-top: 16px; padding: 14px 18px; background: var(--color-surface-1); border: 1px solid var(--color-border-strong); display: flex; align-items: center; gap: 12px; }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     DIRECTION 04 — BRAND SPINE
+     Inputs sit on `--color-bg`. The active field grows a 2px teal left
+     border — the same spine the policy card uses. Labels run inline
+     above. Quiet at rest, brand-present on focus.
+     ═════════════════════════════════════════════════════════════════════ */
+  .d-spine .form-shell { padding: 32px; background: var(--color-surface-1); }
+  .d-spine .stack { display: flex; flex-direction: column; gap: 18px; }
+  .d-spine .field {
+    display: block;
+    padding: 12px 14px 12px 16px;
+    background: var(--color-bg);
+    border-left: 2px solid transparent;
+    border-top: 1px solid var(--color-border-subtle);
+    border-right: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .d-spine .field.focused, .d-spine .field:focus-within { border-left-color: var(--color-accent); }
+  .d-spine .field .lbl {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent-subtle);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .d-spine .field .lbl .help { color: var(--color-text-tertiary); font-weight: 400; letter-spacing: 0.04em; text-transform: none; font-size: 10px; }
+  .d-spine input[type="text"], .d-spine input[type="number"], .d-spine select, .d-spine textarea {
+    width: 100%;
+    color: var(--color-text-primary);
+    font-size: 14px;
+    padding: 0;
+  }
+  .d-spine textarea { min-height: 72px; }
+  .d-spine .field.row-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 0; background: transparent; border: 0; }
+  .d-spine .field.row-pair > .field { margin: 0; }
+  .d-spine .num-with-unit { display: flex; align-items: baseline; gap: 10px; }
+  .d-spine .num-with-unit input { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .d-spine .num-with-unit .unit { color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     DIRECTION 05 — FIELD TAPE
+     A horizontal compact strip — fields are inline cells separated by
+     vertical rules, each cell holds `LABEL · value`. Kin to a status
+     bar but writable. For toolbars and filter strips.
+     ═════════════════════════════════════════════════════════════════════ */
+  .d-tape .form-shell { padding: 0; background: var(--color-surface-1); }
+  .d-tape .tape {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+  .d-tape .tape .cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 18px;
+    border-right: 1px solid var(--color-border-strong);
+    min-width: 0;
+  }
+  .d-tape .tape .cell:last-child { border-right: 0; }
+  .d-tape .cell .lbl { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-subtle); font-weight: 600; }
+  .d-tape .cell input[type="text"], .d-tape .cell input[type="number"], .d-tape .cell select {
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    width: 100%;
+    border-bottom: 1px solid transparent;
+  }
+  .d-tape .cell input:focus, .d-tape .cell select:focus { border-bottom-color: var(--color-accent); }
+  .d-tape .cell.flex { flex: 1 1 200px; }
+  .d-tape .cell.fixed { flex: 0 0 auto; }
+  .d-tape .cell.metric .v { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .d-tape .cell.metric .unit { color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; margin-left: 4px; }
+  .d-tape .cell .seg-mini { display: inline-flex; }
+  .d-tape .cell .seg-mini button {
+    padding: 4px 8px; font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--color-text-secondary); background: var(--color-bg); border: 1px solid var(--color-border-strong); cursor: pointer;
+  }
+  .d-tape .cell .seg-mini button + button { border-left: 0; }
+  .d-tape .cell .seg-mini button.active { background: var(--color-accent); color: var(--color-text-inverse); border-color: var(--color-accent); }
+  .d-tape .lower {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+  .d-tape .lower .cell { padding: 14px 18px; border-right: 1px solid var(--color-border-strong); }
+  .d-tape .lower .cell:last-child { border-right: 0; }
+  .d-tape .lower textarea { width: 100%; min-height: 60px; color: var(--color-text-primary); font-size: 12px; }
+  .d-tape .lower .lbl { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-subtle); font-weight: 600; margin-bottom: 6px; }
+  .d-tape .actions-row { padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+  .d-tape .actions-row .meta { color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .d-tape .actions-row .kbd-hint { margin-left: auto; color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .d-tape .actions-row .kbd { font-family: var(--font-family-mono); padding: 2px 6px; border: 1px solid var(--color-border-strong); background: var(--color-bg); color: var(--color-text-secondary); margin: 0 2px; }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Recommendation matrix (final section).
+     ───────────────────────────────────────────────────────────────────── */
+  .matrix { border: 1px solid var(--color-border-strong); background: var(--color-surface-1); }
+  .matrix table { width: 100%; border-collapse: collapse; }
+  .matrix th, .matrix td { padding: 10px 14px; text-align: left; vertical-align: top; }
+  .matrix th { background: var(--color-bg); color: var(--color-accent-subtle); font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; border-bottom: 1px solid var(--color-border-strong); border-right: 1px solid var(--color-border-strong); }
+  .matrix th:last-child, .matrix td:last-child { border-right: 0; }
+  .matrix td { border-right: 1px solid var(--color-border-default); border-bottom: 1px dashed var(--color-border-default); font-size: 12px; color: var(--color-text-secondary); }
+  .matrix tr:last-child td { border-bottom: 0; }
+  .matrix td .name { color: var(--color-text-primary); font-weight: 700; letter-spacing: 0; display: block; margin-bottom: 4px; }
+  .matrix td .verdict { color: var(--color-accent); font-weight: 700; }
+
+  .footnote { margin-top: 64px; padding-top: 18px; border-top: 1px dashed var(--color-border-default); color: var(--color-text-tertiary); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; }
+  .footnote .pair { color: var(--color-text-secondary); }
+</style>
+</head>
+<body>
+  <div class="tile">
+
+    <!-- STATUS BAR -->
+    <div class="statusbar">
+      <span class="mark"><span class="dot"></span> AMALGAMY · LAUNCHHPC</span>
+      <span class="path"><span class="active">design-system</span> <span class="sep">/</span> studies <span class="sep">/</span> <span class="active">forms</span></span>
+      <span class="pill ok">connected</span>
+      <span class="pill">examples/forms-directional-study.html</span>
+      <span class="ts">2026-05-05 · rev 0.1</span>
+    </div>
+
+    <!-- MASTHEAD -->
+    <div class="masthead">
+      <div>
+        <div class="eyebrow">[study] forms · directional</div>
+        <h1>Five reads of the same form<span class="caret"></span></h1>
+      </div>
+      <div class="meta">
+        Foundation · <b>amalgamy-sovereign-terminal</b><br>
+        Ref · <b>tokens/amalgamy-reset.css</b><br>
+        Same fields · five directions
+      </div>
+    </div>
+
+    <!-- PREFACE -->
+    <div class="preface">
+      <p>The system has no input pattern yet. This study proposes five — each a self-consistent interpretation of the visual language, not a stylistic variant. Every direction renders the <i>same</i> form (a job submission with name, queue, priority, GPU count, runtime, environment, classification) so the directions are comparable on the same problem.</p>
+      <p>All five obey the foundation: hard edges, no shadows, mono-only, the two-accent hierarchy, surface stepping for elevation, dashed-vs-solid divider semantics. They differ in <i>where</i> the chrome lives — whether the field is a prompt, a row, a panel, a clause, or a cell — and that choice carries voice.</p>
+      <p>End matter: a recommendation table mapping direction → use case, plus the one direction we'd ship as the default.</p>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════
+         DIRECTION 01 — CLI PROMPT
+         ═════════════════════════════════════════════════════════════════ -->
+    <div class="d-cli">
+      <div class="section-head">
+        <span class="num">[01]</span>
+        <span class="title">CLI Prompt</span>
+        <span class="spec">prompt · bottom-rule · cursor</span>
+      </div>
+      <p class="thesis">
+        Every field is a terminal prompt. A teal <b>›</b> glyph, a lowercase label, a writable line. No surface fill, no field perimeter — only a 1px bottom rule that brightens to teal on focus, with a blinking caret to advertise the active line. <b>This is the most literal read of "terminal-derived."</b> It earns its keep on single-task forms where the operator already knows the field set; it punishes wide forms because there's nothing to anchor the eye between rows.
+      </p>
+
+      <div class="form-shell">
+        <div class="lead">› launchhpc submit-job <span class="ghost">--</span> <span class="accent">interactive</span></div>
+
+        <div class="row">
+          <span class="prompt">›</span>
+          <span class="lbl">job-name</span>
+          <span class="ctl"><input type="text" value="rendsweep-q4-final" /></span>
+        </div>
+
+        <div class="row">
+          <span class="prompt">›</span>
+          <span class="lbl">queue</span>
+          <span class="ctl"><select><option>prod</option><option>staging</option><option>spot</option></select></span>
+        </div>
+
+        <div class="row">
+          <span class="prompt">›</span>
+          <span class="lbl">priority</span>
+          <span class="ctl">
+            <span class="segmented">
+              <button>low</button>
+              <button>med</button>
+              <button class="active">high</button>
+              <button>crit</button>
+            </span>
+          </span>
+        </div>
+
+        <div class="row">
+          <span class="prompt">›</span>
+          <span class="lbl">gpus</span>
+          <span class="ctl"><input type="number" value="64" style="max-width:140px;" /> <span class="unit">× h100</span></span>
+        </div>
+
+        <div class="row">
+          <span class="prompt">›</span>
+          <span class="lbl">max-runtime</span>
+          <span class="ctl"><input type="text" value="4h 30m" style="max-width:200px;" /> <span class="unit">hh mm ss</span><span class="caret-cursor"></span></span>
+        </div>
+
+        <div class="row multi-row">
+          <span class="prompt">›</span>
+          <span class="lbl">environment</span>
+          <span class="ctl"><textarea>HF_TOKEN=&lt;secret&gt;
+DATASET_PATH=s3://amalgamy/sweeps/q4
+WANDB_PROJECT=rendsweep
+LOG_LEVEL=info</textarea></span>
+        </div>
+
+        <div class="row multi-row">
+          <span class="prompt">›</span>
+          <span class="lbl">classification</span>
+          <span class="ctl">
+            <span class="check-row">
+              <span class="check checked"><span class="box"></span> confidential</span>
+              <span class="check"><span class="box"></span> ITAR</span>
+              <span class="check"><span class="box"></span> export-controlled</span>
+            </span>
+          </span>
+        </div>
+
+        <div class="field-actions">
+          <button class="btn btn-primary">Submit job</button>
+          <button class="btn">Save draft</button>
+          <span class="kbd-hint"><span class="kbd">⌘</span><span class="kbd">⏎</span> submit · <span class="kbd">esc</span> cancel</span>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div>
+          <div class="lbl">Strengths</div>
+          <ul>
+            <li>Maximum signal density — almost no chrome.</li>
+            <li>Native-feeling for power users; reads like a real CLI.</li>
+            <li>Caret animation makes "you are here" unmistakable.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Weaknesses</div>
+          <ul>
+            <li>No perimeter cues — long forms become hard to scan.</li>
+            <li>Group affordances (sections, repeats) require extra invention.</li>
+            <li>Less forgiving for new users who haven't internalized the field set.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════
+         DIRECTION 02 — SPEC SHEET
+         ═════════════════════════════════════════════════════════════════ -->
+    <div class="d-spec">
+      <div class="section-head">
+        <span class="num">[02]</span>
+        <span class="title">Spec Sheet</span>
+        <span class="spec">2-col · recessed-label · dashed-row</span>
+      </div>
+      <p class="thesis">
+        The form is a property table: each row a label cell on <code>--color-bg</code> and a value cell on <code>--color-surface-1</code>, dashed between rows because they're <i>parts of the same artifact</i>. The label column is fixed-width and uppercase; the value column is the input. <b>This is the closest direction to the system's stated voice — "spec sheet, system console."</b> It scales to dozens of fields without losing structure.
+      </p>
+
+      <div class="form-shell flush">
+        <div class="row">
+          <div class="lbl-cell">job name<span class="req">*</span><span class="meta">unique within queue</span></div>
+          <div class="val-cell"><input type="text" value="rendsweep-q4-final" /></div>
+        </div>
+
+        <div class="row">
+          <div class="lbl-cell">queue<span class="req">*</span></div>
+          <div class="val-cell">
+            <select style="max-width:240px;"><option>prod</option><option>staging</option><option>spot</option></select>
+            <span class="unit">3 available</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="lbl-cell">priority</div>
+          <div class="val-cell">
+            <span class="segmented">
+              <button>low</button>
+              <button>medium</button>
+              <button class="active">high</button>
+              <button>critical</button>
+            </span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="lbl-cell">gpu count<span class="req">*</span><span class="meta">h100 partition</span></div>
+          <div class="val-cell">
+            <span class="num-with-unit" style="max-width:200px;">
+              <input type="number" value="64" />
+              <span class="suffix">× h100</span>
+            </span>
+            <span class="unit">cap 256</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="lbl-cell">max runtime<span class="req">*</span></div>
+          <div class="val-cell">
+            <input type="text" value="4h 30m" style="max-width:200px;" />
+            <span class="unit">hh mm ss</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="lbl-cell">environment<span class="meta">key=value, one per line</span></div>
+          <div class="val-cell tall"><textarea>HF_TOKEN=&lt;secret&gt;
+DATASET_PATH=s3://amalgamy/sweeps/q4
+WANDB_PROJECT=rendsweep
+LOG_LEVEL=info</textarea></div>
+        </div>
+
+        <div class="row">
+          <div class="lbl-cell">classification</div>
+          <div class="val-cell">
+            <span class="check-row">
+              <span class="check checked"><span class="box"></span> confidential</span>
+              <span class="check"><span class="box"></span> ITAR</span>
+              <span class="check"><span class="box"></span> export-controlled</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn btn-primary">Submit job</button>
+          <button class="btn">Save draft</button>
+          <span class="kbd-hint"><span class="kbd">⌘</span><span class="kbd">⏎</span> submit · <span class="kbd">esc</span> cancel</span>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div>
+          <div class="lbl">Strengths</div>
+          <ul>
+            <li>Aligns with "spec sheet, not product UI" — strongest brand fit.</li>
+            <li>Scales: 5 fields and 50 fields render the same.</li>
+            <li>Required/meta annotations live cleanly in the label column.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Weaknesses</div>
+          <ul>
+            <li>Label column eats horizontal width — bad for narrow viewports.</li>
+            <li>Reads as "configuration," not "creation" — less expressive.</li>
+            <li>Value cell heights vary; mixed control types can feel choppy.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════
+         DIRECTION 03 — CONSOLE FRAME
+         ═════════════════════════════════════════════════════════════════ -->
+    <div class="d-frame">
+      <div class="section-head">
+        <span class="num">[03]</span>
+        <span class="title">Console Frame</span>
+        <span class="spec">paneled · corner-spec · instrument-cluster</span>
+      </div>
+      <p class="thesis">
+        Each field becomes its own panel: solid border, a head row holding the label and a small uppercase corner spec (the same convention the style tile's metric cells use), a dashed rule, then the input on the recessed bg. Fields tile into a 2-column grid like an instrument cluster. <b>Maximum chrome per field.</b> Best for sparse, high-stakes forms — credentials, deployment configs — where each field deserves to look weighty.
+      </p>
+
+      <div class="form-shell">
+        <div class="grid">
+
+          <div class="panel">
+            <div class="panel-head"><span class="lbl">job name<span class="req">*</span></span><span class="spec">str · ≤ 64</span></div>
+            <div class="panel-body"><input type="text" value="rendsweep-q4-final" /></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><span class="lbl">queue<span class="req">*</span></span><span class="spec">enum · 3 of 3</span></div>
+            <div class="panel-body"><select><option>prod</option><option>staging</option><option>spot</option></select></div>
+          </div>
+
+          <div class="panel full">
+            <div class="panel-head"><span class="lbl">priority</span><span class="spec">tier · default high</span></div>
+            <div class="panel-body">
+              <span class="segmented">
+                <button>low</button>
+                <button>medium</button>
+                <button class="active">high</button>
+                <button>critical</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><span class="lbl">gpu count<span class="req">*</span></span><span class="spec">int · 1 – 256</span></div>
+            <div class="panel-body">
+              <span class="num-display"><span class="v">64</span><span class="unit">× h100</span></span>
+              <span class="stepper"><button>−</button><button>+</button></span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><span class="lbl">max runtime<span class="req">*</span></span><span class="spec">duration · ≤ 24h</span></div>
+            <div class="panel-body"><input type="text" value="4h 30m" /></div>
+          </div>
+
+          <div class="panel full">
+            <div class="panel-head"><span class="lbl">environment</span><span class="spec">key=value · 4 entries</span></div>
+            <div class="panel-body tall"><textarea>HF_TOKEN=&lt;secret&gt;
+DATASET_PATH=s3://amalgamy/sweeps/q4
+WANDB_PROJECT=rendsweep
+LOG_LEVEL=info</textarea></div>
+          </div>
+
+          <div class="panel full">
+            <div class="panel-head"><span class="lbl">classification</span><span class="spec">flags · 1 of 3</span></div>
+            <div class="panel-body">
+              <span class="check-row">
+                <span class="check checked"><span class="box"></span> confidential</span>
+                <span class="check"><span class="box"></span> ITAR</span>
+                <span class="check"><span class="box"></span> export-controlled</span>
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="footer">
+          <button class="btn btn-primary">Submit job</button>
+          <button class="btn">Save draft</button>
+          <span style="margin-left:auto;color:var(--color-text-tertiary);font-size:10px;letter-spacing:0.10em;text-transform:uppercase;">7 fields · 1 required missing</span>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div>
+          <div class="lbl">Strengths</div>
+          <ul>
+            <li>Each field reads as instrument-grade; fits high-stakes contexts.</li>
+            <li>Corner spec carries type/constraint info without inventing tooltips.</li>
+            <li>Tiles naturally — short fields pair into rows, long fields span.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Weaknesses</div>
+          <ul>
+            <li>Per-field overhead is heavy — wasteful for forms over ~10 fields.</li>
+            <li>Visual rhythm is busy at any density above standard.</li>
+            <li>Dashed/solid rules already mean things; here they multiply.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════
+         DIRECTION 04 — BRAND SPINE
+         ═════════════════════════════════════════════════════════════════ -->
+    <div class="d-spine">
+      <div class="section-head">
+        <span class="num">[04]</span>
+        <span class="title">Brand Spine</span>
+        <span class="spec">2px-spine · focused-only · clause-pattern</span>
+      </div>
+      <p class="thesis">
+        Each field rests quietly on <code>--color-bg</code>; the active field grows a 2px teal left spine — the <i>same</i> 2px spine that policy cards use to mark a structured clause. The rule is metaphor: <b>filling out a field is authoring a clause.</b> Subtle perimeter at rest, brand-present at focus. Closer in voice to the policy-authoring side of the product than to the operator side.
+      </p>
+
+      <div class="form-shell">
+        <div class="stack">
+
+          <label class="field focused">
+            <span class="lbl">job name <span class="help">unique within queue</span></span>
+            <input type="text" value="rendsweep-q4-final" />
+          </label>
+
+          <div class="field row-pair">
+            <label class="field">
+              <span class="lbl">queue</span>
+              <select><option>prod</option><option>staging</option><option>spot</option></select>
+            </label>
+            <label class="field">
+              <span class="lbl">priority</span>
+              <span class="segmented" style="margin-top:2px;">
+                <button>low</button>
+                <button>med</button>
+                <button class="active">high</button>
+                <button>crit</button>
+              </span>
+            </label>
+          </div>
+
+          <div class="field row-pair">
+            <label class="field">
+              <span class="lbl">gpu count <span class="help">h100 partition</span></span>
+              <span class="num-with-unit">
+                <input type="number" value="64" />
+                <span class="unit">× h100</span>
+              </span>
+            </label>
+            <label class="field">
+              <span class="lbl">max runtime <span class="help">hh mm ss</span></span>
+              <input type="text" value="4h 30m" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="lbl">environment <span class="help">key=value, one per line</span></span>
+            <textarea>HF_TOKEN=&lt;secret&gt;
+DATASET_PATH=s3://amalgamy/sweeps/q4
+WANDB_PROJECT=rendsweep
+LOG_LEVEL=info</textarea>
+          </label>
+
+          <label class="field">
+            <span class="lbl">classification</span>
+            <span class="check-row" style="margin-top:6px;">
+              <span class="check checked"><span class="box"></span> confidential</span>
+              <span class="check"><span class="box"></span> ITAR</span>
+              <span class="check"><span class="box"></span> export-controlled</span>
+            </span>
+          </label>
+
+        </div>
+
+        <div class="field-actions">
+          <button class="btn btn-primary">Submit job</button>
+          <button class="btn">Save draft</button>
+          <span class="kbd-hint"><span class="kbd">⌘</span><span class="kbd">⏎</span> submit</span>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div>
+          <div class="lbl">Strengths</div>
+          <ul>
+            <li>Quietest at rest of the five — least visual noise.</li>
+            <li>Re-uses the policy-card spine, so the language is already in the system.</li>
+            <li>Pairs naturally with policy/governance flows.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Weaknesses</div>
+          <ul>
+            <li>Spine carries focus state; you lose it as a structural-section signal in the same context.</li>
+            <li>Wide / multi-pane layouts feel underdrawn — lacks the perimeter Spec Sheet has.</li>
+            <li>Less obvious as "form" at first glance; closer to a doc editor.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════
+         DIRECTION 05 — FIELD TAPE
+         ═════════════════════════════════════════════════════════════════ -->
+    <div class="d-tape">
+      <div class="section-head">
+        <span class="num">[05]</span>
+        <span class="title">Field Tape</span>
+        <span class="spec">horizontal · vertical-rules · status-bar-kin</span>
+      </div>
+      <p class="thesis">
+        Fields collapse into a horizontal strip — vertical rules between cells, label above value inside each cell, like a writable status bar. <b>This is not a replacement for a full form</b> — it's the pattern for the toolbar/filter strip that sits above a result list, the docked submit-bar at the bottom of a page, or a compact deploy form when the screen is mostly something else. Adjacent cells let related fields share a row at very high density.
+      </p>
+
+      <div class="form-shell">
+
+        <div class="tape">
+          <div class="cell flex">
+            <span class="lbl">Job name</span>
+            <input type="text" value="rendsweep-q4-final" />
+          </div>
+          <div class="cell fixed">
+            <span class="lbl">Queue</span>
+            <select><option>prod</option><option>staging</option><option>spot</option></select>
+          </div>
+          <div class="cell fixed">
+            <span class="lbl">Priority</span>
+            <span class="seg-mini">
+              <button>L</button>
+              <button>M</button>
+              <button class="active">H</button>
+              <button>C</button>
+            </span>
+          </div>
+          <div class="cell fixed metric">
+            <span class="lbl">GPU</span>
+            <span><span class="v">64</span><span class="unit">× h100</span></span>
+          </div>
+          <div class="cell fixed">
+            <span class="lbl">Runtime</span>
+            <input type="text" value="4h 30m" style="max-width:120px;" />
+          </div>
+        </div>
+
+        <div class="lower">
+          <div class="cell">
+            <div class="lbl">Environment · key=value, one per line</div>
+            <textarea>HF_TOKEN=&lt;secret&gt;
+DATASET_PATH=s3://amalgamy/sweeps/q4
+WANDB_PROJECT=rendsweep</textarea>
+          </div>
+          <div class="cell">
+            <div class="lbl">Classification</div>
+            <span class="check-row" style="margin-top:4px;">
+              <span class="check checked"><span class="box"></span> confidential</span>
+              <span class="check"><span class="box"></span> ITAR</span>
+              <span class="check"><span class="box"></span> export-controlled</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <span class="meta">7 fields · 1 required missing</span>
+          <button class="btn">Save draft</button>
+          <button class="btn btn-primary">Submit job</button>
+          <span class="kbd-hint"><span class="kbd">⌘</span><span class="kbd">⏎</span> submit</span>
+        </div>
+
+      </div>
+
+      <div class="pros-cons">
+        <div>
+          <div class="lbl">Strengths</div>
+          <ul>
+            <li>Highest information density per vertical pixel.</li>
+            <li>Natural fit alongside dense tables — pairs with the result list it filters.</li>
+            <li>Reads as kin to the existing status-bar pattern; voice-consistent.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl">Weaknesses</div>
+          <ul>
+            <li>Doesn't scale past ~7 short fields — overflow is awkward.</li>
+            <li>Long-text inputs (textarea) need a second row, breaking the tape.</li>
+            <li>Labels run very small; gets cramped on narrow viewports.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════════════════════════════════════════════════════════════════
+         RECOMMENDATION
+         ═════════════════════════════════════════════════════════════════ -->
+    <div class="section-head">
+      <span class="num">[06]</span>
+      <span class="title">Recommendation</span>
+      <span class="spec">direction → use-case</span>
+    </div>
+    <p class="thesis">
+      <b>Default the system to direction <span style="color:var(--color-accent);">[02] Spec Sheet</span></b> — it reads truest to the stated voice, scales to any field count, and is the friendliest to extend with grouped sections, repeats, and conditional rows. The other four are not alternates to choose between; they are <i>specialized patterns</i> with sharper edges. Reach for them when the context calls.
+    </p>
+
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr>
+            <th>Direction</th>
+            <th>Reach for it when…</th>
+            <th>Avoid when…</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="name">[01] CLI Prompt</span>The terminal-derived voice cranked all the way up.</td>
+            <td>Operator power-tools, single-task forms, "submit a job" pages where the user already knows the schema.</td>
+            <td>New users; long forms (>10 fields); multi-section configs needing strong group cues.</td>
+            <td><span class="verdict">specialized</span></td>
+          </tr>
+          <tr>
+            <td><span class="name">[02] Spec Sheet</span>Form as property table; closest to "spec sheet" voice.</td>
+            <td>Default. Configuration screens, settings, anything with ≥5 fields. Always a safe choice.</td>
+            <td>Narrow viewports (label column too greedy under ~720px).</td>
+            <td><span class="verdict">default</span></td>
+          </tr>
+          <tr>
+            <td><span class="name">[03] Console Frame</span>Per-field panels, instrument-cluster layout.</td>
+            <td>Sparse, high-stakes forms — credentials, deploy configs, anything with strict per-field constraints worth advertising.</td>
+            <td>Forms over ~10 fields; mobile/compact density (chrome eats the screen).</td>
+            <td><span class="verdict">specialized</span></td>
+          </tr>
+          <tr>
+            <td><span class="name">[04] Brand Spine</span>Quiet at rest, focused field grows the policy-card spine.</td>
+            <td>Policy authoring, governance/compliance flows — anywhere the form authors something that <i>becomes</i> a clause.</td>
+            <td>Operator-side surfaces where you want strong "this is a form, not a doc" affordance.</td>
+            <td><span class="verdict">specialized</span></td>
+          </tr>
+          <tr>
+            <td><span class="name">[05] Field Tape</span>Horizontal strip of inline cells.</td>
+            <td>Filter/query bars, docked submit-bars, compact deploy forms, anywhere the form is supporting the page rather than being it.</td>
+            <td>Standalone form pages; any form needing ≥7 short fields or multiple long-text fields.</td>
+            <td><span class="verdict">specialized</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footnote">
+      <span class="pair">Study revision 0.1</span> · <span class="pair">amalgamy-design-system</span> · five reads · same source · choose by use-case
+    </div>
+
+  </div>
+
+  <script>
+    // Minimal interactivity: segmented-button toggle and checkbox toggle.
+    document.querySelectorAll('.segmented').forEach(function(seg){
+      seg.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){
+          seg.querySelectorAll('button').forEach(function(x){ x.classList.remove('active'); });
+          b.classList.add('active');
+        });
+      });
+    });
+    document.querySelectorAll('.seg-mini').forEach(function(seg){
+      seg.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){
+          seg.querySelectorAll('button').forEach(function(x){ x.classList.remove('active'); });
+          b.classList.add('active');
+        });
+      });
+    });
+    document.querySelectorAll('.check').forEach(function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('checked'); });
+    });
+    // Spine direction: clicking a field marks it focused
+    document.querySelectorAll('.d-spine .field').forEach(function(f){
+      f.addEventListener('click', function(){
+        document.querySelectorAll('.d-spine .field').forEach(function(x){ x.classList.remove('focused'); });
+        f.classList.add('focused');
+      });
+    });
+  </script>
+
+</body>
+</html>
