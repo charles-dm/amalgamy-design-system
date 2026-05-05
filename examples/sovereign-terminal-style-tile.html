@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
   :root {
     /* Base — deep teal-black from screenshot */
@@ -80,6 +81,21 @@
     color: var(--fg); font-weight: 600; letter-spacing: 0.04em;
   }
   .statusbar .mark .dot { width: 8px; height: 8px; background: var(--teal); display: inline-block; box-shadow: 0 0 0 2px rgba(46,206,192,0.18); }
+
+  /* ============ ICONS — Lucide via CDN ============ */
+  /* Defaults mirror tokens/amalgamy-reset.css. */
+  [data-lucide], .lucide {
+    width: 14px; height: 14px;
+    stroke-width: 2;
+    vertical-align: -0.15em;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .icon-sm { width: 12px; height: 12px; }
+  .icon-lg { width: 16px; height: 16px; }
+  .icon-accent { color: var(--teal); }
+  .icon-aqua   { color: var(--aqua); }
+  .icon-subtle { color: var(--teal-deep); }
   .statusbar .path { color: var(--fg-dim); }
   .statusbar .path .sep { color: var(--fg-muted); }
   .statusbar .path .active { color: var(--fg); }
@@ -524,9 +540,9 @@
 
   <!-- STATUS LINE -->
   <div class="statusbar">
-    <span class="mark"><span class="dot"></span>AMALGAMY · LAUNCHHPC</span>
+    <span class="mark"><i data-lucide="terminal" class="icon-accent"></i><span class="dot"></span>AMALGAMY · LAUNCHHPC</span>
     <span class="path">launchhpc <span class="sep">/</span> cluster-a <span class="sep">/</span> <span class="active">fleet</span></span>
-    <span class="pill ok">● connected</span>
+    <span class="pill ok"><i data-lucide="wifi" class="icon-sm"></i> connected</span>
     <span class="pill">api.launchhpc.io</span>
     <span class="ts">14:32:01 UTC−05</span>
   </div>
@@ -647,7 +663,7 @@
     <div class="button-row">
       <button class="btn primary">Submit <kbd>⏎</kbd></button>
       <button class="btn secondary">Buttons <kbd>B</kbd></button>
-      <button class="btn tertiary">View Logs <kbd>L</kbd></button>
+      <button class="btn tertiary"><i data-lucide="square-terminal"></i> View Logs <kbd>L</kbd></button>
       <button class="btn ghost">cancel</button>
       <span class="btn-spec">PRIMARY · SECONDARY · TERTIARY · GHOST</span>
     </div>
@@ -905,6 +921,13 @@
 
   </div>
 </div>
+
+<script>
+  // Render Lucide icons. Icons are used sparsely — see SKILL.md → Icons.
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+</script>
 
 <script>
 (function(){

@@ -82,6 +82,21 @@ Any numeric token in a metric, status count, table cell, log timestamp, or anywh
 
 `role-label`, `role-caps`, and `role-button` ship with `text-transform: uppercase` baked in. The wide tracking on `--letter-spacing-caps` (0.16em) and `--letter-spacing-wide-2` (0.10em) is calibrated for uppercase rendering — do not apply it to mixed case.
 
+### Icons: Lucide, via CDN, sparsely
+
+Iconography is **[Lucide](https://lucide.dev)** loaded from a CDN — never as a font, never as a custom set. Add this once per page:
+
+```html
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+```
+
+Then inline icons with `<i data-lucide="terminal"></i>`. Defaults come from the tokens file: 14px, stroke-width 2, vertical-aligned with body text. Three sizes: default (14px), `.icon-sm` (12px, with caps/labels), `.icon-lg` (16px, with body/headings). Recolor with `.icon-accent`, `.icon-aqua`, `.icon-subtle`, `.icon-faint` — or set `color` on the parent (Lucide icons inherit `currentColor`).
+
+**Use icons only where they carry information text alone cannot.** That means: brand sigils, scannable status indicators, directional affordances on buttons, file/format markers. It does **not** mean: decorating headings, prefixing every nav item, illustrating the obvious. The system is text-led — most prototypes ship with fewer than ten icons total. If a Sovereign Terminal screen looks icon-heavy, it has stopped being Sovereign Terminal.
+
+Stroke weight is a hard floor: never go below 1.5. Lucide ships at 2, which is correct for our scale; thinner strokes go invisible against the dark surface.
+
 ### Density and atmosphere are global controls
 
 Two top-level dials drive the whole system:
