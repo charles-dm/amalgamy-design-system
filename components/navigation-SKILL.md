@@ -63,7 +63,7 @@ With optional numbered prefixes (when the user provides them — see conventions
   gap: 10px;
   padding: 10px 18px;
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-13);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-regular);
   letter-spacing: var(--letter-spacing-normal);
   /* Lowercase, NOT uppercase — tabs are page labels, not buttons */
@@ -109,7 +109,7 @@ With optional numbered prefixes (when the user provides them — see conventions
 ### Conventions
 
 - **The active signal is a 2px top indicator + a tinted background.** A 2px `--color-accent` (teal) line at the top of the active cell, plus a 10% `--color-accent-subtle` (teal-deep) wash filling the cell, plus full text-primary color, plus a step up to `font-weight-medium`. The active tab reads as a *lit panel* — the top indicator is the activation light, the wash is the warmth. Inactive tabs have a 2px transparent top reserve so layout doesn't shift on selection. Tabs are *page positions*, not buttons — this treatment looks deliberate and console-like, not like a button hover.
-- **Lowercase labels, regular weight.** Tabs are page labels, not button text. Skip `text-transform: uppercase` and the `role-button` styling. Reach for `--font-size-13` body-sized text in `--font-weight-regular`. The visual quietness is what tells the user "these aren't buttons."
+- **Lowercase labels, regular weight.** Tabs are page labels, not button text. Skip `text-transform: uppercase` and the `role-button` styling. Reach for `--font-size-14` (`role-body-sm`) text in `--font-weight-regular`. The visual quietness is what tells the user "these aren't buttons."
 - **Optional leading numbers.** When the user provides numbered tabs (or the screen sequence has clear ordering — onboarding steps, a setup wizard), the leading `1` `2` `3` reinforces position-in-sequence semantics. The number is mono, dim (tertiary text), and at the same size as the label. Active state lifts the number to `--color-accent-subtle`. **Do not invent numbers** if the user doesn't provide them — for arbitrary sibling pages (Fleet · Jobs · Policies), numbers feel forced. They earn their place when the order is meaningful.
 - **Trailing count chips are bare numbers.** Skip the bordered-pill background — the count is meta, not a chip. Just the number in tertiary text, with `tabular-nums`. On the active tab, the count lifts to `--color-accent` (teal) — a small piece of brand presence to anchor the active position.
 - **Never use aqua on tabs.** Aqua (`--color-accent-secondary`) is reserved for primary CTAs only. Tabs are navigation, not action.

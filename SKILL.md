@@ -17,7 +17,7 @@ Components never use hardcoded values. Every color, size, weight, and spacing re
 
 `tokens/amalgamy-reset.css` is the single source of truth and matches the Figma variable collections name-for-name. Always include it (or its contents) at the top of any artifact. Tokens come in two layers:
 
-- **Primitives** — `--color-bg`, `--font-size-13`, `--font-weight-semibold`, `--letter-spacing-caps` etc. Numeric or descriptive, not semantic.
+- **Primitives** — `--color-bg`, `--font-size-16`, `--font-weight-semibold`, `--letter-spacing-caps` etc. Numeric or descriptive, not semantic.
 - **Role aliases + utility classes** — `.role-metric-display`, `.role-label`, `.role-caps` etc. Each composes 5 primitives (family, size, weight, line-height, letter-spacing) and matches one Figma text style 1:1.
 
 **Prefer role utility classes over re-composing primitives.** They mirror Figma, they're shorter, and they bake in the right invariants (tabular nums on metrics, uppercase on labels/caps/buttons).
@@ -72,7 +72,7 @@ A status indicator is almost always a **6×6px or 8×8px square** of the status 
 
 ### Typography: monospace by default, Inter by exception
 
-JetBrains Mono is the system font. It runs in display sizes (48px metric displays), title sizes, body, captions, and labels. **The only legitimate use of Inter is `role-narrative` and `role-narrative-lg`**, reserved for executive narrative screens — long-form prose that would be punishing in mono. Never mix Inter and Mono on the same line.
+JetBrains Mono is the system font. It runs in display sizes (56px `role-metric-display`, 48px `role-display`), title and subtitle sizes, body (16px), captions, and labels. **The legitimate uses of Inter are `role-narrative` (18px), `role-narrative-lg` (20px), and `role-body-lg` (18px executive body)** — reserved for executive narrative screens with long-form prose that would be punishing in mono. Never mix Inter and Mono on the same line.
 
 ### Tabular numerals: always, on metrics
 
@@ -109,38 +109,41 @@ Components should not fight these. If a component is rendered with `--atm: 0.4` 
 ## Token Reference (quick)
 
 ### Surface
-- `--color-bg` `#011619` — page, recessed
-- `--color-surface-1` `#0A2125` — default panel
-- `--color-surface-2` `#143034` — elevated/nested
-- `--color-surface-3` `#1A3A40` — top-of-stack, hover
+- `--color-bg` `#051315` — page, recessed
+- `--color-surface-1` `#0A181A` — default panel
+- `--color-surface-2` `#0F1E20` — elevated/nested
+- `--color-surface-3` `#162526` — top-of-stack, hover
 
 ### Border
-- `--color-border-subtle` `#1E3A40` — internal/dashed dividers
-- `--color-border-default` `#284C53` — standard
-- `--color-border-strong` `#284C53` — outer panel borders
+- `--color-border-subtle` `#162526` — internal/dashed dividers
+- `--color-border-default` `#223233` — standard
+- `--color-border-strong` `#456066` — outer panel borders, visibly distinct from default
 
-### Text
-- `--color-text-primary` `#DCE8E6` — body, headings
-- `--color-text-secondary` `#8AA6A4` — meta, captions on emphasized rows
-- `--color-text-tertiary` `#54706E` — timestamps, faint meta
-- `--color-text-faint` `#2A4448` — disabled, decorative
-- `--color-text-inverse` `#011619` — text on aqua/teal buttons
+### Text — all tiers pass WCAG AA (4.5:1) on every surface
+- `--color-text-primary` `#EAF1EC` — body, headings
+- `--color-text-secondary` `#C3D3D0` — meta, captions on emphasized rows
+- `--color-text-tertiary` `#8CADA7` — timestamps, faint meta
+- `--color-text-faint` `#78948F` — decorative, lowest legible tier
+- `--color-text-inverse` `#051315` — text on aqua/teal buttons
 
-### Brand
-- `--color-accent-secondary` `#A9F4EA` — **primary CTAs only**
-- `--color-accent` `#2ECEC0` — secondary CTAs, links, brand presence
-- `--color-accent-hover` `#45D9CD` — accent hover
-- `--color-accent-subtle` `#1F908A` — labels, IDs, code
+### Brand — full state ramp on teal, interactive states on aqua
+- `--color-accent-secondary` `#A9F4EA` — **primary CTAs only** · `-hover` `#B3F5ED` · `-active` `#90CFC7` · `-disabled` `#65938F`
+- `--color-accent` `#2ECEC0` — secondary CTAs, links, brand presence · `-hover` `#45D9CD` · `-active` `#27AFA3` · `-disabled` `#2E827C`
+- `--color-accent-subtle` `#1F908A` — labels, IDs, code (teal-deep)
+- `--color-accent-muted-bg` `#082223` — tinted surface wash for decorative bg
 
 ### Status
-- `--color-info` `#69B1E8` (running) · `--color-success` `#0DC378` (healthy/done) · `--color-warning` `#C99A3F` (warn/throttled) · `--color-danger` `#C8533B` (critical/failed) · `--color-neutral` `#3E5A5E` (idle) · `--color-status-queued` `#8EA0C9` (queued)
+- `--color-info` `#69B1E8` (running) · `--color-success` `#85BE00` (healthy/done — olive-lime) · `--color-warning` `#F29421` (warn/throttled) · `--color-danger` `#FE483B` (critical/failed) · `--color-status-queued` `#8EA0C9` (queued)
+- `--color-neutral` `#2E4445` — idle **fill** (status dots, badge backgrounds). Text uses `--color-neutral-text` `#649497` instead so it passes contrast.
 - `-text` variants (`--color-success-text`, `--color-warning-text`, `--color-danger-text`, `--color-info-text`, `--color-neutral-text`) are tuned for small-size legibility on dark.
 
-### Data viz
-- `--color-viz-1` `#D11A6E` (magenta) · `--color-viz-2` `#E5C739` (amber) · `--color-viz-3` `#9988C2` (violet)
+### Data viz — three structured paradigms
+- **Categorical** (8 colors, first 6 colorblind-distinguishable): `--color-viz-categorical-1..8`. Use 1 for first series, 2 for second, etc. Don't randomize.
+- **Sequential** (7 stops, teal-anchored): `--color-viz-sequential-1..7` for heatmaps, density plots, utilization gradients.
+- **Diverging** (5 stops): `cool-strong / cool-weak / neutral / warm-weak / warm-strong` for "above vs below baseline" charts. Hues distinct from status colors so "performance vs target" never reads as "danger to success."
 
 ### Typography roles (use the utility classes)
-`role-display` · `role-title` · `role-heading` · `role-body` · `role-body-sm` · `role-secondary` · `role-metric-display` · `role-metric-value` · `role-label` · `role-caps` · `role-button` · `role-code` · `role-kbd` · `role-narrative` · `role-narrative-lg`
+`role-display-lg` (64) · `role-display` (48) · `role-display-sm` (40) · `role-title` (32) · `role-subtitle` (24) · `role-heading` (20) · `role-body-lg` (18 Inter) · `role-body` (16) · `role-body-sm` (14) · `role-secondary` (14) · `role-metric-display` (56) · `role-metric-value` (40) · `role-label` (12, uppercase) · `role-caps` (12, uppercase) · `role-button` (14, uppercase) · `role-code` (14) · `role-kbd` (11) · `role-narrative` (18 Inter) · `role-narrative-lg` (20 Inter)
 
 ## Rendering Invariants (do these by default)
 

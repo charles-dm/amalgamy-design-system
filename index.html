@@ -15,47 +15,53 @@
    * ============================================================ */
 
   :root {
-    /* SURFACE */
-    --color-bg:               #011619;
-    --color-surface-1:        #0A2125;
-    --color-surface-2:        #143034;
-    --color-surface-3:        #1A3A40;
+    /* SURFACE — v0.2 darker Clear-teal ramp */
+    --color-bg:               #051315;
+    --color-surface-1:        #0A181A;
+    --color-surface-2:        #0F1E20;
+    --color-surface-3:        #162526;
 
-    /* BORDER */
-    --color-border-subtle:    #1E3A40;
-    --color-border-default:   #284C53;
-    --color-border-strong:    #284C53;
+    /* BORDER — strong now visibly distinct from default */
+    --color-border-subtle:    #162526;
+    --color-border-default:   #223233;
+    --color-border-strong:    #456066;
 
-    /* TEXT */
-    --color-text-primary:     #DCE8E6;
-    --color-text-secondary:   #8AA6A4;
-    --color-text-tertiary:    #54706E;
-    --color-text-faint:       #2A4448;
-    --color-text-inverse:     #011619;
+    /* TEXT — all tiers WCAG AA on every surface */
+    --color-text-primary:     #EAF1EC;
+    --color-text-secondary:   #C3D3D0;
+    --color-text-tertiary:    #8CADA7;
+    --color-text-faint:       #78948F;
+    --color-text-inverse:     #051315;
 
-    /* BRAND */
-    --color-accent:           #2ECEC0;
-    --color-accent-hover:     #45D9CD;
-    --color-accent-subtle:    #1F908A;
-    --color-accent-secondary: #A9F4EA;
+    /* BRAND — full state ramps */
+    --color-accent:                    #2ECEC0;
+    --color-accent-hover:              #45D9CD;
+    --color-accent-active:             #27AFA3;
+    --color-accent-disabled:           #2E827C;
+    --color-accent-subtle:             #1F908A;
+    --color-accent-muted-bg:           #082223;
+    --color-accent-secondary:          #A9F4EA;
+    --color-accent-secondary-hover:    #B3F5ED;
+    --color-accent-secondary-active:   #90CFC7;
+    --color-accent-secondary-disabled: #65938F;
 
-    /* STATUS */
-    --color-success:          #0DC378;
-    --color-success-text:     #2CC988;
-    --color-warning:          #C99A3F;
-    --color-warning-text:     #CCA658;
-    --color-danger:           #C8533B;
-    --color-danger-text:      #CB6955;
+    /* STATUS — retuned for new surface palette + AA */
+    --color-success:          #85BE00;
+    --color-success-text:     #94C623;
+    --color-warning:          #F29421;
+    --color-warning-text:     #F1A23F;
+    --color-danger:           #FE483B;
+    --color-danger-text:      #FB6156;
     --color-info:             #69B1E8;
-    --color-info-text:        #7AB9E8;
+    --color-info-text:        #7CBBE9;
     --color-status-queued:    #8EA0C9;
-    --color-neutral:          #3E5A5E;
-    --color-neutral-text:     #8AA6A4;
+    --color-neutral:          #2E4445;
+    --color-neutral-text:     #649497;
 
-    /* VIZ */
-    --color-viz-1:            #D11A6E;
-    --color-viz-2:            #E5C739;
-    --color-viz-3:            #9988C2;
+    /* VIZ — categorical (first 3 shown; full set at viz-categorical-1..8) */
+    --color-viz-categorical-1: #2ECEC0;  /* teal */
+    --color-viz-categorical-2: #E5C739;  /* amber */
+    --color-viz-categorical-3: #D11A6E;  /* magenta */
 
     /* TYPOGRAPHY */
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -68,7 +74,7 @@
     background: var(--color-bg);
     color: var(--color-text-primary);
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 16px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     font-variant-ligatures: none;
@@ -392,21 +398,25 @@
     text-align: right;
     letter-spacing: 0.04em;
   }
-  .role-display     { font-family: var(--font-mono); font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
-  .role-title       { font-family: var(--font-mono); font-size: 22px; font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; }
-  .role-heading     { font-family: var(--font-mono); font-size: 14px; font-weight: 600; line-height: 1.5; }
-  .role-body        { font-family: var(--font-mono); font-size: 13px; font-weight: 400; line-height: 1.5; }
-  .role-body-sm     { font-family: var(--font-mono); font-size: 12px; font-weight: 400; line-height: 1.5; }
-  .role-secondary   { font-family: var(--font-mono); font-size: 11px; font-weight: 400; line-height: 1.5; color: var(--color-text-secondary); }
-  .role-metric-display { font-family: var(--font-mono); font-size: 38px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
-  .role-metric-value   { font-family: var(--font-mono); font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
-  .role-label       { font-family: var(--font-mono); font-size: 10px; font-weight: 500; line-height: 1.5; letter-spacing: 0.10em; text-transform: uppercase; }
-  .role-caps        { font-family: var(--font-mono); font-size: 10px; font-weight: 500; line-height: 1.5; letter-spacing: 0.16em; text-transform: uppercase; }
-  .role-button      { font-family: var(--font-mono); font-size: 11px; font-weight: 600; line-height: 1.1; letter-spacing: 0.04em; text-transform: uppercase; }
-  .role-code        { font-family: var(--font-mono); font-size: 11px; font-weight: 400; line-height: 1.5; }
-  .role-kbd         { font-family: var(--font-mono); font-size: 9px;  font-weight: 500; line-height: 1.1; }
-  .role-narrative   { font-family: var(--font-sans); font-size: 14px; font-weight: 400; line-height: 1.7; }
-  .role-narrative-lg{ font-family: var(--font-sans); font-size: 16px; font-weight: 400; line-height: 1.7; }
+  .role-display-lg     { font-family: var(--font-mono); font-size: 64px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .role-display        { font-family: var(--font-mono); font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .role-display-sm     { font-family: var(--font-mono); font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .role-title          { font-family: var(--font-mono); font-size: 32px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
+  .role-subtitle       { font-family: var(--font-mono); font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
+  .role-heading        { font-family: var(--font-mono); font-size: 20px; font-weight: 700; line-height: 1.5; }
+  .role-body-lg        { font-family: var(--font-sans); font-size: 18px; font-weight: 400; line-height: 1.7; }
+  .role-body           { font-family: var(--font-mono); font-size: 16px; font-weight: 400; line-height: 1.5; }
+  .role-body-sm        { font-family: var(--font-mono); font-size: 14px; font-weight: 400; line-height: 1.5; }
+  .role-secondary      { font-family: var(--font-mono); font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--color-text-secondary); }
+  .role-metric-display { font-family: var(--font-mono); font-size: 56px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .role-metric-value   { font-family: var(--font-mono); font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .role-label          { font-family: var(--font-mono); font-size: 12px; font-weight: 500; line-height: 1.5; letter-spacing: 0.10em; text-transform: uppercase; }
+  .role-caps           { font-family: var(--font-mono); font-size: 12px; font-weight: 500; line-height: 1.5; letter-spacing: 0.16em; text-transform: uppercase; }
+  .role-button         { font-family: var(--font-mono); font-size: 14px; font-weight: 700; line-height: 1.1; letter-spacing: 0.04em; text-transform: uppercase; }
+  .role-code           { font-family: var(--font-mono); font-size: 14px; font-weight: 400; line-height: 1.5; }
+  .role-kbd            { font-family: var(--font-mono); font-size: 11px; font-weight: 500; line-height: 1.1; }
+  .role-narrative      { font-family: var(--font-sans); font-size: 18px; font-weight: 400; line-height: 1.7; }
+  .role-narrative-lg   { font-family: var(--font-sans); font-size: 20px; font-weight: 400; line-height: 1.7; }
 
   /* ───────── COMPONENT SHOWCASE ───────── */
   .panel {
@@ -645,7 +655,7 @@
     display: inline-flex; align-items: center; gap: 10px;
     padding: 10px 18px;
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 14px;
     color: var(--color-text-secondary);
     text-decoration: none;
     border-right: 1px solid var(--color-border-strong);
@@ -1018,56 +1028,56 @@
 
         <div class="swatches" data-rows="auto">
           <div class="sw bordered" data-copy="--color-bg">
-            <div class="sq" style="background:#011619"></div>
+            <div class="sq" style="background:#051315"></div>
             <div class="var">--color-bg</div>
-            <div class="hex">#011619</div>
+            <div class="hex">#051315</div>
             <div class="hint">Page · recessed containers</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw bordered" data-copy="--color-surface-1">
-            <div class="sq" style="background:#0A2125"></div>
+            <div class="sq" style="background:#0A181A"></div>
             <div class="var">--color-surface-1</div>
-            <div class="hex">#0A2125</div>
+            <div class="hex">#0A181A</div>
             <div class="hint">Default panel surface</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw bordered" data-copy="--color-surface-2">
-            <div class="sq" style="background:#143034"></div>
+            <div class="sq" style="background:#0F1E20"></div>
             <div class="var">--color-surface-2</div>
-            <div class="hex">#143034</div>
+            <div class="hex">#0F1E20</div>
             <div class="hint">Elevated · selected · modal</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw bordered" data-copy="--color-surface-3">
-            <div class="sq" style="background:#1A3A40"></div>
+            <div class="sq" style="background:#162526"></div>
             <div class="var">--color-surface-3</div>
-            <div class="hex">#1A3A40</div>
+            <div class="hex">#162526</div>
             <div class="hint">Top-of-stack · row hover</div>
             <span class="copied">copied</span>
           </div>
         </div>
 
-        <p class="note" style="margin-top: 32px;"><strong>Border.</strong> Subtle for internal/dashed dividers, default and strong (same hex) for outer panel borders.</p>
+        <p class="note" style="margin-top: 32px;"><strong>Border.</strong> Subtle for internal/dashed dividers, default and strong now visibly distinct (v0.2 lifted strong significantly).</p>
 
         <div class="swatches" data-rows="auto">
           <div class="sw" data-copy="--color-border-subtle">
-            <div class="sq" style="background:#1E3A40"></div>
+            <div class="sq" style="background:#162526"></div>
             <div class="var">--color-border-subtle</div>
-            <div class="hex">#1E3A40</div>
+            <div class="hex">#162526</div>
             <div class="hint">Internal · dashed dividers</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-border-default">
-            <div class="sq" style="background:#284C53"></div>
+            <div class="sq" style="background:#223233"></div>
             <div class="var">--color-border-default</div>
-            <div class="hex">#284C53</div>
+            <div class="hex">#223233</div>
             <div class="hint">Standard divider</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-border-strong">
-            <div class="sq" style="background:#284C53"></div>
+            <div class="sq" style="background:#456066"></div>
             <div class="var">--color-border-strong</div>
-            <div class="hex">#284C53</div>
+            <div class="hex">#456066</div>
             <div class="hint">Outer panel border</div>
             <span class="copied">copied</span>
           </div>
@@ -1079,34 +1089,41 @@
           </div>
         </div>
 
-        <p class="note" style="margin-top: 32px;"><strong>Text.</strong> A 4-step hierarchy plus an inverse for text on aqua/teal buttons.</p>
+        <p class="note" style="margin-top: 32px;"><strong>Text.</strong> All tiers pass WCAG AA 4.5:1 on every surface in the system.</p>
 
         <div class="swatches" data-rows="auto">
           <div class="sw" data-copy="--color-text-primary">
-            <div class="sq" style="background:#DCE8E6"></div>
+            <div class="sq" style="background:#EAF1EC"></div>
             <div class="var">--color-text-primary</div>
-            <div class="hex">#DCE8E6</div>
-            <div class="hint">Body · headings</div>
+            <div class="hex">#EAF1EC</div>
+            <div class="hint">Body · headings · 13.79:1</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-text-secondary">
-            <div class="sq" style="background:#8AA6A4"></div>
+            <div class="sq" style="background:#C3D3D0"></div>
             <div class="var">--color-text-secondary</div>
-            <div class="hex">#8AA6A4</div>
-            <div class="hint">Meta · captions</div>
+            <div class="hex">#C3D3D0</div>
+            <div class="hint">Meta · captions · 10.21:1 (AAA)</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-text-tertiary">
-            <div class="sq" style="background:#54706E"></div>
+            <div class="sq" style="background:#8CADA7"></div>
             <div class="var">--color-text-tertiary</div>
-            <div class="hex">#54706E</div>
-            <div class="hint">Timestamps · faint</div>
+            <div class="hex">#8CADA7</div>
+            <div class="hint">Timestamps · faint · 6.52:1</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-text-faint">
+            <div class="sq" style="background:#78948F"></div>
+            <div class="var">--color-text-faint</div>
+            <div class="hex">#78948F</div>
+            <div class="hint">Decorative · 4.85:1</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw bordered" data-copy="--color-text-inverse">
-            <div class="sq" style="background:#011619"></div>
+            <div class="sq" style="background:#051315"></div>
             <div class="var">--color-text-inverse</div>
-            <div class="hex">#011619</div>
+            <div class="hex">#051315</div>
             <div class="hint">On aqua/teal buttons</div>
             <span class="copied">copied</span>
           </div>
@@ -1165,23 +1182,23 @@
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-success">
-            <div class="sq" style="background:#0DC378"></div>
+            <div class="sq" style="background:#85BE00"></div>
             <div class="var">--color-success</div>
-            <div class="hex">#0DC378</div>
-            <div class="hint">healthy · done</div>
+            <div class="hex">#85BE00</div>
+            <div class="hint">healthy · olive-lime</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-warning">
-            <div class="sq" style="background:#C99A3F"></div>
+            <div class="sq" style="background:#F29421"></div>
             <div class="var">--color-warning</div>
-            <div class="hex">#C99A3F</div>
+            <div class="hex">#F29421</div>
             <div class="hint">warn · throttled</div>
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-danger">
-            <div class="sq" style="background:#C8533B"></div>
+            <div class="sq" style="background:#FE483B"></div>
             <div class="var">--color-danger</div>
-            <div class="hex">#C8533B</div>
+            <div class="hex">#FE483B</div>
             <div class="hint">critical · failed</div>
             <span class="copied">copied</span>
           </div>
@@ -1193,24 +1210,31 @@
             <span class="copied">copied</span>
           </div>
           <div class="sw" data-copy="--color-neutral">
-            <div class="sq" style="background:#3E5A5E"></div>
+            <div class="sq" style="background:#2E4445"></div>
             <div class="var">--color-neutral</div>
-            <div class="hex">#3E5A5E</div>
-            <div class="hint">idle</div>
+            <div class="hex">#2E4445</div>
+            <div class="hint">idle · fill only</div>
             <span class="copied">copied</span>
           </div>
-          <div class="sw" data-copy="--color-viz-1">
-            <div class="sq" style="background:#D11A6E"></div>
-            <div class="var">--color-viz-1</div>
-            <div class="hex">#D11A6E</div>
-            <div class="hint">viz · magenta</div>
+          <div class="sw" data-copy="--color-viz-categorical-1">
+            <div class="sq" style="background:#2ECEC0"></div>
+            <div class="var">--color-viz-categorical-1</div>
+            <div class="hex">#2ECEC0</div>
+            <div class="hint">viz · teal · series 1</div>
             <span class="copied">copied</span>
           </div>
-          <div class="sw" data-copy="--color-viz-2">
+          <div class="sw" data-copy="--color-viz-categorical-2">
             <div class="sq" style="background:#E5C739"></div>
-            <div class="var">--color-viz-2</div>
+            <div class="var">--color-viz-categorical-2</div>
             <div class="hex">#E5C739</div>
-            <div class="hint">viz · amber</div>
+            <div class="hint">viz · amber · series 2</div>
+            <span class="copied">copied</span>
+          </div>
+          <div class="sw" data-copy="--color-viz-categorical-3">
+            <div class="sq" style="background:#D11A6E"></div>
+            <div class="var">--color-viz-categorical-3</div>
+            <div class="hex">#D11A6E</div>
+            <div class="hint">viz · magenta · series 3</div>
             <span class="copied">copied</span>
           </div>
         </div>

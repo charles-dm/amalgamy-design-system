@@ -10,35 +10,35 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   :root {
-    /* Base — deep teal-black from screenshot */
-    --bg:        #011619;
-    --surface:   #0A2125;
-    --elevated:  #143034;
-    --hover:     #1A3A40;
-    --border:    #1E3A40;
-    --border-2:  #284C53;
-    --rule:      #1E3A40;
+    /* Base — v0.2 darker Clear-teal ramp */
+    --bg:        #051315;
+    --surface:   #0A181A;
+    --elevated:  #0F1E20;
+    --hover:     #162526;
+    --border:    #162526;
+    --border-2:  #456066;     /* border-strong now visibly distinct */
+    --rule:      #223233;     /* border-default */
 
-    /* Text — cool paper, high contrast */
-    --fg:        #DCE8E6;
-    --fg-dim:    #8AA6A4;
-    --fg-muted:  #54706E;
-    --fg-faint:  #2A4448;
+    /* Text — v0.2, all tiers WCAG AA on every surface */
+    --fg:        #EAF1EC;
+    --fg-dim:    #C3D3D0;
+    --fg-muted:  #8CADA7;
+    --fg-faint:  #78948F;
 
-    /* Brand — primary aqua/teal scale from screenshot */
+    /* Brand — primary aqua/teal scale */
     --aqua:      #A9F4EA;     /* top button - light aqua */
     --teal:      #2ECEC0;     /* mid button - vivid teal */
     --teal-deep: #1F908A;     /* deep button - desaturated teal */
 
-    /* Status — calm signal palette tuned to teal base */
-    --st-ok:       #0DC378;    /* healthy — vivid sea green */
+    /* Status — v0.2 retuned for new surfaces */
+    --st-ok:       #85BE00;    /* healthy — olive-lime */
     --st-run:      #69B1E8;    /* running — soft sky blue */
-    --st-warn:     #C99A3F;    /* warn — warm gold */
-    --st-crit:     #C8533B;    /* critical — dull brick */
-    --st-idle:     #3E5A5E;    /* idle — cold neutral */
+    --st-warn:     #F29421;    /* warn — warm orange */
+    --st-crit:     #FE483B;    /* critical — bright red */
+    --st-idle:     #2E4445;    /* idle — fill only */
     --st-queue:    #8EA0C9;    /* queued — dusty periwinkle */
 
-    /* Data-viz accents */
+    /* Data-viz — categorical (subset; full set in tokens/amalgamy-reset.css) */
     --viz-magenta: #D11A6E;
     --viz-amber:   #E5C739;
     --viz-violet:  #9988C2;
@@ -51,7 +51,7 @@
     background: var(--bg);
     color: var(--fg);
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     font-variant-ligatures: none;
@@ -520,7 +520,7 @@
   }
   .t-display { font-size: 48px; font-weight: 700; letter-spacing: -0.025em; line-height: 1; font-variant-numeric: tabular-nums; }
   .t-title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
-  .t-prim { font-size: 13px; }
+  .t-prim { font-size: 14px; }
   .t-sec { font-size: 11px; color: var(--fg-dim); }
   .t-mono { font-size: 12px; color: var(--fg); }
   .t-caps { font-size: 10px; color: var(--fg-muted); letter-spacing: 0.16em; text-transform: uppercase; }
@@ -724,24 +724,24 @@
   <section class="sec">
     <div class="sec-head"><span class="num">[08]</span><span class="name">Color Palette</span><span></span><span class="desc">deep teal base · aqua brand · muted signal</span></div>
     <div class="swatches">
-      <div class="sw bordered"><div class="sq" style="background:#011619"></div><div class="name">Background</div><div class="hex">#011619</div></div>
-      <div class="sw bordered"><div class="sq" style="background:#0A2125"></div><div class="name">Surface</div><div class="hex">#0A2125</div></div>
-      <div class="sw bordered"><div class="sq" style="background:#143034"></div><div class="name">Elevated</div><div class="hex">#143034</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#051315"></div><div class="name">Background</div><div class="hex">#051315</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#0A181A"></div><div class="name">Surface</div><div class="hex">#0A181A</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#0F1E20"></div><div class="name">Elevated</div><div class="hex">#0F1E20</div></div>
       <div class="sw"><div class="sq" style="background:#A9F4EA"></div><div class="name">Aqua / Brand</div><div class="hex">#A9F4EA</div></div>
       <div class="sw"><div class="sq" style="background:#2ECEC0"></div><div class="name">Teal</div><div class="hex">#2ECEC0</div></div>
       <div class="sw"><div class="sq" style="background:#1F908A"></div><div class="name">Teal Deep</div><div class="hex">#1F908A</div></div>
 
       <div class="sw"><div class="sq" style="background:#69B1E8"></div><div class="name">Running</div><div class="hex" data-hex="run">#69B1E8</div></div>
-      <div class="sw"><div class="sq" style="background:#0DC378"></div><div class="name">Healthy</div><div class="hex" data-hex="ok">#0DC378</div></div>
-      <div class="sw"><div class="sq" style="background:#C99A3F"></div><div class="name">Warning</div><div class="hex">#C99A3F</div></div>
-      <div class="sw"><div class="sq" style="background:#C8533B"></div><div class="name">Critical</div><div class="hex">#C8533B</div></div>
+      <div class="sw"><div class="sq" style="background:#85BE00"></div><div class="name">Healthy</div><div class="hex" data-hex="ok">#85BE00</div></div>
+      <div class="sw"><div class="sq" style="background:#F29421"></div><div class="name">Warning</div><div class="hex">#F29421</div></div>
+      <div class="sw"><div class="sq" style="background:#FE483B"></div><div class="name">Critical</div><div class="hex">#FE483B</div></div>
       <div class="sw"><div class="sq" style="background:#8EA0C9"></div><div class="name">Queued</div><div class="hex">#8EA0C9</div></div>
-      <div class="sw"><div class="sq" style="background:#3E5A5E"></div><div class="name">Idle</div><div class="hex">#3E5A5E</div></div>
+      <div class="sw"><div class="sq" style="background:#2E4445"></div><div class="name">Idle</div><div class="hex">#2E4445</div></div>
 
-      <div class="sw"><div class="sq" style="background:#DCE8E6"></div><div class="name">Text</div><div class="hex">#DCE8E6</div></div>
-      <div class="sw"><div class="sq" style="background:#8AA6A4"></div><div class="name">Text-2</div><div class="hex">#8AA6A4</div></div>
-      <div class="sw"><div class="sq" style="background:#54706E"></div><div class="name">Text-3</div><div class="hex">#54706E</div></div>
-      <div class="sw bordered"><div class="sq" style="background:#284C53"></div><div class="name">Border</div><div class="hex">#284C53</div></div>
+      <div class="sw"><div class="sq" style="background:#EAF1EC"></div><div class="name">Text</div><div class="hex">#EAF1EC</div></div>
+      <div class="sw"><div class="sq" style="background:#C3D3D0"></div><div class="name">Text-2</div><div class="hex">#C3D3D0</div></div>
+      <div class="sw"><div class="sq" style="background:#8CADA7"></div><div class="name">Text-3</div><div class="hex">#8CADA7</div></div>
+      <div class="sw bordered"><div class="sq" style="background:#456066"></div><div class="name">Border</div><div class="hex">#456066</div></div>
       <div class="sw"><div class="sq" style="background:#D11A6E"></div><div class="name">Viz Magenta</div><div class="hex">#D11A6E</div></div>
       <div class="sw"><div class="sq" style="background:#E5C739"></div><div class="name">Viz Amber</div><div class="hex">#E5C739</div></div>
     </div>
@@ -822,63 +822,63 @@
 
   /* ───────── PANEL ───────── */
   .twk{position:fixed;right:16px;bottom:16px;z-index:9999;width:280px;display:none;flex-direction:column;
-    background:#0A2125;color:#DCE8E6;border:1px solid #284C53;
+    background:#0A181A;color:#EAF1EC;border:1px solid #456066;
     font:11px/1.5 'JetBrains Mono',ui-monospace,monospace;
     box-shadow:0 12px 40px rgba(0,0,0,.5);max-height:calc(100vh - 32px);overflow:hidden}
   .twk.on{display:flex}
   .twk-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;
-    border-bottom:1px solid #284C53;background:#011619;cursor:move;user-select:none}
+    border-bottom:1px solid #456066;background:#051315;cursor:move;user-select:none}
   .twk-hd b{font-size:11px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:#2ECEC0}
-  .twk-x{background:none;border:1px solid #284C53;color:#8AA6A4;width:22px;height:22px;
+  .twk-x{background:none;border:1px solid #456066;color:#C3D3D0;width:22px;height:22px;
     cursor:pointer;font-family:inherit;font-size:11px}
-  .twk-x:hover{color:#DCE8E6;border-color:#2ECEC0}
+  .twk-x:hover{color:#EAF1EC;border-color:#2ECEC0}
   .twk-bd{padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
-  .twk-sect{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#54706E;
-    padding-top:8px;border-top:1px dashed #1E3A40;font-weight:600}
+  .twk-sect{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8CADA7;
+    padding-top:8px;border-top:1px dashed #162526;font-weight:600}
   .twk-sect:first-child{padding-top:0;border-top:0}
   .twk-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
-  .twk-row label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#8AA6A4}
+  .twk-row label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#C3D3D0}
   .twk-row .ctrl{display:flex;align-items:center;gap:8px}
-  .twk-row input[type=color]{width:28px;height:22px;background:transparent;border:1px solid #284C53;
+  .twk-row input[type=color]{width:28px;height:22px;background:transparent;border:1px solid #456066;
     cursor:pointer;padding:0}
   .twk-row input[type=color]::-webkit-color-swatch-wrapper{padding:0}
   .twk-row input[type=color]::-webkit-color-swatch{border:0}
-  .twk-row .hex{font-size:10px;color:#54706E;font-variant-numeric:tabular-nums;width:64px}
-  .twk-row select{background:#011619;color:#DCE8E6;border:1px solid #284C53;
+  .twk-row .hex{font-size:10px;color:#8CADA7;font-variant-numeric:tabular-nums;width:64px}
+  .twk-row select{background:#051315;color:#EAF1EC;border:1px solid #456066;
     font:inherit;padding:3px 6px;outline:none}
-  .twk-row .reset{background:none;border:1px solid #284C53;color:#8AA6A4;
+  .twk-row .reset{background:none;border:1px solid #456066;color:#C3D3D0;
     padding:4px 10px;font:inherit;cursor:pointer;font-size:10px;letter-spacing:.10em;text-transform:uppercase}
   .twk-row .reset:hover{color:#2ECEC0;border-color:#2ECEC0}
 
   /* Segmented control */
   .twk-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0;
-    border:1px solid #284C53;background:#011619}
-  .twk-seg button{appearance:none;background:transparent;color:#8AA6A4;border:0;
+    border:1px solid #456066;background:#051315}
+  .twk-seg button{appearance:none;background:transparent;color:#C3D3D0;border:0;
     padding:7px 4px;font:inherit;font-size:10px;letter-spacing:.10em;text-transform:uppercase;
-    cursor:pointer;border-right:1px solid #284C53}
+    cursor:pointer;border-right:1px solid #456066}
   .twk-seg button:last-child{border-right:0}
-  .twk-seg button:hover{color:#DCE8E6}
-  .twk-seg button.on{background:#143034;color:#2ECEC0}
+  .twk-seg button:hover{color:#EAF1EC}
+  .twk-seg button.on{background:#0F1E20;color:#2ECEC0}
   .twk-seg.col2{grid-template-columns:1fr 1fr}
   .twk-seg.col4{grid-template-columns:repeat(4,1fr)}
 
   /* Slider */
   .twk-slider{display:flex;flex-direction:column;gap:6px}
   .twk-slider .head{display:flex;justify-content:space-between;align-items:baseline}
-  .twk-slider .head label{font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:#8AA6A4}
+  .twk-slider .head label{font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:#C3D3D0}
   .twk-slider .head .v{font-size:10px;color:#2ECEC0;font-variant-numeric:tabular-nums}
-  .twk-slider input[type=range]{appearance:none;width:100%;height:2px;background:#284C53;outline:none;margin:8px 0}
+  .twk-slider input[type=range]{appearance:none;width:100%;height:2px;background:#456066;outline:none;margin:8px 0}
   .twk-slider input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;
     background:#2ECEC0;border:0;cursor:pointer}
   .twk-slider input[type=range]::-moz-range-thumb{width:12px;height:12px;background:#2ECEC0;border:0;cursor:pointer}
 
   /* Mood preview chip */
-  .twk-mood-chip{display:flex;height:18px;border:1px solid #284C53;margin-top:2px}
+  .twk-mood-chip{display:flex;height:18px;border:1px solid #456066;margin-top:2px}
   .twk-mood-chip span{flex:1}
 
   .twk-block{display:flex;flex-direction:column;gap:8px}
-  .twk-cap{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#54706E;font-weight:600}
-  .twk-hint{font-size:10px;color:#54706E;line-height:1.5;font-style:italic}
+  .twk-cap{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8CADA7;font-weight:600}
+  .twk-hint{font-size:10px;color:#8CADA7;line-height:1.5;font-style:italic}
 </style>
 
 <div class="twk" id="twk">
@@ -942,14 +942,14 @@
   var MOODS = {
     terminal: {
       label: 'Terminal',
-      preview: ['#011619','#0A2125','#2ECEC0','#A9F4EA','#0DC378'],
+      preview: ['#051315','#0A181A','#2ECEC0','#A9F4EA','#85BE00'],
       vars: {
-        '--bg':'#011619','--surface':'#0A2125','--elevated':'#143034','--hover':'#1A3A40',
-        '--border':'#1E3A40','--border-2':'#284C53','--rule':'#1E3A40',
-        '--fg':'#DCE8E6','--fg-dim':'#8AA6A4','--fg-muted':'#54706E','--fg-faint':'#2A4448',
+        '--bg':'#051315','--surface':'#0A181A','--elevated':'#0F1E20','--hover':'#162526',
+        '--border':'#162526','--border-2':'#456066','--rule':'#162526',
+        '--fg':'#EAF1EC','--fg-dim':'#C3D3D0','--fg-muted':'#8CADA7','--fg-faint':'#78948F',
         '--aqua':'#A9F4EA','--teal':'#2ECEC0','--teal-deep':'#1F908A',
-        '--st-ok':'#0DC378','--st-run':'#69B1E8','--st-warn':'#C99A3F','--st-crit':'#C8533B',
-        '--st-idle':'#3E5A5E','--st-queue':'#8EA0C9',
+        '--st-ok':'#85BE00','--st-run':'#69B1E8','--st-warn':'#F29421','--st-crit':'#FE483B',
+        '--st-idle':'#2E4445','--st-queue':'#8EA0C9',
         '--viz-magenta':'#D11A6E','--viz-amber':'#E5C739','--viz-violet':'#9988C2'
       }
     },

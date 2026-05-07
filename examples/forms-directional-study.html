@@ -16,35 +16,36 @@
      study uses. The external link still loads when available.
      ───────────────────────────────────────────────────────────────────── */
   :root {
-    --color-bg:               #011619;
-    --color-surface-1:        #0A2125;
-    --color-surface-2:        #143034;
-    --color-surface-3:        #1A3A40;
+    /* v0.2 darker Clear-teal ramp */
+    --color-bg:               #051315;
+    --color-surface-1:        #0A181A;
+    --color-surface-2:        #0F1E20;
+    --color-surface-3:        #162526;
 
-    --color-border-subtle:    #1E3A40;
-    --color-border-default:   #284C53;
-    --color-border-strong:    #284C53;
+    --color-border-subtle:    #162526;
+    --color-border-default:   #223233;
+    --color-border-strong:    #456066;
 
-    --color-text-primary:     #DCE8E6;
-    --color-text-secondary:   #8AA6A4;
-    --color-text-tertiary:    #54706E;
-    --color-text-faint:       #2A4448;
-    --color-text-inverse:     #011619;
+    --color-text-primary:     #EAF1EC;
+    --color-text-secondary:   #C3D3D0;
+    --color-text-tertiary:    #8CADA7;
+    --color-text-faint:       #78948F;
+    --color-text-inverse:     #051315;
 
     --color-accent:           #2ECEC0;
     --color-accent-hover:     #45D9CD;
     --color-accent-subtle:    #1F908A;
     --color-accent-secondary: #A9F4EA;
 
-    --color-success:          #0DC378;
-    --color-success-text:     #2CC988;
-    --color-warning:          #C99A3F;
-    --color-warning-text:     #CCA658;
-    --color-danger:           #C8533B;
-    --color-danger-text:      #CB6955;
+    --color-success:          #85BE00;
+    --color-success-text:     #94C623;
+    --color-warning:          #F29421;
+    --color-warning-text:     #F1A23F;
+    --color-danger:           #FE483B;
+    --color-danger-text:      #FB6156;
     --color-info:             #69B1E8;
-    --color-info-text:        #7AB9E8;
-    --color-neutral:          #3E5A5E;
+    --color-info-text:        #7CBBE9;
+    --color-neutral:          #2E4445;
 
     --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -58,7 +59,7 @@
     background: var(--color-bg);
     color: var(--color-text-primary);
     font-family: var(--font-family-mono);
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     font-variant-ligatures: none;
@@ -122,7 +123,7 @@
   .masthead .meta b { color: var(--color-text-primary); font-weight: 600; }
 
   /* preface */
-  .preface { max-width: 720px; margin: 0 0 64px; color: var(--color-text-secondary); font-size: 13px; line-height: 1.7; }
+  .preface { max-width: 720px; margin: 0 0 64px; color: var(--color-text-secondary); font-size: 14px; line-height: 1.7; }
   .preface p { margin: 0 0 12px; }
   .preface p:last-child { margin-bottom: 0; }
   .preface code { font-family: var(--font-family-mono); color: var(--color-accent); font-size: 12px; padding: 1px 6px; border: 1px solid var(--color-border-strong); background: var(--color-bg); }
@@ -290,7 +291,7 @@
     color: var(--color-text-primary);
     padding: 4px 0 6px;
     border-bottom: 1px solid var(--color-border-default);
-    font-size: 13px;
+    font-size: 14px;
   }
   .d-cli input[type="text"]:focus, .d-cli input[type="number"]:focus, .d-cli select:focus, .d-cli textarea:focus {
     border-bottom-color: var(--color-accent);
@@ -338,7 +339,7 @@
     background: var(--color-surface-2);
     border: 1px solid var(--color-border-strong);
     color: var(--color-text-primary);
-    font-size: 13px;
+    font-size: 14px;
   }
   .d-spec input:focus, .d-spec select:focus, .d-spec textarea:focus { border-color: var(--color-accent); }
   .d-spec textarea { width: 100%; min-height: 84px; }
@@ -385,7 +386,7 @@
     background: var(--color-bg);
     border: 1px solid var(--color-border-strong);
     color: var(--color-text-primary);
-    font-size: 13px;
+    font-size: 14px;
   }
   .d-frame input:focus, .d-frame select:focus, .d-frame textarea:focus { border-color: var(--color-accent); }
   .d-frame textarea { min-height: 88px; }
@@ -483,7 +484,7 @@
   .d-tape .cell input[type="text"], .d-tape .cell input[type="number"], .d-tape .cell select {
     background: transparent;
     color: var(--color-text-primary);
-    font-size: 13px;
+    font-size: 14px;
     width: 100%;
     border-bottom: 1px solid transparent;
   }
