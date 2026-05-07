@@ -1,6 +1,6 @@
 /* ============================================================================
  * Amalgamy LaunchHPC — Reset & Tokens
- * Style direction: Sovereign Terminal
+ * Style direction: Sovereign Terminal (darker Clear-teal palette)
  * Mode: Dark (Blueprint mode handled in Figma only)
  *
  * Mirrors the Figma Design File:
@@ -8,99 +8,127 @@
  *   - Typography collection (primitives + role aliases)
  *   - role/* text styles → .role-* utility classes
  *
- * Note: JetBrains Mono SemiBold is unavailable in the rendering environment,
- * so the "semibold" weight token resolves to 700 (Bold) — matching Figma.
+ * Note: JetBrains Mono SemiBold unavailable, so the "semibold" weight token
+ * resolves to 700 (Bold) — matching Figma.
  * ============================================================================ */
-
-/* ──────────────────────────────────────────────────────────────────────────
- * TOKENS
- * ────────────────────────────────────────────────────────────────────────── */
 
 :root {
 
   /* ═══ COLOR ════════════════════════════════════════════════════════════ */
 
-  /* Surface */
-  --color-bg:               #011619;
-  --color-surface-1:        #0A2125;
-  --color-surface-2:        #143034;
-  --color-surface-3:        #1A3A40;
+  /* Surface — darker Clear-teal ramp */
+  --color-bg:               #051315;
+  --color-surface-1:        #0A181A;
+  --color-surface-2:        #0F1E20;
+  --color-surface-3:        #162526;
 
   /* Border */
-  --color-border-subtle:    #1E3A40;
-  --color-border-default:   #284C53;
-  --color-border-strong:    #284C53;
+  --color-border-subtle:    #162526;
+  --color-border-default:   #223233;
+  --color-border-strong:    #456066;
 
-  /* Text */
-  --color-text-primary:     #DCE8E6;
-  --color-text-secondary:   #8AA6A4;
-  --color-text-tertiary:    #54706E;
-  --color-text-faint:       #2A4448;
-  --color-text-inverse:     #011619;
+  /* Text — all tiers pass WCAG AA (4.5:1) on every surface */
+  --color-text-primary:     #EAF1EC;
+  --color-text-secondary:   #C3D3D0;
+  --color-text-tertiary:    #8CADA7;
+  --color-text-faint:       #78948F;
+  --color-text-inverse:     #051315;
 
   /* Brand */
   --color-accent:           #2ECEC0;  /* teal — secondary CTA, links, accents */
   --color-accent-hover:     #45D9CD;
+  --color-accent-active:    #27AFA3;  /* pressed state */
+  --color-accent-disabled:  #2E827C;  /* disabled — AA-Lg, allowed for inactive UI per WCAG */
   --color-accent-subtle:    #1F908A;  /* teal-deep — section labels, code, chips */
-  --color-accent-secondary: #A9F4EA;  /* aqua — primary CTA */
+  --color-accent-muted-bg:  #082223;  /* tinted surface wash — decorative bg */
+  --color-accent-secondary:          #A9F4EA;  /* aqua — primary CTA */
+  --color-accent-secondary-hover:    #B3F5ED;
+  --color-accent-secondary-active:   #90CFC7;
+  --color-accent-secondary-disabled: #65938F;
 
   /* Status */
-  --color-success:          #0DC378;
-  --color-success-subtle:   #0BA96A;
-  --color-success-text:     #2CC988;
+  --color-success:          #85BE00;  /* olive-lime — healthy */
+  --color-success-subtle:   #72A403;
+  --color-success-text:     #94C623;
 
-  --color-warning:          #C99A3F;
-  --color-warning-subtle:   #AB8639;
-  --color-warning-text:     #CCA658;
+  --color-warning:          #F29421;
+  --color-warning-subtle:   #CE811F;
+  --color-warning-text:     #F1A23F;
 
-  --color-danger:           #C8533B;
-  --color-danger-subtle:    #AA4A36;
-  --color-danger-text:      #CB6955;
+  --color-danger:           #FE483B;
+  --color-danger-subtle:    #FC594D;  /* note: mixes toward fg (lighter) to maintain AA on light surfaces */
+  --color-danger-text:      #FB6156;
 
   --color-info:             #69B1E8;  /* running */
-  --color-info-subtle:      #599AC9;
-  --color-info-text:        #7AB9E8;
+  --color-info-subtle:      #5A99C8;
+  --color-info-text:        #7CBBE9;
 
   --color-status-queued:    #8EA0C9;
-  --color-neutral:          #3E5A5E;  /* idle */
-  --color-neutral-text:     #8AA6A4;
+  --color-neutral:          #2E4445;  /* idle fill — status dots, badge backgrounds */
+  --color-neutral-text:     #649497;  /* idle text — passes 4.5:1 on every surface */
 
-  /* Data viz */
-  --color-viz-1:            #D11A6E;  /* magenta */
-  --color-viz-2:            #E5C739;  /* amber */
-  --color-viz-3:            #9988C2;  /* violet */
+  /* Data viz — categorical (8 colors, distinguishable up to 6 colorblind-safe) */
+  --color-viz-categorical-1:  #2ECEC0;  /* teal */
+  --color-viz-categorical-2:  #E5C739;  /* amber */
+  --color-viz-categorical-3:  #D11A6E;  /* magenta — note: 3.68:1 vs bg, fill use only */
+  --color-viz-categorical-4:  #9988C2;  /* violet */
+  --color-viz-categorical-5:  #5DB3F2;  /* sky */
+  --color-viz-categorical-6:  #FF8B6E;  /* coral */
+  --color-viz-categorical-7:  #A8DC4D;  /* lime */
+  --color-viz-categorical-8:  #C794D8;  /* lavender */
+
+  /* Data viz — sequential (7 stops, teal-based for utilization/density heatmaps) */
+  --color-viz-sequential-1:   #0F2A2C;  /* darkest, near-zero */
+  --color-viz-sequential-2:   #194446;
+  --color-viz-sequential-3:   #1F6B66;
+  --color-viz-sequential-4:   #2ECEC0;  /* anchor — brand teal */
+  --color-viz-sequential-5:   #5BD9CC;
+  --color-viz-sequential-6:   #85E3D9;
+  --color-viz-sequential-7:   #A9F4EA;  /* brightest, max value */
+
+  /* Data viz — diverging (5 stops, cool ↔ neutral ↔ warm; distinct from status colors) */
+  --color-viz-diverging-cool-strong:  #4A8DC9;
+  --color-viz-diverging-cool-weak:    #9BBFD9;
+  --color-viz-diverging-neutral:      #7A8888;
+  --color-viz-diverging-warm-weak:    #E8B68A;
+  --color-viz-diverging-warm-strong:  #D67A4A;
 
 
   /* ═══ TYPOGRAPHY — PRIMITIVES ═════════════════════════════════════════ */
 
-  /* Family */
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Size */
+  /* Size — modern scale with clearer step ratios (~1.125-1.4x) */
+  --font-size-11:  11px;  /* kbd, micro hints */
+  --font-size-12:  12px;  /* label, caps */
+  --font-size-14:  14px;  /* body-sm, secondary, code, button */
+  --font-size-16:  16px;  /* body — primary */
+  --font-size-18:  18px;  /* body-lg, narrative */
+  --font-size-20:  20px;  /* heading, narrative-lg */
+  --font-size-24:  24px;  /* subtitle */
+  --font-size-32:  32px;  /* title */
+  --font-size-40:  40px;  /* metric-value, display-sm */
+  --font-size-48:  48px;  /* display (default) */
+  --font-size-56:  56px;  /* metric-display */
+  --font-size-64:  64px;  /* display-lg */
+
+  /* Deprecated — kept for transition only; do not use in new work */
   --font-size-9:   9px;
   --font-size-10:  10px;
-  --font-size-11:  11px;
-  --font-size-12:  12px;
   --font-size-13:  13px;
-  --font-size-14:  14px;
-  --font-size-16:  16px;
   --font-size-22:  22px;
   --font-size-28:  28px;
   --font-size-38:  38px;
-  --font-size-48:  48px;
 
-  /* Weight — note: semibold = 700 (Bold) due to font availability */
   --font-weight-regular:  400;
   --font-weight-medium:   500;
   --font-weight-semibold: 700;
 
-  /* Line height */
   --line-height-tight:    1.1;
   --line-height-normal:   1.5;
   --line-height-relaxed:  1.7;
 
-  /* Letter spacing */
   --letter-spacing-tight-2: -0.025em;
   --letter-spacing-tight-1: -0.01em;
   --letter-spacing-normal:   0;
@@ -110,132 +138,130 @@
 
 
   /* ═══ TYPOGRAPHY — ROLE ALIASES ═══════════════════════════════════════ */
-  /* Each role composes 5 primitives. Use either the aliases below or the
-     .role-* utility classes — both resolve to the same values. */
 
-  /* role/display */
+  /* role/display — md (default page masthead) */
   --role-display-family:         var(--font-family-mono);
   --role-display-size:           var(--font-size-48);
   --role-display-weight:         var(--font-weight-semibold);
   --role-display-line-height:    var(--line-height-tight);
   --role-display-letter-spacing: var(--letter-spacing-tight-2);
 
-  /* role/title */
+  /* role/display-sm — operator dashboard mastheads (denser) */
+  --role-display-sm-family:         var(--font-family-mono);
+  --role-display-sm-size:           var(--font-size-40);
+  --role-display-sm-weight:         var(--font-weight-semibold);
+  --role-display-sm-line-height:    var(--line-height-tight);
+  --role-display-sm-letter-spacing: var(--letter-spacing-tight-2);
+
+  /* role/display-lg — executive report headers, narrative-first screens */
+  --role-display-lg-family:         var(--font-family-mono);
+  --role-display-lg-size:           var(--font-size-64);
+  --role-display-lg-weight:         var(--font-weight-semibold);
+  --role-display-lg-line-height:    var(--line-height-tight);
+  --role-display-lg-letter-spacing: var(--letter-spacing-tight-2);
+
   --role-title-family:           var(--font-family-mono);
-  --role-title-size:             var(--font-size-22);
+  --role-title-size:             var(--font-size-32);
   --role-title-weight:           var(--font-weight-semibold);
   --role-title-line-height:      var(--line-height-tight);
   --role-title-letter-spacing:   var(--letter-spacing-tight-1);
 
-  /* role/heading */
+  /* role/subtitle — fills the gap between body and title */
+  --role-subtitle-family:           var(--font-family-mono);
+  --role-subtitle-size:             var(--font-size-24);
+  --role-subtitle-weight:           var(--font-weight-semibold);
+  --role-subtitle-line-height:      var(--line-height-tight);
+  --role-subtitle-letter-spacing:   var(--letter-spacing-tight-1);
+
   --role-heading-family:         var(--font-family-mono);
-  --role-heading-size:           var(--font-size-14);
+  --role-heading-size:           var(--font-size-20);
   --role-heading-weight:         var(--font-weight-semibold);
   --role-heading-line-height:    var(--line-height-normal);
   --role-heading-letter-spacing: var(--letter-spacing-normal);
 
-  /* role/body */
   --role-body-family:            var(--font-family-mono);
-  --role-body-size:              var(--font-size-13);
+  --role-body-size:              var(--font-size-16);
   --role-body-weight:            var(--font-weight-regular);
   --role-body-line-height:       var(--line-height-normal);
   --role-body-letter-spacing:    var(--letter-spacing-normal);
 
-  /* role/body-sm */
+  /* role/body-lg — Inter, executive-screen body */
+  --role-body-lg-family:            var(--font-family-sans);
+  --role-body-lg-size:              var(--font-size-18);
+  --role-body-lg-weight:            var(--font-weight-regular);
+  --role-body-lg-line-height:       var(--line-height-relaxed);
+  --role-body-lg-letter-spacing:    var(--letter-spacing-normal);
+
   --role-body-sm-family:         var(--font-family-mono);
-  --role-body-sm-size:           var(--font-size-12);
+  --role-body-sm-size:           var(--font-size-14);
   --role-body-sm-weight:         var(--font-weight-regular);
   --role-body-sm-line-height:    var(--line-height-normal);
   --role-body-sm-letter-spacing: var(--letter-spacing-normal);
 
-  /* role/secondary */
   --role-secondary-family:         var(--font-family-mono);
-  --role-secondary-size:           var(--font-size-11);
+  --role-secondary-size:           var(--font-size-14);
   --role-secondary-weight:         var(--font-weight-regular);
   --role-secondary-line-height:    var(--line-height-normal);
   --role-secondary-letter-spacing: var(--letter-spacing-normal);
 
-  /* role/metric-display */
   --role-metric-display-family:         var(--font-family-mono);
-  --role-metric-display-size:           var(--font-size-38);
+  --role-metric-display-size:           var(--font-size-56);
   --role-metric-display-weight:         var(--font-weight-semibold);
   --role-metric-display-line-height:    var(--line-height-tight);
   --role-metric-display-letter-spacing: var(--letter-spacing-tight-2);
 
-  /* role/metric-value */
   --role-metric-value-family:         var(--font-family-mono);
-  --role-metric-value-size:           var(--font-size-28);
+  --role-metric-value-size:           var(--font-size-40);
   --role-metric-value-weight:         var(--font-weight-semibold);
   --role-metric-value-line-height:    var(--line-height-tight);
   --role-metric-value-letter-spacing: var(--letter-spacing-tight-1);
 
-  /* role/label */
   --role-label-family:           var(--font-family-mono);
-  --role-label-size:             var(--font-size-10);
+  --role-label-size:             var(--font-size-12);
   --role-label-weight:           var(--font-weight-medium);
   --role-label-line-height:      var(--line-height-normal);
   --role-label-letter-spacing:   var(--letter-spacing-wide-2);
 
-  /* role/caps */
   --role-caps-family:            var(--font-family-mono);
-  --role-caps-size:              var(--font-size-10);
+  --role-caps-size:              var(--font-size-12);
   --role-caps-weight:            var(--font-weight-medium);
   --role-caps-line-height:       var(--line-height-normal);
   --role-caps-letter-spacing:    var(--letter-spacing-caps);
 
-  /* role/button */
   --role-button-family:          var(--font-family-mono);
-  --role-button-size:            var(--font-size-11);
+  --role-button-size:            var(--font-size-14);
   --role-button-weight:          var(--font-weight-semibold);
   --role-button-line-height:     var(--line-height-tight);
   --role-button-letter-spacing:  var(--letter-spacing-wide-1);
 
-  /* role/code */
   --role-code-family:            var(--font-family-mono);
-  --role-code-size:              var(--font-size-11);
+  --role-code-size:              var(--font-size-14);
   --role-code-weight:            var(--font-weight-regular);
   --role-code-line-height:       var(--line-height-normal);
   --role-code-letter-spacing:    var(--letter-spacing-normal);
 
-  /* role/kbd */
   --role-kbd-family:             var(--font-family-mono);
-  --role-kbd-size:               var(--font-size-9);
+  --role-kbd-size:               var(--font-size-11);
   --role-kbd-weight:             var(--font-weight-medium);
   --role-kbd-line-height:        var(--line-height-tight);
   --role-kbd-letter-spacing:     var(--letter-spacing-normal);
 
-  /* role/narrative — Inter, executive narrative screens only */
   --role-narrative-family:         var(--font-family-sans);
-  --role-narrative-size:           var(--font-size-14);
+  --role-narrative-size:           var(--font-size-18);
   --role-narrative-weight:         var(--font-weight-regular);
   --role-narrative-line-height:    var(--line-height-relaxed);
   --role-narrative-letter-spacing: var(--letter-spacing-normal);
 
-  /* role/narrative-lg — Inter */
   --role-narrative-lg-family:         var(--font-family-sans);
-  --role-narrative-lg-size:           var(--font-size-16);
+  --role-narrative-lg-size:           var(--font-size-20);
   --role-narrative-lg-weight:         var(--font-weight-regular);
   --role-narrative-lg-line-height:    var(--line-height-relaxed);
   --role-narrative-lg-letter-spacing: var(--letter-spacing-normal);
-
-
-  /* ═══ ICON ════════════════════════════════════════════════════════════
-     Iconography uses Lucide (https://lucide.dev) loaded via CDN. Icons are
-     used sparingly — only where they add information text can't carry on
-     its own. Inline with mono text at 14px / stroke-width 2 by default.
-     ════════════════════════════════════════════════════════════════════ */
-  --icon-size:       14px;   /* default — pairs with role-body / role-label */
-  --icon-size-sm:    12px;   /* inline with role-secondary / role-caps */
-  --icon-size-lg:    16px;   /* inline with role-heading / role-narrative */
-  --icon-stroke:     2;      /* lucide stroke-width — never finer than 1.5 */
 }
 
 
 /* ──────────────────────────────────────────────────────────────────────────
  * ROLE UTILITY CLASSES
- * One class per Figma text style. Apply directly:
- *   <div class="role-metric-display">97.4%</div>
- *   <span class="role-label">GPU UTIL</span>
  * ────────────────────────────────────────────────────────────────────────── */
 
 .role-display {
@@ -245,7 +271,34 @@
   line-height:    var(--role-display-line-height);
   letter-spacing: var(--role-display-letter-spacing);
 }
-
+.role-display-sm {
+  font-family:    var(--role-display-sm-family);
+  font-size:      var(--role-display-sm-size);
+  font-weight:    var(--role-display-sm-weight);
+  line-height:    var(--role-display-sm-line-height);
+  letter-spacing: var(--role-display-sm-letter-spacing);
+}
+.role-display-lg {
+  font-family:    var(--role-display-lg-family);
+  font-size:      var(--role-display-lg-size);
+  font-weight:    var(--role-display-lg-weight);
+  line-height:    var(--role-display-lg-line-height);
+  letter-spacing: var(--role-display-lg-letter-spacing);
+}
+.role-subtitle {
+  font-family:    var(--role-subtitle-family);
+  font-size:      var(--role-subtitle-size);
+  font-weight:    var(--role-subtitle-weight);
+  line-height:    var(--role-subtitle-line-height);
+  letter-spacing: var(--role-subtitle-letter-spacing);
+}
+.role-body-lg {
+  font-family:    var(--role-body-lg-family);
+  font-size:      var(--role-body-lg-size);
+  font-weight:    var(--role-body-lg-weight);
+  line-height:    var(--role-body-lg-line-height);
+  letter-spacing: var(--role-body-lg-letter-spacing);
+}
 .role-title {
   font-family:    var(--role-title-family);
   font-size:      var(--role-title-size);
@@ -253,7 +306,6 @@
   line-height:    var(--role-title-line-height);
   letter-spacing: var(--role-title-letter-spacing);
 }
-
 .role-heading {
   font-family:    var(--role-heading-family);
   font-size:      var(--role-heading-size);
@@ -261,7 +313,6 @@
   line-height:    var(--role-heading-line-height);
   letter-spacing: var(--role-heading-letter-spacing);
 }
-
 .role-body {
   font-family:    var(--role-body-family);
   font-size:      var(--role-body-size);
@@ -269,7 +320,6 @@
   line-height:    var(--role-body-line-height);
   letter-spacing: var(--role-body-letter-spacing);
 }
-
 .role-body-sm {
   font-family:    var(--role-body-sm-family);
   font-size:      var(--role-body-sm-size);
@@ -277,7 +327,6 @@
   line-height:    var(--role-body-sm-line-height);
   letter-spacing: var(--role-body-sm-letter-spacing);
 }
-
 .role-secondary {
   font-family:    var(--role-secondary-family);
   font-size:      var(--role-secondary-size);
@@ -285,8 +334,6 @@
   line-height:    var(--role-secondary-line-height);
   letter-spacing: var(--role-secondary-letter-spacing);
 }
-
-/* Tabular numerals are intent-bearing for metric tokens — bake them in. */
 .role-metric-display {
   font-family:    var(--role-metric-display-family);
   font-size:      var(--role-metric-display-size);
@@ -295,7 +342,6 @@
   letter-spacing: var(--role-metric-display-letter-spacing);
   font-variant-numeric: tabular-nums;
 }
-
 .role-metric-value {
   font-family:    var(--role-metric-value-family);
   font-size:      var(--role-metric-value-size);
@@ -304,10 +350,6 @@
   letter-spacing: var(--role-metric-value-letter-spacing);
   font-variant-numeric: tabular-nums;
 }
-
-/* Label, caps, and button are nearly always uppercase in the system. Bake it
-   in here so designers don't repeat `text-transform: uppercase` everywhere.
-   Override on the element if you need mixed case. */
 .role-label {
   font-family:    var(--role-label-family);
   font-size:      var(--role-label-size);
@@ -316,7 +358,6 @@
   letter-spacing: var(--role-label-letter-spacing);
   text-transform: uppercase;
 }
-
 .role-caps {
   font-family:    var(--role-caps-family);
   font-size:      var(--role-caps-size);
@@ -325,7 +366,6 @@
   letter-spacing: var(--role-caps-letter-spacing);
   text-transform: uppercase;
 }
-
 .role-button {
   font-family:    var(--role-button-family);
   font-size:      var(--role-button-size);
@@ -334,7 +374,6 @@
   letter-spacing: var(--role-button-letter-spacing);
   text-transform: uppercase;
 }
-
 .role-code {
   font-family:    var(--role-code-family);
   font-size:      var(--role-code-size);
@@ -342,7 +381,6 @@
   line-height:    var(--role-code-line-height);
   letter-spacing: var(--role-code-letter-spacing);
 }
-
 .role-kbd {
   font-family:    var(--role-kbd-family);
   font-size:      var(--role-kbd-size);
@@ -350,7 +388,6 @@
   line-height:    var(--role-kbd-line-height);
   letter-spacing: var(--role-kbd-letter-spacing);
 }
-
 .role-narrative {
   font-family:    var(--role-narrative-family);
   font-size:      var(--role-narrative-size);
@@ -358,7 +395,6 @@
   line-height:    var(--role-narrative-line-height);
   letter-spacing: var(--role-narrative-letter-spacing);
 }
-
 .role-narrative-lg {
   font-family:    var(--role-narrative-lg-family);
   font-size:      var(--role-narrative-lg-size);
@@ -391,42 +427,3 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-variant-ligatures: none;
 }
-
-
-/* ──────────────────────────────────────────────────────────────────────────
- * ICONS — Lucide via CDN
- *
- * Load once per page:
- *   <script src="https://unpkg.com/lucide@latest"></script>
- *   <script>lucide.createIcons();</script>
- *
- * Use sparsely. The system is text-led — reach for an icon only when it
- * carries information the surrounding text cannot (status indicators,
- * directional affordances, brand sigils). See SKILL.md → Icons.
- *
- * Inline:
- *   <i data-lucide="terminal"></i>            ← default 14px
- *   <i data-lucide="terminal" class="icon-sm"></i>
- *   <i data-lucide="terminal" class="icon-lg"></i>
- * ────────────────────────────────────────────────────────────────────────── */
-
-[data-lucide],
-.lucide {
-  width:           var(--icon-size);
-  height:          var(--icon-size);
-  stroke-width:    var(--icon-stroke);
-  vertical-align:  -0.15em;
-  flex-shrink:     0;
-  display:         inline-block;
-}
-
-.icon-sm { width: var(--icon-size-sm); height: var(--icon-size-sm); }
-.icon-lg { width: var(--icon-size-lg); height: var(--icon-size-lg); }
-
-/* Brand-tinted icons inherit currentColor — set color on the parent to
-   recolor. Reach for these accent classes when the icon is itself the
-   carrier of meaning (status, brand presence). */
-.icon-accent  { color: var(--color-accent); }
-.icon-aqua    { color: var(--color-accent-secondary); }
-.icon-subtle  { color: var(--color-accent-subtle); }
-.icon-faint   { color: var(--color-text-tertiary); }
