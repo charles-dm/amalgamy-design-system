@@ -257,6 +257,17 @@
   --role-narrative-lg-weight:         var(--font-weight-regular);
   --role-narrative-lg-line-height:    var(--line-height-relaxed);
   --role-narrative-lg-letter-spacing: var(--letter-spacing-normal);
+
+
+  /* ═══ ICON ════════════════════════════════════════════════════════════
+     Iconography uses Lucide (https://lucide.dev) loaded via CDN. Icons are
+     used sparingly — only where they add information text can't carry on
+     its own. Inline with mono text at 14px / stroke-width 2 by default.
+     ════════════════════════════════════════════════════════════════════ */
+  --icon-size:       14px;   /* default — pairs with body-sm / button / code (14px) */
+  --icon-size-sm:    12px;   /* inline with label / caps (12px) */
+  --icon-size-lg:    16px;   /* inline with body (16px) */
+  --icon-stroke:     2;      /* lucide stroke-width — never finer than 1.5 */
 }
 
 
@@ -427,3 +438,42 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-variant-ligatures: none;
 }
+
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * ICONS — Lucide via CDN
+ *
+ * Load once per page:
+ *   <script src="https://unpkg.com/lucide@latest"></script>
+ *   <script>lucide.createIcons();</script>
+ *
+ * Use sparsely. The system is text-led — reach for an icon only when it
+ * carries information the surrounding text cannot (status indicators,
+ * directional affordances, brand sigils). See SKILL.md → Icons.
+ *
+ * Inline:
+ *   <i data-lucide="terminal"></i>            ← default 14px
+ *   <i data-lucide="terminal" class="icon-sm"></i>
+ *   <i data-lucide="terminal" class="icon-lg"></i>
+ * ────────────────────────────────────────────────────────────────────────── */
+
+[data-lucide],
+.lucide {
+  width:           var(--icon-size);
+  height:          var(--icon-size);
+  stroke-width:    var(--icon-stroke);
+  vertical-align:  -0.15em;
+  flex-shrink:     0;
+  display:         inline-block;
+}
+
+.icon-sm { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.icon-lg { width: var(--icon-size-lg); height: var(--icon-size-lg); }
+
+/* Brand-tinted icons inherit currentColor — set color on the parent to
+   recolor. Reach for these accent classes when the icon is itself the
+   carrier of meaning (status, brand presence). */
+.icon-accent  { color: var(--color-accent); }
+.icon-aqua    { color: var(--color-accent-secondary); }
+.icon-subtle  { color: var(--color-accent-subtle); }
+.icon-faint   { color: var(--color-text-tertiary); }
