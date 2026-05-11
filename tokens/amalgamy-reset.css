@@ -365,6 +365,17 @@
   --topbar-height:             52px;
   --content-max-width:       1280px;
 
+
+  /* ----------------------------------------------------------
+     ICONS — Phosphor via CDN
+     Default sizes pair with the type scale; color inherits from
+     parent via currentColor. See components/icons-SKILL.md.
+     ---------------------------------------------------------- */
+  --icon-size:        14px;   /* default — pairs with type-body-sm */
+  --icon-size-sm:     12px;   /* with type-heading-xs / type-caps */
+  --icon-size-lg:     16px;   /* with type-body */
+  --icon-size-xl:     20px;   /* with type-heading-group */
+
 }
 
 
@@ -957,6 +968,51 @@ hr {
     scroll-behavior:           auto !important;
   }
 }
+
+
+/* ============================================================
+   09 — ICONS — Phosphor via CDN
+
+   Load once per page:
+     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+   Inline (default regular weight):
+     <i class="ph ph-terminal"></i>
+     <i class="ph-bold ph-terminal"></i>
+     <i class="ph-fill ph-circle"></i>
+     <i class="ph-duotone ph-warning"></i>
+
+   Use sparsely. Icons earn their place when they carry information
+   text alone cannot — status indicators, directional affordances,
+   brand sigils. See components/icons-SKILL.md.
+
+   Sizing inherits font-size; color inherits currentColor.
+   Set color on the parent or use the .icon-* accent classes below.
+   ============================================================ */
+
+.ph,
+[class^="ph-"],
+[class*=" ph-"] {
+  font-size:       var(--icon-size);
+  vertical-align:  -0.15em;
+  flex-shrink:     0;
+  line-height:     1;
+}
+
+.icon-sm  { font-size: var(--icon-size-sm); }
+.icon-lg  { font-size: var(--icon-size-lg); }
+.icon-xl  { font-size: var(--icon-size-xl); }
+
+/* Accent tints — apply on the icon element itself, or set color on
+   the parent and the icon will inherit. */
+.icon-accent  { color: var(--color-accent); }
+.icon-aqua    { color: var(--color-aqua); }
+.icon-subtle  { color: var(--color-accent-subtle); }
+.icon-faint   { color: var(--color-text-tertiary); }
+.icon-success { color: var(--color-success); }
+.icon-warning { color: var(--color-warning); }
+.icon-danger  { color: var(--color-danger); }
+.icon-info    { color: var(--color-info); }
 
 
 /* ============================================================

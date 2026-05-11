@@ -286,6 +286,30 @@ Rule: nested elements always use a smaller radius than their parent.
 
 Animate only `transform` and `opacity`. Never `width`, `height`, `top`, `left`.
 
+### Icon tokens
+
+Iconography is **Phosphor** ([phosphoricons.com](https://phosphoricons.com)) loaded via CDN. No other icon library — never mix with Lucide, Heroicons, Feather, or system glyphs.
+
+```
+--icon-size      14px   default — pairs with type-body-sm
+--icon-size-sm   12px   with type-heading-xs / type-caps
+--icon-size-lg   16px   with type-body
+--icon-size-xl   20px   with type-heading-group, empty-state illustrations
+```
+
+```html
+<!-- Load once per page -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Inline -->
+<i class="ph ph-terminal"></i>           regular (default)
+<i class="ph-bold ph-terminal"></i>      bold strokes — active states
+<i class="ph-fill ph-circle"></i>        filled — status badges
+<i class="ph-duotone ph-warning"></i>    duotone — decorative only
+```
+
+Icons inherit `font-size` and `currentColor` from parent. Set color on the parent or use `.icon-accent` / `.icon-aqua` / `.icon-subtle` / `.icon-faint` / `.icon-success` / `.icon-warning` / `.icon-danger` / `.icon-info`. Use icons sparsely — they earn their place when they carry information the surrounding text cannot. See `components/icons-SKILL.md` for the full guide.
+
 ---
 
 ## 3. Layout templates
@@ -538,13 +562,14 @@ Do not load all component files — only the ones the current session requires.
 
 | File | Load when building... |
 |---|---|
-| `components/component-button.md` | Any button — CTA, action, toolbar, icon-only |
-| `components/component-badge-tag.md` | Status indicators, category labels, filter chips |
-| `components/component-table.md` | Any list of comparable items — fleet, job queue, audit log |
-| `components/component-input-form.md` | Any form — job submission, policy config, search |
-| `components/component-card.md` | Metric cards, detail panels, modals, alert boxes |
-| `components/component-nav.md` | Sidebar, topbar, tabs, breadcrumbs, app shell |
-| `components/component-feedback.md` | Inline alerts, toasts, tooltips, empty states |
+| `components/button-SKILL.md` | Any button — CTA, action, toolbar, icon-only |
+| `components/badge-tag-SKILL.md` | Status indicators, category labels, filter chips |
+| `components/table-SKILL.md` | Any list of comparable items — fleet, job queue, audit log |
+| `components/input-form-SKILL.md` | Any form — job submission, policy config, search |
+| `components/card-SKILL.md` | Metric cards, detail panels, modals, alert boxes |
+| `components/nav-SKILL.md` | Sidebar, topbar, tabs, breadcrumbs, app shell |
+| `components/feedback-SKILL.md` | Inline alerts, toasts, tooltips, empty states |
+| `components/icons-SKILL.md` | Any icon use — Phosphor via CDN, size + weight conventions |
 
 ### Component file anatomy (what each file contains)
 Each component file has:
@@ -564,13 +589,14 @@ amalgamy/
   skill/
     SKILL.md
   components/
-    component-button.md
-    component-badge-tag.md
-    component-table.md
-    component-input-form.md
-    component-card.md
-    component-nav.md
-    component-feedback.md
+    button-SKILL.md
+    badge-tag-SKILL.md
+    table-SKILL.md
+    input-form-SKILL.md
+    card-SKILL.md
+    nav-SKILL.md
+    feedback-SKILL.md
+    icons-SKILL.md            (Phosphor — load when icons appear on a screen)
 ```
 
 ---
