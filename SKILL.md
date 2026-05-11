@@ -1,187 +1,633 @@
 ---
-name: amalgamy-sovereign-terminal
-description: Foundation token + visual-language skill for Amalgamy LaunchHPC prototypes. Style direction is Sovereign Terminal — a dark, monospace-led, terminal-derived UI for sovereign HPC. Use this skill BEFORE any component skill whenever building any UI for Amalgamy. It defines the token vocabulary (color, typography roles, status palette, surface elevation), the visual rules that tokens alone cannot express (when to use which surface level, primary vs. secondary accent, when Inter is allowed), and the rendering invariants (tabular numerals on metrics, uppercase on labels/caps/buttons, hard-edged borders never shadows). Also use whenever the user wants to add a new mood (Terminal/Phosphor/Arctic/Vault), tune density (compact/standard/spacious), or adjust atmosphere (clinical → CRT bloom).
+name: amalgamy-design-system
+description: >
+  Design system skill for Amalgamy / LaunchHPC prototypes and production HTML.
+  Governs all UI generation — component selection, layout composition,
+  token usage, and interaction patterns. Load at the start of every
+  prototype session. Prevents drift by anchoring decisions to
+  explicit rationale, not just component specs.
+
+  v0.2 — May 2026
+  Typeface committed: Geist + Geist Mono
+  Typography reconciled: 28 styles, all leading/tracking standardized
+  Brand palette complete: teal surfaces, status system, data viz
+  Workflow nodes added: LaunchHPC job lifecycle patterns
 ---
 
-# Amalgamy — Sovereign Terminal
+# Amalgamy Design System — Claude Skill
+## Version 0.2 — May 2026
 
-Foundation skill for every Amalgamy LaunchHPC prototype. Defines tokens, visual rules, and rendering invariants. Component skills depend on this; load this **first**, always.
+## How to use this skill
 
-## Core Principle
+Read this file completely before generating any HTML, CSS, or layout.
+When a prompt asks you to build a screen, flow, or component:
 
-**Sovereign Terminal is a terminal-derived information system, not a dashboard.** Hard edges, no rounded corners, no drop shadows, monospace everywhere except executive narrative. Borders and surface stepping carry the elevation work that shadows do in lighter design systems. Information density is high; chrome is low.
+1. Identify the **user role** (operator, researcher, executive)
+2. Identify the **screen type** (dashboard, list+detail, form, settings)
+3. Select the correct **layout template** from Section 3
+4. Select components using the **rationale rules** in Section 4
+5. Reference only the **token names** defined in Section 2 — never hardcode values
+6. Apply the **interaction rules** in Section 5
 
-Components never use hardcoded values. Every color, size, weight, and spacing reference resolves to a CSS variable defined in `tokens/amalgamy-reset.css`. This is what makes mood-swapping (Terminal → Phosphor → Arctic → Vault) and density-swapping (compact/standard/spacious) work — overrides cascade because everything downstream is variables.
+If something is not defined here, default to the most structurally
+conservative option and add a comment flagging it for review.
+Do not invent visual treatments. Do not hardcode colors, sizes, or fonts.
 
-## Token File
+---
 
-`tokens/amalgamy-reset.css` is the single source of truth and matches the Figma variable collections name-for-name. Always include it (or its contents) at the top of any artifact. Tokens come in two layers:
+## 1. Product and persona context
 
-- **Primitives** — `--color-bg`, `--font-size-16`, `--font-weight-semibold`, `--letter-spacing-caps` etc. Numeric or descriptive, not semantic.
-- **Role aliases + utility classes** — `.role-metric-display`, `.role-label`, `.role-caps` etc. Each composes 5 primitives (family, size, weight, line-height, letter-spacing) and matches one Figma text style 1:1.
+### What Amalgamy is
 
-**Prefer role utility classes over re-composing primitives.** They mirror Figma, they're shorter, and they bake in the right invariants (tabular nums on metrics, uppercase on labels/caps/buttons).
+LaunchHPC is an intent-based workload scheduling platform for heterogeneous
+compute — GPUs, CPUs, edge devices — with late-binding hardware allocation.
+Users describe what they want to accomplish; the system decides how to run it.
 
-## Visual Rules (the part tokens cannot express)
+**Core technical concepts every UI decision must reflect:**
 
-These are decisions that hold across every Amalgamy prototype. Treat them as invariants.
+- **Late binding** — hardware not assigned until the exact moment data is
+  local and compute is ready. Slurm locks all GPUs at submission;
+  LaunchHPC defers. Any UI that shows "hardware assigned" before this moment
+  is misleading.
 
-### Surface elevation: stepping, not shadowing
+- **Scatter-gather** — computation broken into parallel shards, sent to
+  multiple nodes simultaneously, gathered when all complete. The researcher
+  sees one job; the system runs many. Visualization must show parallelism.
 
-Surfaces stack as numeric steps, not as semantic roles. Higher number = closer to the eye.
+- **Data gravity** — large datasets stay where they are; compute moves to
+  data. Data locality drives hardware selection. Never imply data moves
+  freely or cheaply.
 
-| Token | Use |
-|-------|-----|
-| `--color-bg` | Page background. Also used for "recessed" containers (table headers, code chips, log frames) where the surface should read as *behind* the surrounding panel. |
-| `--color-surface-1` | The default panel surface — most cards, tables, status rows, log bodies. |
-| `--color-surface-2` | Nested elevation — hover-lifted variants, selected items, modal surfaces over `surface-1`. |
-| `--color-surface-3` | Top-of-stack — popovers, dropdowns, the active region of an interaction. Also the row hover state on tables. |
+- **Slurm plugin model** — LaunchHPC initially runs invisibly under Slurm
+  at Texas Tech. Researchers keep using srun/sbatch. The Slurm nudge
+  (CLI text injection) is the primary researcher touchpoint.
 
-**Never use box-shadow for elevation.** Stepping plus a 1px border (`--color-border-default` or `--color-border-strong`) does the work. The only acceptable use of `box-shadow` is the inset-highlight on primary buttons (a 1px inner light line that simulates a metallic edge).
+- **Decision Ledger** — git-backed audit record of every scheduling decision.
+  Serves three audiences with different reference ranges. Every decision
+  is auditable. The UI must surface this without overwhelming.
 
-### Border philosophy: present, but quiet
+- **Rules engine** — four-level policy hierarchy: global → tenant → team → user.
+  Operator defines resource pools. Policy overrides are graceful (give
+  highest available and explain why). Always show what policy was applied.
 
-Every panel, table, log, status row, and metric grid has a `1px solid var(--color-border-strong)` outer border. Cells inside grids divide with `1px solid var(--color-border-strong)`. Internal subdivisions (between table rows, between policy header and body) often switch to `1px dashed var(--color-border-default)` — dashed dividers signal *"these are sections of the same thing"*, solid borders signal *"these are separate things"*.
+### The three personas
 
-### Two accents, two jobs
+**Cluster Operator**
+- Mental state: scanning for problems, managing incidents, Monday-morning triage
+- Context: desktop, 1440px, multiple tabs open, high information density expected
+- Goal: know fleet health at a glance, drill into problems fast
+- Key screens: Fleet overview, node detail, job queue, alert feed, tenant dashboard
+- What they fear: missing a critical failure buried in noise
+- Design principle: signal over decoration — every element earns its place
+- Density: comfortable with table/cell-md at 36px rows, expects no whitespace padding
 
-This system has **two** brand accents and they are **not interchangeable.**
+**HPC Researcher**
+- Mental state: focused, task-oriented, terminal-native, skeptical of abstraction
+- Context: desktop or laptop, terminal running alongside the UI
+- Tools: vi/emacs, Jupyter, srun/sbatch, sacct, tail -f
+- Goal: submit a job, understand its status, diagnose failures without guessing
+- Key screens: Job submission, job status, job detail, output logs, ledger entry
+- What they fear: not knowing why something is slow or failed; system hiding decisions
+- Design principle: progressive disclosure — enough to diagnose, not a manual
+- Trust is earned incrementally. Never force new UI on them. The Slurm nudge
+  is the onboarding mechanic — a single line in CLI output, not a modal.
 
-- **`--color-accent-secondary` (aqua, `#A9F4EA`)** — primary CTAs only. The single most important button on a screen. Light, almost overexposed against the dark background. Pair with `--color-text-inverse` (the deep teal-black) for text inside the button.
-- **`--color-accent` (teal, `#2ECEC0`)** — secondary CTAs, links, the active dot in the status bar, the cursor glyph in the masthead, the section-spine on policy cards (a 2px left border), inline `<code>` tokens. Brand-present everywhere.
-- **`--color-accent-subtle` (teal-deep, `#1F908A`)** — section labels, table column headers, ID chips, key-value labels. *Brand-tinted but quiet.* Anywhere you want "this is structurally important" without shouting.
+**Executive / Buyer**
+- Mental state: occasional, preparing for a board meeting or review call
+- Context: laptop, possibly tablet, not a daily user
+- Goal: utilization trending up, ROI provable, ESG metrics visible
+- Key screens: Utilization summary, cost efficiency, trend charts, yield report
+- What they fear: being asked a question they can't answer in a meeting
+- Design principle: narrative over data — tell the story, not every number
+- Use body/narrative text, large metrics, generous whitespace
 
-Mistake to avoid: using teal for a primary CTA. The aqua/teal pair is a hierarchy, not a palette. If a screen has a primary action, that action is aqua. Everything else uses teal.
+---
 
-### Status vocabulary
+## 2. Token reference
 
-Status colors carry product-specific meaning in HPC contexts. Use them by intent, not by hue.
+All generated CSS must use these token names. Never hardcode hex, px, or
+font names in component or layout styles. Values live in `amalgamy-reset.css`.
 
-| Token | Means |
-|-------|-------|
-| `--color-info` (sky blue) | **running** — actively executing |
-| `--color-success` (sea green) | **healthy / done / ok** — completed or stable |
-| `--color-warning` (warm gold) | **warn / throttled / degraded** — running but compromised |
-| `--color-danger` (brick) | **critical / failed** — broken or stopped abnormally |
-| `--color-neutral` (cold neutral) | **idle** — present but not doing anything |
-| `--color-status-queued` (dusty periwinkle) | **queued** — waiting for resources |
+### Color tokens
 
-For text on these colors at small sizes, prefer the `-text` variants (`--color-success-text`, `--color-warning-text`, etc.) — they're tuned for legibility on the dark surface and avoid the slight neon cast of the pure status hues.
+```
+Background hierarchy (darkest to lightest):
+  --color-bg              Page canvas (#051315)
+  --color-surface-1       Cards, sidebar (#0A181A)
+  --color-surface-2       Table rows, hover bg (#0F1E20)
+  --color-surface-3       Pressed states, code bg (#162526)
+  --color-surface-code    Code blocks, terminal (#0D1A17)
 
-A status indicator is almost always a **6×6px or 8×8px square** of the status color, never a circle. Squares match the hard-edged language; circles read as foreign.
+Border scale (teal-tinted white at opacity):
+  --color-border-subtle   Dividers, table rows (#162526)
+  --color-border-default  Card edges, inputs (#223233)
+  --color-border-strong   Focus rings, active (#456066)
+  --color-border-kbd      Keyboard shortcut container (18%)
 
-### Typography: monospace by default, Inter by exception
+Text hierarchy (WCAG AA on surface/1):
+  --color-text-primary    Headings, labels, primary content
+  --color-text-secondary  Supporting text, descriptions
+  --color-text-tertiary   Timestamps, metadata, labels
+  --color-text-faint      Decorative only — do not use for readable content
+  --color-text-inverse    Text on teal or light backgrounds
 
-JetBrains Mono is the system font. It runs in display sizes (56px `role-metric-display`, 48px `role-display`), title and subtitle sizes, body (16px), captions, and labels. **The legitimate uses of Inter are `role-narrative` (18px), `role-narrative-lg` (20px), and `role-body-lg` (18px executive body)** — reserved for executive narrative screens with long-form prose that would be punishing in mono. Never mix Inter and Mono on the same line.
+Brand (Amalgamy teal):
+  --color-accent          Primary actions, links, active nav (#2ECEC0)
+  --color-accent-subtle   Teal background fill (12% opacity)
+  --color-accent-hover    Hover state (#45D9CB)
+  --color-accent-active   Pressed state (#27B5A3)
+  --color-accent-muted-bg Deep teal bg for selected states (#081f20)
+  --color-aqua            Secondary accent (#A9F4EA)
+  --color-aqua-hover      (#B3F5ED)
+  --color-aqua-active     (#90CFC7)
+  --color-aqua-disabled   (#65938F)
 
-### Tabular numerals: always, on metrics
+Semantic status (each: default · subtle · text · bg):
+  --color-success / --color-success-subtle / --color-success-text / --color-success-bg
+  --color-warning / --color-warning-subtle / --color-warning-text / --color-warning-bg
+  --color-danger  / --color-danger-subtle  / --color-danger-text  / --color-danger-bg
+  --color-info    / --color-info-subtle    / --color-info-text    / --color-info-bg
+  --color-queued          Queued job state (#8EA0C9)
+  --color-queued-bg       (#1A2830)
+  --color-idle-fill       Idle node fill (#2E4445)
+  --color-idle-text       (#649497)
+  --color-idle-bg         (#0B1A1C)
+  --color-danger-hover    (#FE5D52)
+  --color-danger-active   (#E63B2F)
+  --color-neutral / --color-neutral-text
 
-Any numeric token in a metric, status count, table cell, log timestamp, or anywhere numbers might align vertically gets `font-variant-numeric: tabular-nums`. The `role-metric-display` and `role-metric-value` utilities bake this in. If you compose a custom numeric style, add it explicitly.
-
-### Uppercase: labels, caps, buttons
-
-`role-label`, `role-caps`, and `role-button` ship with `text-transform: uppercase` baked in. The wide tracking on `--letter-spacing-caps` (0.16em) and `--letter-spacing-wide-2` (0.10em) is calibrated for uppercase rendering — do not apply it to mixed case.
-
-### Icons: Lucide, via CDN, sparsely
-
-Iconography is **[Lucide](https://lucide.dev)** loaded from a CDN — never as a font, never as a custom set. Add this once per page:
-
-```html
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>lucide.createIcons();</script>
+Data viz palette (use in order, always label):
+  --color-dv-1  teal    primary series
+  --color-dv-2  amber   secondary
+  --color-dv-3  magenta tertiary
+  --color-dv-4  violet
+  --color-dv-5  sky
+  --color-dv-6  coral
+  --color-dv-7  lime
+  --color-dv-8  lavender
+  --color-dv-seq-1 → seq-7   Sequential teal ramp (dark → light)
+  --color-dv-div-*            Diverging cool/neutral/warm (5 tokens)
 ```
 
-Then inline icons with `<i data-lucide="terminal"></i>`. Defaults come from the tokens file: 14px, stroke-width 2, vertical-aligned with body text. Three sizes: default (14px), `.icon-sm` (12px, with caps/labels), `.icon-lg` (16px, with body/headings). Recolor with `.icon-accent`, `.icon-aqua`, `.icon-subtle`, `.icon-faint` — or set `color` on the parent (Lucide icons inherit `currentColor`).
+### Spacing tokens (8pt base grid)
 
-**Use icons only where they carry information text alone cannot.** That means: brand sigils, scannable status indicators, directional affordances on buttons, file/format markers. It does **not** mean: decorating headings, prefixing every nav item, illustrating the obvious. The system is text-led — most prototypes ship with fewer than ten icons total. If a Sovereign Terminal screen looks icon-heavy, it has stopped being Sovereign Terminal.
+```
+--space-1    4px    icon gaps, tight inline spacing
+--space-2    8px    button px, badge pad, kbd pad
+--space-3   12px    form field gap, card inner gap
+--space-4   16px    default content padding
+--space-5   24px    card padding, grid gutter
+--space-6   32px    panel padding, between major sections
+--space-7   48px    large layout gaps
+--space-8   64px    page margin, hero padding
+```
 
-Stroke weight is a hard floor: never go below 1.5. Lucide ships at 2, which is correct for our scale; thinner strokes go invisible against the dark surface.
+Rule: internal spacing ≤ external spacing. Never mix density levels in a table.
+Never use three density levels on the same screen.
 
-### Density and atmosphere are global controls
+### Typography tokens
 
-Two top-level dials drive the whole system:
+```
+Font families (committed May 2026):
+  --font-sans    'Geist', 'Inter', system-ui
+  --font-mono    'Geist Mono', 'JetBrains Mono', 'SF Mono', monospace
 
-- **Density** (`data-density="compact|standard|spacious"`) rescales padding, gaps, and type via a multiplier. Always honor it — never hardcode pixel padding outside the multiplier system.
-- **Atmosphere** (`--atm: 0..1` on body) controls the CRT-bloom layer: grid overlay opacity, scanline visibility, and accent glow. `0` is clinical, `1` is full phosphor terminal. Most production prototypes sit between `0.2` and `0.4`.
+Font sizes (real px — matched to Figma text styles):
+  Micro:
+    --text-9    9px    table/caps-sm
+    --text-10  10px    table/caps-md, table/cell-sm
+    --text-11  11px    ui/kbd, table/caps-lg, table/cell-md, ui/code-sm
+  Small:
+    --text-12  12px    body/xs, ui/label, ui/caps, heading/xs
+    --text-13  13px    table/cell-lg
+  Body:
+    --text-14  14px    body/sm, ui/code, ui/button, heading/group
+    --text-16  16px    body/md, heading/card-sm
+    --text-18  18px    body/narrative, heading/card
+  Heading:
+    --text-20  20px    heading/section, body/narrative-lg
+    --text-24  24px    heading/subtitle
+    --text-32  32px    heading/title
+  Display:
+    --text-40  40px    display/sm OR metric/value (see disambiguation below)
+    --text-48  48px    display/md
+    --text-56  56px    metric/display
+    --text-64  64px    display/lg
+  Legacy aliases: --text-xs → --text-11, --text-sm → --text-12,
+    --text-base → --text-14, --text-md → --text-16, --text-lg → --text-18
 
-Components should not fight these. If a component is rendered with `--atm: 0.4` it should automatically pick up scanlines and glow without the component having to know.
+Font weights (CORRECTED from v0.1):
+  --weight-regular:   400
+  --weight-medium:    500
+  --weight-semibold:  600   ← was incorrectly 700 in v0.1
+  --weight-bold:      700   ← NEW — table caps, button labels
 
-## Token Reference (quick)
+Line heights (unitless — no px):
+  --leading-tight    1.10   display, metric
+  --leading-140      1.40   table/cell-sm
+  --leading-145      1.45   table/cell-md
+  --leading-normal   1.50   body, headings, UI
+  --leading-138      1.38   table/cell-lg
+  --leading-relaxed  1.70   narrative, code blocks
 
-### Surface
-- `--color-bg` `#051315` — page, recessed
-- `--color-surface-1` `#0A181A` — default panel
-- `--color-surface-2` `#0F1E20` — elevated/nested
-- `--color-surface-3` `#162526` — top-of-stack, hover
+Letter spacing (named by role):
+  --tracking-tightest  -0.025em   display
+  --tracking-tight     -0.01em    heading/title, subtitle
+  --tracking-normal     0
+  --tracking-wide      +0.04em    ui/button
+  --tracking-caps-sm   +0.08em    ui/label
+  --tracking-caps-md   +0.10em    table/caps-md
+  --tracking-caps-lg   +0.06em    table/caps-lg
+  --tracking-caps-xl   +0.16em    ui/caps
 
-### Border
-- `--color-border-subtle` `#162526` — internal/dashed dividers
-- `--color-border-default` `#223233` — standard
-- `--color-border-strong` `#456066` — outer panel borders, visibly distinct from default
+TYPE DISAMBIGUATION — critical rules:
+  40px editorial text  → .type-display-sm  (Geist Regular)
+  40px data value      → .type-metric-value (Geist Mono Medium)
+  18px heading         → .type-heading-card (Geist Medium, 150% lh)
+  18px body text       → .type-body-narrative (Geist Regular, 170% lh)
+  16px heading         → .type-heading-card-sm (Geist Medium)
+  16px body text       → .type-body-md (Geist Regular)
+  14px heading         → .type-heading-group (Geist Medium)
+  14px body text       → .type-body-sm (Geist Regular)
+  12px label/input     → .type-heading-xs (Geist Medium) — NEW
+  12px body text       → .type-body-xs (Geist Regular)
+  De-emphasized body   → .type-body-sm + color: var(--color-text-secondary)
+                         NOT a separate style — body/secondary was removed
 
-### Text — all tiers pass WCAG AA (4.5:1) on every surface
-- `--color-text-primary` `#EAF1EC` — body, headings
-- `--color-text-secondary` `#C3D3D0` — meta, captions on emphasized rows
-- `--color-text-tertiary` `#8CADA7` — timestamps, faint meta
-- `--color-text-faint` `#78948F` — decorative, lowest legible tier
-- `--color-text-inverse` `#051315` — text on aqua/teal buttons
+Text styles removed in v0.2 (do not use):
+  body/secondary — merged into body/sm (was identical)
+  body/lg        — merged into body/narrative (was identical)
+```
 
-### Brand — full state ramp on teal, interactive states on aqua
-- `--color-accent-secondary` `#A9F4EA` — **primary CTAs only** · `-hover` `#B3F5ED` · `-active` `#90CFC7` · `-disabled` `#65938F`
-- `--color-accent` `#2ECEC0` — secondary CTAs, links, brand presence · `-hover` `#45D9CD` · `-active` `#27AFA3` · `-disabled` `#2E827C`
-- `--color-accent-subtle` `#1F908A` — labels, IDs, code (teal-deep)
-- `--color-accent-muted-bg` `#082223` — tinted surface wash for decorative bg
+### Radius tokens
 
-### Status
-- `--color-info` `#69B1E8` (running) · `--color-success` `#85BE00` (healthy/done — olive-lime) · `--color-warning` `#F29421` (warn/throttled) · `--color-danger` `#FE483B` (critical/failed) · `--color-status-queued` `#8EA0C9` (queued)
-- `--color-neutral` `#2E4445` — idle **fill** (status dots, badge backgrounds). Text uses `--color-neutral-text` `#649497` instead so it passes contrast.
-- `-text` variants (`--color-success-text`, `--color-warning-text`, `--color-danger-text`, `--color-info-text`, `--color-neutral-text`) are tuned for small-size legibility on dark.
+```
+--radius-sm     3px     kbd, badge, tooltip
+--radius-md     6px     input, button, chip
+--radius-lg     8px     card, modal, panel
+--radius-xl    12px     drawer, large card
+--radius-full  9999px   pill, avatar, status dot
+```
 
-### Data viz — three structured paradigms
-- **Categorical** (8 colors, first 6 colorblind-distinguishable): `--color-viz-categorical-1..8`. Use 1 for first series, 2 for second, etc. Don't randomize.
-- **Sequential** (7 stops, teal-anchored): `--color-viz-sequential-1..7` for heatmaps, density plots, utilization gradients.
-- **Diverging** (5 stops): `cool-strong / cool-weak / neutral / warm-weak / warm-strong` for "above vs below baseline" charts. Hues distinct from status colors so "performance vs target" never reads as "danger to success."
+Rule: nested elements always use a smaller radius than their parent.
 
-### Typography roles (use the utility classes)
-`role-display-lg` (64) · `role-display` (48) · `role-display-sm` (40) · `role-title` (32) · `role-subtitle` (24) · `role-heading` (20) · `role-body-lg` (18 Inter) · `role-body` (16) · `role-body-sm` (14) · `role-secondary` (14) · `role-metric-display` (56) · `role-metric-value` (40) · `role-label` (12, uppercase) · `role-caps` (12, uppercase) · `role-button` (14, uppercase) · `role-code` (14) · `role-kbd` (11) · `role-narrative` (18 Inter) · `role-narrative-lg` (20 Inter)
+### Animation tokens
 
-## Rendering Invariants (do these by default)
+```
+--duration-fast    100ms   button press, toggle, row hover
+--duration-base    150ms   tooltips, small state changes
+--duration-slow    250ms   panels, sidebars, expanding sections
+--duration-slower  400ms   page transitions
 
-Every component built on this system, unless overridden for a deliberate reason:
+--ease-out     entering elements
+--ease-in      leaving elements
+--ease-in-out  repositioning
+```
 
-1. **Imports `tokens/amalgamy-reset.css`** at the top of the artifact (or inlines its full contents).
-2. **Uses role utility classes** for type. `<div class="role-metric-display">97.4%</div>` is preferred over re-stating `font-family / size / weight / line-height / letter-spacing`.
-3. **Uses CSS variables for color and border**, never hex codes.
-4. **Has hard-edged corners** (`border-radius: 0`). The system has no `--radius-*` tokens and that is intentional. The only exceptions are: the JetBrains Mono cursor block in the masthead (no border-radius applied — it's a square block), and individual circular dots which are deliberately decorative.
-5. **No drop shadows** — see Surface elevation above.
-6. **Spec annotation in the corner** — many panels in the style tile carry a small uppercase spec line (e.g., `cell · spark · semantic delta`) styled with `role-secondary` + `--color-text-tertiary`. Carry this convention forward where it fits — it's part of the "this is a spec sheet, not a marketing page" voice.
+Animate only `transform` and `opacity`. Never `width`, `height`, `top`, `left`.
 
-## Creating a New Mood
+---
 
-To add a new client variant or mode:
+## 3. Layout templates
 
-1. Add a key to the `MOODS` object in the prototype JS, defining override values for the same set of variables that `terminal` defines.
-2. The variable surface is fixed: surfaces (4), borders (3), text (4), brand (3), status (6), viz (3). Provide all of them.
-3. Provide a 5-color preview swatch (`preview: [bg, surface, accent, accent-secondary, success]`) for the mood picker.
-4. Test the mood at `--atm: 0.4` — atmosphere amplifies hue choices and tends to surface palette mistakes that look fine at `0`.
+These are the valid page compositions. Use exactly one per page.
+Do not invent new shell structures.
 
-The four canonical moods are: **Terminal** (default — teal/aqua on near-black), **Phosphor** (amber on black, vintage CRT), **Arctic** (icy blues, daylight-ish), **Vault** (gold on warm black, archival).
+### Template A — Operator dashboard
 
-## Density: not a free parameter
+**Use when:** Persona is Cluster Operator, screen is fleet overview or metrics.
 
-Density is for fitting more or less information on screen — it is not a brand lever. Most production prototypes ship in **standard**. Use **compact** for power-user screens (operations dashboards, tables of 100+ rows). Use **spacious** for executive narrative screens, onboarding, or presentation-mode demos. Don't mix densities within a single screen.
+```html
+<div class="app-shell">
+  <header class="topbar"> ... </header>
+  <nav class="sidebar"> ... </nav>
+  <main class="main">
+    <div class="page-header"> ... </div>
+    <div class="page-body page-body--full">
+      <div class="dashboard-grid">
+        <!-- 4 metric cards across: GPU util, kW/token, active jobs, alerts -->
+      </div>
+      <div class="chart-grid">
+        <!-- 2/3 chart left (utilization over time), 1/3 summary right -->
+      </div>
+      <div class="table-container">
+        <!-- Job queue or fleet table below charts -->
+      </div>
+    </div>
+  </main>
+</div>
+```
 
-## Voice and Texture
+**Density rule:** Dense but not chaotic. Use table/cell-md (36px rows) as default.
+Upgrade to table/cell-lg (44px rows) only for the primary fleet table.
+The operator expects to see a lot — don't pad for aesthetics.
 
-The system reads as: spec sheet, system console, scheduler trace, policy clause. It does **not** read as: marketing page, hero illustration, lifestyle photography, product launch. Concretely:
+### Template B — Researcher list + detail
 
-- Section headers use `[01]` `[02]` numeric labels in `--color-accent-subtle`, never uppercase brand wordmarks.
-- Inline `<code>` is an honest semantic — wrap policy fragments, IDs, paths, expressions. Style them with `--color-accent` text on `--color-bg` background, 1px border. `code` is part of the prose, not an exception.
-- Dashed dividers (`border-style: dashed`) signal "section of the same artifact" and appear inside policy cards, between metric trend lines and values, etc. Solid borders separate distinct artifacts.
-- Status bars across the top of screens (`AMALGAMY · LAUNCHHPC | breadcrumb | connected | api.host | timestamp`) are a recurring frame. Reach for them on full-screen views.
+**Use when:** Persona is Researcher, screen is job queue, job status, or
+pipeline view.
 
-## Component Skills
+```html
+<div class="app-shell">
+  <header class="topbar"> ... </header>
+  <nav class="sidebar"> ... </nav>
+  <main class="main">
+    <div class="page-header"> ... </div>
+    <div class="page-body page-body--full">
+      <div class="split-layout">
+        <div class="split-layout__list"> ... </div>
+        <div class="split-layout__detail">
+          <div class="detail-panel"> ... </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+```
 
-Component skills extending this foundation live in `components/`. Each has its own `SKILL.md` and demos. As of revision 0.1: `metrics-SKILL.md` is provided as a worked example. Future skills will cover status displays, dense tables, log/console patterns, navigation, buttons, policy cards, and data viz.
+**Density rule:** List side is dense (researcher scanning job names and states).
+Detail side is airy — they're reading and diagnosing. The pipeline strip
+lives in the detail panel, not the list.
 
-When asked to build a component that doesn't have a skill yet, build it using the rules above and the canonical examples in `examples/` as reference.
+### Template C — Executive summary
+
+**Use when:** Persona is Executive, screen is utilization report or ROI summary.
+
+```html
+<div class="app-shell">
+  <header class="topbar"> ... </header>
+  <nav class="sidebar"> ... </nav>
+  <main class="main">
+    <div class="page-header"> ... </div>
+    <div class="page-body">
+      <div class="section-stack">
+        <!-- Narrative sections, large charts, Decision Ledger executive panel -->
+      </div>
+    </div>
+  </main>
+</div>
+```
+
+**Density rule:** Generous. Use --space-7 and --space-8 between sections.
+Use .type-body-narrative for paragraphs. Every chart tells one story.
+No raw data tables. The Decision Ledger executive panel is the primary
+data-dense element allowed here.
+
+### Template D — Single workflow / form
+
+**Use when:** Screen is job submission, migration setup, policy creation.
+Single focused task.
+
+```html
+<div class="app-shell">
+  <header class="topbar"> ... </header>
+  <nav class="sidebar"> ... </nav>
+  <main class="main">
+    <div class="page-header"> ... </div>
+    <div class="page-body page-body--narrow">
+      <!-- Single column, max-width 720px -->
+      <!-- Step indicator at top if multi-step -->
+    </div>
+  </main>
+</div>
+```
+
+
+---
+
+## 4. Component rationale rules
+
+### Buttons
+
+**Use `.btn` (default):** Supporting actions — Cancel, Back, Export, View Details.
+
+**Use `.btn--primary`:** Single most important action per section — Submit Job,
+Confirm Migration, Apply Changes. One per screen section.
+
+**Use ghost/text-only:** Low-priority actions — Reset filters, Clear selection, Dismiss.
+
+**Sizing rule:**
+- Default (32px): toolbar actions, table row actions, secondary actions
+- Large `.btn--lg` (40px): primary CTA in page headers, form submit
+- Small `.btn--sm` (28px): dense table cells, badge-adjacent actions
+
+**Button label rule:** Mono Bold Uppercase is the Amalgamy button convention.
+This is intentional — terminal/CLI signal. All labels use .type-ui-button.
+Keep to 3–4 words maximum.
+
+**Disabled state rule:** Only disable when you can explain why. If you can't
+surface the reason, keep enabled and show an error on attempt.
+
+### Status indicators
+
+**`.status-dot`:** Live state that changes — Running, Queued, Failed, Idle.
+Always pair with text label. Never color alone (accessibility).
+
+**Workflow node states:**
+```
+```
+
+```
+
+### Data display
+
+**`.data-value` (monospace + tabular-nums):**
+Any numeric measurement, ID, timestamp, or technical parameter.
+GPU utilization %, kW/token, job ID, node address, duration, memory GB.
+
+**`.data-value--hero`:** One primary metric per card. One per section.
+
+**Table density selection:**
+```
+table/cell-lg (44px)  operator fleet overview — primary table
+table/cell-md (36px)  most operator tables — default
+table/cell-sm (28px)  audit logs, Decision Ledger entries, event feeds
+```
+Never mix density levels in one table. Choose based on row height, not data volume.
+
+**Column alignment rule:**
+Text: left-align. Numbers: right-align. Status: center. Headers match data.
+
+### Workflow-specific components
+
+**Slurm nudge (CLI injection):**
+One line injected into srun/sbatch output. Formatted as:
+`━━ LaunchHPC ━━━━━━━━━━━━━━━━━━━━`
+`  [plain language summary of what Amalgamy did and why]`
+`  Details: launch.hpc/{job_id}`
+
+Do not build modal alerts for Slurm nudge. It lives in the terminal,
+not the UI. The URL is the bridge to the full ledger view.
+
+---
+
+## 5. Interaction rules
+
+### Navigation
+
+Sidebar shows current location with `.nav-item--active`. Exactly one active
+item at all times. Clicking nav item: instant, no animation.
+Sidebar collapse: `.app-shell--collapsed`, 240px → 64px.
+
+### Loading states
+
+Never use a spinner for content with structural shape. Use skeleton screens.
+Skeleton rule: same class structure as loaded state, pulsing placeholders.
+Only use spinner for unknown-duration actions (job submission, export).
+
+### Error states
+
+Every error must answer: what happened, why, what to do.
+Use `--color-danger` + `--color-danger-bg` for borders and fills.
+Never just red text — full inline alert with icon and recovery action.
+
+### Workflow transitions
+
+Pipeline step activation: 150ms ease-out on border-color and background.
+Scatter-gather shard completion: 250ms ease-out on the track bar fill.
+Decision Ledger panel switch: instant — the researcher doesn't need animation
+when switching between audience views. Speed matters.
+
+---
+
+## 6. What not to do
+
+- **Do not hardcode any color, spacing, or font.** All values reference tokens.
+- **Do not use body/secondary or body/lg.** They were merged in v0.2.
+  Use body/sm (with text-secondary color) or body/narrative respectively.
+- **Do not use font-weight 700 for semibold.** weight/semibold = 600.
+  Use weight/bold (700) only for table caps and button labels.
+- **Do not use Inter or JetBrains Mono.** Typeface is Geist + Geist Mono.
+- **Do not convey status with color alone.** Always pair with a text label.
+- **Do not mix table density levels** in a single table.
+- **Do not use a table for a single item.** Use .detail-pair key-value layout.
+- **Do not generate inline styles for layout.** Use layout.css classes.
+  Steps have variable content height; columns fight this.
+- **Do not show the Decision Ledger as tabs.** Show all three panels side
+  by side in the .ledger grid. The researcher sees their view, but the
+  panel shape tells them three audiences exist.
+- **Do not animate layout properties.**
+- **Do not build empty states without a title, description, and action.**
+- **Do not show a placeholder-only input label.**
+
+---
+
+## 7. Session startup checklist
+
+- [ ] `amalgamy-reset.css` v0.2 is loaded
+- [ ] `amalgamy-layout.css` v0.2 is loaded
+- [ ] Persona identified: operator / researcher / executive
+- [ ] Layout template selected: A / B / C / D / E
+- [ ] All token references use variable names from Section 2
+
+---
+
+## 8. File structure + component library
+
+### Core files (load every session)
+```
+amalgamy-reset.css     ← All design tokens + base element styles. Load first.
+amalgamy-layout.css    ← App shell, grid, page templates. Load second.
+skill/SKILL.md         ← This file. Load at session start.
+```
+
+### Component files (load only when needed)
+
+Load the relevant component file before generating that component.
+Do not load all component files — only the ones the current session requires.
+
+| File | Load when building... |
+|---|---|
+| `components/component-button.md` | Any button — CTA, action, toolbar, icon-only |
+| `components/component-badge-tag.md` | Status indicators, category labels, filter chips |
+| `components/component-table.md` | Any list of comparable items — fleet, job queue, audit log |
+| `components/component-input-form.md` | Any form — job submission, policy config, search |
+| `components/component-card.md` | Metric cards, detail panels, modals, alert boxes |
+| `components/component-nav.md` | Sidebar, topbar, tabs, breadcrumbs, app shell |
+| `components/component-feedback.md` | Inline alerts, toasts, tooltips, empty states |
+
+### Component file anatomy (what each file contains)
+Each component file has:
+1. **When to load** — exact trigger conditions
+2. **Figma source** — component set name, variant count, file reference
+3. **Variants** — table of all Figma properties and their meaning
+4. **HTML anatomy** — copy-ready markup for each variant and state
+5. **CSS** — complete styles using only token references (no hardcoded values)
+6. **Rules** — explicit prohibitions and required patterns
+
+### Full file tree
+```
+amalgamy/
+  amalgamy-reset.css
+  amalgamy-layout.css
+  amalgamy-style-layer.css  (to author — visual personality overrides)
+  skill/
+    SKILL.md
+  components/
+    component-button.md
+    component-badge-tag.md
+    component-table.md
+    component-input-form.md
+    component-card.md
+    component-nav.md
+    component-feedback.md
+```
+
+---
+
+## 9. Change log
+
+### v0.2 — May 2026
+
+**Typography (breaking changes):**
+- Typeface: Inter → Geist, JetBrains Mono → Geist Mono
+- `body/secondary` removed — use `body/sm` + `color: var(--color-text-secondary)`
+- `body/lg` removed — use `body/narrative`
+- `heading/xs` added — 12px Geist Medium for form labels
+- All line-heights standardized to unitless (no px values)
+- `--tracking-caps-sm/md/lg` added, replacing ad-hoc tracking values
+- `--weight-semibold` corrected: 600 (was 700)
+- `--weight-bold` added: 700
+
+**Colors (new):**
+- Full Amalgamy surface stack: `--color-bg` through `--color-surface-code`
+- Brand teal palette: `--color-accent` + hover/active/muted-bg/disabled
+- `--color-aqua` secondary accent
+- Complete status system with bg variants
+- Data viz palette: `--color-dv-1` through `--color-dv-8`
+- `--color-border-kbd` for keyboard shortcut containers
+
+**Components (new):**
+- `kbd` styled with container tokens
+- `.code-block` and `.code-block--sm` with `.syn-*` syntax roles
+- `.type-*` utility classes — one per Figma text style
+- `.data-value--display` for 56px hero metrics
+- `- `.divider--group` for heading/group separator pattern
+
+**Layout (new):**
+- Primary design target updated: 1440px (was 1280px)
+
+---
+
+## 10. Experiment notes (for Chuck and Charles)
+
+The v0.2 skill extends the v0.1 hypothesis — rationale-first documentation
+reduces model drift — with three new layers:
+
+**Workflow nodes:** The LaunchHPC job lifecycle is now codeable. The pipeline
+strip, conductor score, and Decision Ledger have defined classes and rules.
+Watch for: does Claude correctly choose between strata vs pipeline strip
+for different researcher contexts?
+
+**Disambiguation table (Section 2 typography):** Four pairs of styles at
+identical sizes are now explicitly differentiated. Watch for: does Claude
+apply heading/card (18px Medium) vs body/narrative (18px Regular) correctly
+without being told explicitly?
+
+**Three-audience ledger:** The Decision Ledger's three-panel pattern is the
+most novel component. Watch for: does Claude maintain the reference-range
+framing (same value, different normal range) or default to showing three
+different values?
+
+Flag any moment where a prompt couldn't be satisfied by this skill as written.
+Those gaps are the next sprint's documentation work.

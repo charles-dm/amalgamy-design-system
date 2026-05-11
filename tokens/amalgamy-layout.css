@@ -1,0 +1,962 @@
+/* ============================================================
+   AMALGAMY — LAYOUT
+   Version: 0.2 (Updated to match v0.2 token names · May 2026)
+   Depends on: amalgamy-reset.css (must load first)
+   
+   PURPOSE
+   This file defines the spatial skeleton of the Amalgamy app shell.
+   It answers three questions every user needs to answer instantly:
+     - Where am I?
+     - Where can I go?
+     - What is this page showing me?
+   
+   WHAT LIVES HERE vs ELSEWHERE
+   - App shell structure (sidebar, topbar, content area): HERE
+   - Grid systems for page-level layout: HERE
+   - Responsive behavior of the shell: HERE
+   - Visual treatment of nav items, surface colors: style-layer.css
+   - Individual component layout (card internals, table rows): components/
+   
+   PERSONAS THIS SHELL SERVES
+   Three distinct user roles, same shell structure, different nav items:
+   
+     Cluster Operator  — dense, monitoring-focused, lots of open tabs,
+                         scanning for problems across the fleet
+     HPC Researcher    — task-focused, submitting jobs, checking status,
+                         wants to get in and out fast
+     Executive/Buyer   — occasional, high-level, needs the story not the data,
+                         likely on a smaller screen or tablet
+   
+   PRIMARY DESIGN TARGET: 1280px desktop (xl breakpoint)
+   The operator lives here. Information density is expected and welcome.
+   
+   CONTEXT FOR CLAUDE
+   When generating page layouts, use the regions defined here:
+     .app-shell        — root container
+     .sidebar          — persistent left navigation
+     .topbar           — persistent top bar (breadcrumb, actions, user)
+     .main             — scrollable content area
+     .page-header      — top of each page (title, subtitle, page-level actions)
+     .page-body        — below the header, holds the actual content
+   
+   Never generate inline styles for shell structure. Reference these classes.
+   ============================================================ */
+
+
+/* ============================================================
+   01 — APP SHELL
+   
+   Fixed sidebar + fixed topbar + scrollable main content.
+   This is the standard enterprise dashboard pattern (GitHub,
+   Linear, Vercel, Datadog all use this structure).
+   
+   Users have strong spatial memory for this layout.
+   Deviating from it creates disorientation — don't.
+   
+   Shell structure:
+   
+   ┌─────────────────────────────────────────┐
+   │              .topbar (52px)             │
+   ├──────────┬──────────────────────────────┤
+   │          │   .page-header               │
+   │ .sidebar │   ────────────────────────── │
+   │ (240px)  │   .page-body                 │
+   │          │                              │
+   │          │   (scrolls independently)    │
+   └──────────┴──────────────────────────────┘
+   ============================================================ */
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* shell controls its own scrolling regions */
+}
+
+.app-shell {
+  display:        grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows:    var(--topbar-height) 1fr;
+  grid-template-areas:
+    "topbar  topbar"
+    "sidebar main";
+  height: 100vh;
+  width:  100%;
+  overflow: hidden;
+}
+
+/* Collapsed sidebar variant */
+.app-shell--collapsed {
+  grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+}
+
+
+/* ============================================================
+   02 — TOPBAR
+   
+   52px. Persistent. Contains:
+   - Left: product wordmark / logo area
+   - Center: global search (optional, operator-primary)
+   - Right: notifications, user avatar, quick actions
+   
+   Why 52px not 64px: operator context — every pixel of vertical
+   space they recover goes to monitoring data. Dense is right here.
+   ============================================================ */
+
+.topbar {
+  grid-area:    topbar;
+  display:      flex;
+  align-items:  center;
+  gap:          var(--space-4);
+  padding:      0 var(--space-5);
+  height:       var(--topbar-height);
+  position:     sticky;
+  top:          0;
+  z-index:      100;
+  flex-shrink:  0;
+
+  /* Border bottom — style-layer.css adds color */
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.topbar__brand {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-2);
+  flex-shrink: 0;
+  width:       calc(var(--sidebar-width) - var(--space-5) - var(--space-4));
+  /* Aligns brand with sidebar nav items */
+}
+
+.topbar__brand-name {
+  font-size:      var(--text-md);
+  font-weight:    var(--weight-semibold);
+  color:          var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  white-space:    nowrap;
+}
+
+.topbar__search {
+  flex:       1;
+  max-width:  480px;
+  /* Centers in the available space when sidebar is present */
+}
+
+.topbar__actions {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-2);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.topbar__avatar {
+  width:         32px;
+  height:        32px;
+  border-radius: var(--radius-full);
+  flex-shrink:   0;
+  cursor:        pointer;
+  /* Background set in style-layer.css */
+}
+
+
+/* ============================================================
+   03 — SIDEBAR
+   
+   240px. Persistent. Fixed, doesn't scroll with content.
+   Scrollable internally if nav items overflow.
+   
+   Structure:
+   ┌─────────────┐
+   │  nav groups │  ← .sidebar__section (repeatable)
+   │  with items │  ← .nav-item
+   │             │
+   │  (spacer)   │  ← .sidebar__spacer pushes workspace to bottom
+   │             │
+   │  workspace  │  ← .sidebar__section--footer (pinned to bottom)
+   └─────────────┘
+   
+   Nav item anatomy:
+   [icon] [label]          [badge?]
+   
+   Active state must be immediately obvious. Users open many
+   tabs and lose context — they need to know where they are
+   instantly. Background + accent color + weight all fire together.
+   ============================================================ */
+
+.sidebar {
+  grid-area:    sidebar;
+  display:      flex;
+  flex-direction: column;
+  width:        var(--sidebar-width);
+  height:       100%;
+  overflow-y:   auto;
+  overflow-x:   hidden;
+  padding:      var(--space-4) var(--space-3);
+  flex-shrink:  0;
+
+  /* Subtle right border — style-layer.css adds color */
+  border-right: 1px solid var(--color-border-subtle);
+
+  /* Custom scrollbar — minimal, stays out of the way */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+
+/* Nav section (group of related items) */
+.sidebar__section {
+  display:       flex;
+  flex-direction: column;
+  gap:           var(--space-1);
+  margin-bottom: var(--space-5);
+}
+
+.sidebar__section-label {
+  font-size:      var(--text-xs);
+  font-weight:    var(--weight-semibold);
+  color:          var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding:        0 var(--space-3);
+  margin-bottom:  var(--space-1);
+}
+
+/* Pushes footer section to bottom */
+.sidebar__spacer {
+  flex: 1;
+}
+
+.sidebar__section--footer {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-1);
+  padding-top:    var(--space-4);
+  border-top:     1px solid var(--color-border-subtle);
+  margin-top:     auto;
+}
+
+
+/* Nav item */
+.nav-item {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--space-3);
+  padding:       var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size:     var(--text-sm);
+  font-weight:   var(--weight-medium);
+  color:         var(--color-text-secondary);
+  cursor:        pointer;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  min-height:    36px;           /* Fitts's Law — generous hit target */
+  transition:    background var(--duration-base) var(--ease-out),
+                 color      var(--duration-base) var(--ease-out);
+}
+
+.nav-item__icon {
+  width:      20px;
+  height:     20px;
+  flex-shrink: 0;
+  opacity:    0.6;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.nav-item__label {
+  flex:          1;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-item__badge {
+  flex-shrink: 0;
+  /* Uses .badge from reset — style-layer sets colors */
+}
+
+/* Active state — all signals fire at once */
+.nav-item--active {
+  color:         var(--color-text-primary);
+  background:    var(--color-accent-subtle);
+  font-weight:   var(--weight-semibold);
+}
+
+.nav-item--active .nav-item__icon {
+  opacity: 1;
+  color:   var(--color-accent);
+}
+
+/* Hover state */
+.nav-item:hover:not(.nav-item--active) {
+  background: rgba(255, 255, 255, 0.04);
+  color:      var(--color-text-primary);
+}
+
+.nav-item:hover .nav-item__icon {
+  opacity: 0.9;
+}
+
+
+/* Collapsed sidebar — icon only */
+.app-shell--collapsed .nav-item {
+  padding:         var(--space-2);
+  justify-content: center;
+}
+
+.app-shell--collapsed .nav-item__label,
+.app-shell--collapsed .nav-item__badge,
+.app-shell--collapsed .sidebar__section-label {
+  display: none;
+}
+
+.app-shell--collapsed .nav-item__icon {
+  margin: 0;
+}
+
+.app-shell--collapsed .sidebar__brand-name {
+  display: none;
+}
+
+
+/* ============================================================
+   04 — MAIN CONTENT AREA
+   
+   Everything to the right of the sidebar. Scrolls independently.
+   
+   Contains:
+   - .page-header  (sticky within main, not full-page sticky)
+   - .page-body    (the actual content — grids, tables, etc.)
+   ============================================================ */
+
+.main {
+  grid-area:  main;
+  display:    flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height:     100%;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+.main::-webkit-scrollbar {
+  width: 6px;
+}
+.main::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+
+/* ============================================================
+   05 — PAGE HEADER
+   
+   Top of each page inside .main. Sticky so it stays visible
+   while the user scrolls through dense data below.
+   
+   Contains:
+   - Left: breadcrumb + page title + subtitle
+   - Right: page-level actions (export, filter, time range)
+   
+   Why sticky: operator monitoring context. When scrolling through
+   100 rows of job data, users need to know what page they're on
+   and have access to filter controls without scrolling back up.
+   ============================================================ */
+
+.page-header {
+  display:      flex;
+  align-items:  flex-start;
+  justify-content: space-between;
+  gap:          var(--space-4);
+  padding:      var(--space-5) var(--space-6);
+  position:     sticky;
+  top:          0;
+  z-index:      50;
+  flex-shrink:  0;
+
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  /* Prevents content bleeding through on scroll */
+  background: var(--color-bg);
+}
+
+.page-header__meta {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-1);
+  min-width:      0;  /* allows text-overflow in children */
+}
+
+.page-header__breadcrumb {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-2);
+  font-size:   var(--text-xs);
+  color:       var(--color-text-tertiary);
+}
+
+.page-header__breadcrumb-sep {
+  color:       var(--color-text-tertiary);
+  opacity:     0.5;
+}
+
+.page-header__title {
+  font-size:      var(--text-xl);
+  font-weight:    var(--weight-semibold);
+  color:          var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+  line-height:    var(--leading-tight);
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+}
+
+.page-header__subtitle {
+  font-size:  var(--text-sm);
+  color:      var(--color-text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.page-header__actions {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-2);
+  flex-shrink: 0;
+  padding-top: var(--space-1);  /* optical alignment with title */
+}
+
+
+/* ============================================================
+   06 — PAGE BODY
+   
+   The content canvas. Padding + max-width constraints.
+   
+   Default: padded container for standard page layouts
+   Full-bleed: for tables and data grids that need the full width
+   ============================================================ */
+
+.page-body {
+  flex:       1;
+  padding:    var(--space-6);
+  max-width:  var(--content-max-width);
+  width:      100%;
+}
+
+/* Full-bleed variant — for data tables, monitoring grids */
+.page-body--full {
+  max-width: none;
+  padding:   var(--space-4) var(--space-6);
+}
+
+/* Narrow variant — for settings, forms, detail panels */
+.page-body--narrow {
+  max-width: 720px;
+}
+
+
+/* ============================================================
+   07 — PAGE-LEVEL GRID SYSTEMS
+   
+   Three standard layouts used throughout Amalgamy:
+   
+   A. Dashboard grid — metric cards + charts (operator overview)
+   B. Split layout — list + detail (job queue + job detail)
+   C. Full-width — tables, monitoring grids
+   
+   These are page-body compositions, not component internals.
+   ============================================================ */
+
+/* --- A. Dashboard grid --- */
+/* Metric cards across the top, larger chart areas below */
+
+.dashboard-grid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   var(--space-4);
+}
+
+/* 2-column chart row (below metric cards) */
+.chart-grid {
+  display:               grid;
+  grid-template-columns: 2fr 1fr;
+  gap:                   var(--space-4);
+  margin-top:            var(--space-4);
+}
+
+/* 3-column equal chart row */
+.chart-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Full-width chart row */
+.chart-grid--full {
+  grid-template-columns: 1fr;
+}
+
+
+/* --- B. Split layout --- */
+/* Left: list / queue. Right: detail panel. */
+
+.split-layout {
+  display:    grid;
+  grid-template-columns: 380px 1fr;
+  gap:        0;
+  height:     100%;
+  overflow:   hidden;
+}
+
+.split-layout__list {
+  overflow-y:   auto;
+  border-right: 1px solid var(--color-border-subtle);
+  height:       100%;
+}
+
+.split-layout__detail {
+  overflow-y: auto;
+  height:     100%;
+  padding:    var(--space-5);
+}
+
+
+/* --- C. Section stack --- */
+/* Vertical stack of page sections with consistent spacing */
+
+.section-stack {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-6);
+}
+
+.section-stack__item {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-4);
+}
+
+.section-stack__header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--space-4);
+}
+
+.section-stack__title {
+  font-size:   var(--text-md);
+  font-weight: var(--weight-semibold);
+  color:       var(--color-text-primary);
+}
+
+.section-stack__subtitle {
+  font-size: var(--text-sm);
+  color:     var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+
+/* ============================================================
+   08 — METRIC CARD
+   
+   The primary data display unit for the operator dashboard.
+   
+   Anatomy:
+   ┌──────────────────────────────┐
+   │  Label         [trend badge] │
+   │  Value                       │
+   │  Supporting context          │
+   └──────────────────────────────┘
+   
+   Used for: kW/token, PUE, MFLOPs utilization, job counts.
+   The .data-value--hero class from the reset handles
+   the number display. This handles the card structure.
+   ============================================================ */
+
+.metric-card {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-2);
+  padding:        var(--space-5);
+  border-radius:  var(--radius-lg);
+  background:     var(--color-surface-1);
+  min-width:      0;  /* allows truncation in grid cells */
+}
+
+.metric-card__header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--space-2);
+}
+
+.metric-card__label {
+  font-size:      var(--text-xs);
+  font-weight:    var(--weight-semibold);
+  color:          var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+}
+
+.metric-card__value {
+  /* Uses .data-value--hero from reset for the number itself */
+  line-height: 1;
+}
+
+.metric-card__context {
+  font-size:  var(--text-xs);
+  color:      var(--color-text-tertiary);
+  line-height: var(--leading-snug);
+}
+
+/* Trend indicators */
+.metric-card__trend {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           var(--space-1);
+  font-size:     var(--text-xs);
+  font-weight:   var(--weight-medium);
+  border-radius: var(--radius-sm);
+  padding:       2px var(--space-2);
+  flex-shrink:   0;
+}
+
+.metric-card__trend--up {
+  color:      var(--color-success-text);
+  background: var(--color-success-subtle);
+}
+
+.metric-card__trend--down {
+  color:      var(--color-danger-text);
+  background: var(--color-danger-subtle);
+}
+
+.metric-card__trend--neutral {
+  color:      var(--color-neutral-text);
+  background: var(--color-neutral);
+}
+
+
+/* ============================================================
+   09 — DATA TABLE LAYOUT
+   
+   Operator-primary. Designed for dense scanning.
+   
+   Table containers handle:
+   - Sticky header
+   - Overflow scrolling
+   - Empty state placement
+   
+   The <table> element uses reset defaults.
+   Style-layer.css adds hover states and zebra stripes.
+   ============================================================ */
+
+.table-container {
+  width:        100%;
+  overflow-x:   auto;
+  border-radius: var(--radius-lg);
+  background:   var(--color-surface-1);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background:    var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+/* Table toolbar (search, filters, column controls) */
+.table-toolbar {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--space-4);
+  padding:         var(--space-4) var(--space-5);
+  border-bottom:   1px solid var(--color-border-subtle);
+}
+
+.table-toolbar__left {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-3);
+  flex:        1;
+}
+
+.table-toolbar__right {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-2);
+  flex-shrink: 0;
+}
+
+/* Table footer (pagination, row count) */
+.table-footer {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--space-3) var(--space-5);
+  border-top:      1px solid var(--color-border-subtle);
+  font-size:       var(--text-xs);
+  color:           var(--color-text-secondary);
+}
+
+/* Empty state inside table */
+.table-empty {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-8);
+  text-align:      center;
+  gap:             var(--space-3);
+}
+
+.table-empty__title {
+  font-size:   var(--text-base);
+  font-weight: var(--weight-medium);
+  color:       var(--color-text-primary);
+}
+
+.table-empty__description {
+  font-size:  var(--text-sm);
+  color:      var(--color-text-secondary);
+  max-width:  320px;
+  line-height: var(--leading-normal);
+}
+
+
+/* ============================================================
+   10 — DETAIL PANEL
+   
+   Right-hand panel in split layouts. Used for:
+   - Job detail (researcher view)
+   - Node detail (operator view)
+   - Resource inspector
+   
+   Has its own internal scroll and sticky header.
+   ============================================================ */
+
+.detail-panel {
+  display:        flex;
+  flex-direction: column;
+  height:         100%;
+  overflow:       hidden;
+}
+
+.detail-panel__header {
+  display:      flex;
+  align-items:  flex-start;
+  justify-content: space-between;
+  gap:          var(--space-4);
+  padding:      var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink:  0;
+}
+
+.detail-panel__title {
+  font-size:   var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color:       var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+.detail-panel__subtitle {
+  font-size:  var(--text-sm);
+  color:      var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+.detail-panel__body {
+  flex:       1;
+  overflow-y: auto;
+  padding:    var(--space-5);
+}
+
+.detail-panel__section {
+  margin-bottom: var(--space-6);
+}
+
+.detail-panel__section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-panel__section-title {
+  font-size:      var(--text-xs);
+  font-weight:    var(--weight-semibold);
+  color:          var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin-bottom:  var(--space-3);
+}
+
+/* Key-value pairs in detail panel */
+.detail-pair {
+  display:       grid;
+  grid-template-columns: 140px 1fr;
+  gap:           var(--space-2) var(--space-4);
+  align-items:   baseline;
+  margin-bottom: var(--space-2);
+}
+
+.detail-pair__key {
+  font-size:  var(--text-xs);
+  color:      var(--color-text-tertiary);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+
+.detail-pair__value {
+  font-size:   var(--text-sm);
+  color:       var(--color-text-primary);
+  font-family: var(--font-mono);
+  word-break:  break-all;
+}
+
+
+/* ============================================================
+   11 — RESPONSIVE BEHAVIOR
+   
+   Primary target: xl (1280px) — operator at their desk
+   Secondary: lg (1024px) — laptop, still operational
+   Collapsed: md (768px) — tablet, executive checking in
+   Mobile: sm (640px) — not a primary use case, should not break
+   ============================================================ */
+
+/* lg: sidebar collapses to icon-only automatically */
+@media (max-width: 1024px) {
+  .app-shell {
+    grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+  }
+
+  .nav-item__label,
+  .nav-item__badge,
+  .sidebar__section-label {
+    display: none;
+  }
+
+  .nav-item {
+    padding:         var(--space-2);
+    justify-content: center;
+  }
+
+  .topbar__brand-name {
+    display: none;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* md: sidebar hides entirely, topbar gets a menu toggle */
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows:    var(--topbar-height) 1fr;
+    grid-template-areas:
+      "topbar"
+      "main";
+  }
+
+  .sidebar {
+    display: none;  /* toggled by JS via .sidebar--mobile-open */
+  }
+
+  /* Mobile sidebar overlay */
+  .sidebar--mobile-open {
+    display:   flex;
+    position:  fixed;
+    top:       var(--topbar-height);
+    left:      0;
+    bottom:    0;
+    z-index:   200;
+    width:     var(--sidebar-width);
+    /* style-layer.css adds background and shadow */
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items:    flex-start;
+    gap:            var(--space-3);
+    padding:        var(--space-4);
+  }
+
+  .page-body {
+    padding: var(--space-4);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .split-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .split-layout__list {
+    border-right:  none;
+    border-bottom: 1px solid var(--color-border-subtle);
+    max-height:    40vh;
+  }
+}
+
+/* sm: single column everything */
+@media (max-width: 640px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-grid--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .page-body {
+    padding: var(--space-3);
+  }
+
+  .table-toolbar {
+    flex-direction: column;
+    align-items:    flex-start;
+  }
+}
+
+
+/* ============================================================
+   END OF LAYOUT
+   
+   Files authored so far:
+     ✓ amalgamy-reset.css    — tokens, base, element defaults
+     ✓ amalgamy-layout.css   — app shell, grids, page structure
+   
+   Next:
+     amalgamy-style-layer.css  — visual personality (after direction)
+     components/               — individual component files
+   
+   CONTEXT FOR CLAUDE
+   When generating a new page or workflow, compose it using
+   the regions and grid systems defined here. The operator
+   monitoring view should use:
+     .app-shell → .main → .page-header + .page-body--full
+     → .dashboard-grid (metrics) + .table-container (job list)
+   ============================================================ */
+
+

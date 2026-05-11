@@ -1,479 +1,965 @@
-/* ============================================================================
- * Amalgamy LaunchHPC — Reset & Tokens
- * Style direction: Sovereign Terminal (darker Clear-teal palette)
- * Mode: Dark (Blueprint mode handled in Figma only)
- *
- * Mirrors the Figma Design File:
- *   - Color collection (Dark mode)
- *   - Typography collection (primitives + role aliases)
- *   - role/* text styles → .role-* utility classes
- *
- * Note: JetBrains Mono SemiBold unavailable, so the "semibold" weight token
- * resolves to 700 (Bold) — matching Figma.
- * ============================================================================ */
+/* ============================================================
+   AMALGAMY — CUSTOM MINIMAL RESET
+   Version: 0.2 (Typography reconciled · Brand tokens committed · May 2026)
+
+   PURPOSE
+   This file is the structural foundation for all Amalgamy
+   prototypes and production HTML. It does three things:
+
+     1. Normalizes browser behavior
+     2. Defines all visual decisions as CSS custom properties (tokens)
+     3. Sets base typography and element defaults
+
+   WHAT LIVES HERE vs ELSEWHERE
+   - Token values (colors, spacing, type, radius, shadow): HERE
+   - Component structure (buttons, cards, nav): HERE as minimal defaults
+   - Visual personality (borders, hover treatments, brand): style-layer.css
+   - Layout scaffolding (app shell, sidebar, grid): layout.css
+
+   CHANGES FROM v0.1
+   - Typeface committed: Geist + Geist Mono (was Inter + JetBrains Mono)
+   - Full Amalgamy brand palette (teal, status, data viz, surfaces)
+   - Type scale restructured to match Figma text styles exactly (not Major Second)
+   - body/sm and body/secondary merged → body/sm
+   - body/narrative and body/lg merged → body/narrative
+   - Line-height units standardized to unitless across all styles
+   - Letter-spacing renamed by role (--tracking-caps-sm/md/lg)
+   - weight/semibold corrected: 600 (was 700) · weight/bold added: 700
+   - New tokens: --color-surface-code, --color-border-kbd, --leading-138/140/145
+   - New elements: kbd styled with container tokens · pre/code-block expanded
+   - New component classes: .type-* (one per Figma text style)
+   - tabular-nums on all data-value, table, metric, and input contexts
+
+   HOW THE STYLE SWAP WORKS
+   All visual values are tokens. When visual direction updates,
+   change :root values only. Everything built against these tokens
+   reskins automatically — no HTML changes needed.
+
+   CONTEXT FOR CLAUDE
+   Reference tokens by variable name (var(--token-name)) — never
+   hardcode hex values, px values, or font names in component CSS.
+   ============================================================ */
+
+
+/* ============================================================
+   01 — BOX MODEL
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ============================================================
+   02 — DESIGN TOKENS
+   ============================================================ */
 
 :root {
 
-  /* ═══ COLOR ════════════════════════════════════════════════════════════ */
+  /* ----------------------------------------------------------
+     COLOR — Backgrounds
+     Amalgamy teal-green surface hierarchy.
+     Darkest furthest back, lighter surfaces float forward.
+     In dark mode, elevation = lighter surfaces, not heavy shadows.
+     ---------------------------------------------------------- */
+  --color-bg:              #051315;   /* page canvas — deepest layer */
+  --color-surface-1:       #0A181A;   /* cards, sidebar, primary surfaces */
+  --color-surface-2:       #0F1E20;   /* table rows, col headers, hover bg */
+  --color-surface-3:       #162526;   /* pressed states, section headers */
+  --color-surface-code:    #0D1A17;   /* code blocks, terminal output */
 
-  /* Surface — darker Clear-teal ramp */
-  --color-bg:               #051315;
-  --color-surface-1:        #0A181A;
-  --color-surface-2:        #0F1E20;
-  --color-surface-3:        #162526;
+  /* ----------------------------------------------------------
+     COLOR — Borders
+     Teal-tinted white at varying opacity. Never solid grays.
+     ---------------------------------------------------------- */
+  --color-border-subtle:   #162526;   /* = surface/3 — Figma source */
+  --color-border-default:  #223233;   /* Figma source */
+  --color-border-strong:   #456066;   /* Figma source */
+  --color-border-kbd:      rgba(255, 255, 255, 0.18);
 
-  /* Border */
-  --color-border-subtle:    #162526;
-  --color-border-default:   #223233;
-  --color-border-strong:    #456066;
+  /* ----------------------------------------------------------
+     COLOR — Text
+     Teal-green hierarchy. Never pure white — too harsh.
+     All values WCAG AA compliant on --color-surface-1.
+     ---------------------------------------------------------- */
+  --color-text-primary:    #EAF1EC;   /* headings, body, primary content */
+  --color-text-secondary:  #C3D3D0;   /* supporting text, descriptions */
+  --color-text-tertiary:   #8CADA7;   /* timestamps, metadata, labels */
+  --color-text-faint:      #78948F;   /* decorative only — do not use for readable content */
+  --color-text-inverse:    #051315;   /* text on teal or light backgrounds */
 
-  /* Text — all tiers pass WCAG AA (4.5:1) on every surface */
-  --color-text-primary:     #EAF1EC;
-  --color-text-secondary:   #C3D3D0;
-  --color-text-tertiary:    #8CADA7;
-  --color-text-faint:       #78948F;
-  --color-text-inverse:     #051315;
+  /* ----------------------------------------------------------
+     COLOR — Brand / Accent (Amalgamy teal)
+     The 10% that draws the eye. One accent, used consistently.
+     Dark mode values — see Light mode section for inverted palette.
+     ---------------------------------------------------------- */
+  --color-accent:          #2ECEC0;   /* primary actions, active states, links */
+  --color-accent-subtle:   #1F908A;   /* brand/teal/subtle — Figma source */
+  --color-accent-hover:    #45D9CD;
+  --color-accent-active:   #27AFA3;
+  --color-accent-muted-bg: #082223;
+  --color-accent-disabled: #2E827C;   /* brand/teal/disabled — Figma source */
 
-  /* Brand */
-  --color-accent:           #2ECEC0;  /* teal — secondary CTA, links, accents */
-  --color-accent-hover:     #45D9CD;
-  --color-accent-active:    #27AFA3;  /* pressed state */
-  --color-accent-disabled:  #2E827C;  /* disabled — AA-Lg, allowed for inactive UI per WCAG */
-  --color-accent-subtle:    #1F908A;  /* teal-deep — section labels, code, chips */
-  --color-accent-muted-bg:  #082223;  /* tinted surface wash — decorative bg */
-  --color-accent-secondary:          #A9F4EA;  /* aqua — primary CTA */
-  --color-accent-secondary-hover:    #B3F5ED;
-  --color-accent-secondary-active:   #90CFC7;
-  --color-accent-secondary-disabled: #65938F;
+  --color-aqua:            #A9F4EA;   /* brand/aqua/default */
+  --color-aqua-hover:      #B3F5ED;   /* brand/aqua/hover */
+  --color-aqua-active:     #90CFC7;   /* brand/aqua/active */
+  --color-aqua-disabled:   #65938F;   /* brand/aqua/disabled */
 
-  /* Status */
-  --color-success:          #85BE00;  /* olive-lime — healthy */
-  --color-success-subtle:   #72A403;
-  --color-success-text:     #94C623;
+  --color-aqua:            #A9F4EA;   /* secondary brand accent, data viz highlight */
 
-  --color-warning:          #F29421;
-  --color-warning-subtle:   #CE811F;
-  --color-warning-text:     #F1A23F;
+  /* ----------------------------------------------------------
+     COLOR — Semantic status
+     Each state: default · subtle · text · bg
+     Used for status indicators, alerts, inline feedback.
+     ---------------------------------------------------------- */
 
-  --color-danger:           #FE483B;
-  --color-danger-subtle:    #FC594D;  /* note: mixes toward fg (lighter) to maintain AA on light surfaces */
-  --color-danger-text:      #FB6156;
+  /* Success */
+  --color-success:         #85BE00;
+  --color-success-subtle:  #72A403;   /* Figma source */
+  --color-success-text:    #94C623;
+  --color-success-bg:      rgba(133, 190, 0, 0.08);
 
-  --color-info:             #69B1E8;  /* running */
-  --color-info-subtle:      #5A99C8;
-  --color-info-text:        #7CBBE9;
+  /* Warning */
+  --color-warning:         #F29421;
+  --color-warning-subtle:  #CE811F;   /* Figma source */
+  --color-warning-text:    #F1A23F;
+  --color-warning-bg:      rgba(242, 148, 33, 0.08);
 
-  --color-status-queued:    #8EA0C9;
-  --color-neutral:          #2E4445;  /* idle fill — status dots, badge backgrounds */
-  --color-neutral-text:     #649497;  /* idle text — passes 4.5:1 on every surface */
+  /* Danger */
+  --color-danger:          #FE483B;
+  --color-danger-subtle:   #FC594D;   /* Figma source */
+  --color-danger-text:     #FB6156;
+  --color-danger-bg:       rgba(254, 72, 64, 0.08);
 
-  /* Data viz — categorical (8 colors, distinguishable up to 6 colorblind-safe) */
-  --color-viz-categorical-1:  #2ECEC0;  /* teal */
-  --color-viz-categorical-2:  #E5C739;  /* amber */
-  --color-viz-categorical-3:  #D11A6E;  /* magenta — note: 3.68:1 vs bg, fill use only */
-  --color-viz-categorical-4:  #9988C2;  /* violet */
-  --color-viz-categorical-5:  #5DB3F2;  /* sky */
-  --color-viz-categorical-6:  #FF8B6E;  /* coral */
-  --color-viz-categorical-7:  #A8DC4D;  /* lime */
-  --color-viz-categorical-8:  #C794D8;  /* lavender */
-
-  /* Data viz — sequential (7 stops, teal-based for utilization/density heatmaps) */
-  --color-viz-sequential-1:   #0F2A2C;  /* darkest, near-zero */
-  --color-viz-sequential-2:   #194446;
-  --color-viz-sequential-3:   #1F6B66;
-  --color-viz-sequential-4:   #2ECEC0;  /* anchor — brand teal */
-  --color-viz-sequential-5:   #5BD9CC;
-  --color-viz-sequential-6:   #85E3D9;
-  --color-viz-sequential-7:   #A9F4EA;  /* brightest, max value */
-
-  /* Data viz — diverging (5 stops, cool ↔ neutral ↔ warm; distinct from status colors) */
-  --color-viz-diverging-cool-strong:  #4A8DC9;
-  --color-viz-diverging-cool-weak:    #9BBFD9;
-  --color-viz-diverging-neutral:      #7A8888;
-  --color-viz-diverging-warm-weak:    #E8B68A;
-  --color-viz-diverging-warm-strong:  #D67A4A;
-
-
-  /* ═══ TYPOGRAPHY — PRIMITIVES ═════════════════════════════════════════ */
-
-  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  /* Size — modern scale with clearer step ratios (~1.125-1.4x) */
-  --font-size-11:  11px;  /* kbd, micro hints */
-  --font-size-12:  12px;  /* label, caps */
-  --font-size-14:  14px;  /* body-sm, secondary, code, button */
-  --font-size-16:  16px;  /* body — primary */
-  --font-size-18:  18px;  /* body-lg, narrative */
-  --font-size-20:  20px;  /* heading, narrative-lg */
-  --font-size-24:  24px;  /* subtitle */
-  --font-size-32:  32px;  /* title */
-  --font-size-40:  40px;  /* metric-value, display-sm */
-  --font-size-48:  48px;  /* display (default) */
-  --font-size-56:  56px;  /* metric-display */
-  --font-size-64:  64px;  /* display-lg */
-
-  /* Deprecated — kept for transition only; do not use in new work */
-  --font-size-9:   9px;
-  --font-size-10:  10px;
-  --font-size-13:  13px;
-  --font-size-22:  22px;
-  --font-size-28:  28px;
-  --font-size-38:  38px;
-
-  --font-weight-regular:  400;
-  --font-weight-medium:   500;
-  --font-weight-semibold: 700;
-
-  --line-height-tight:    1.1;
-  --line-height-normal:   1.5;
-  --line-height-relaxed:  1.7;
-
-  --letter-spacing-tight-2: -0.025em;
-  --letter-spacing-tight-1: -0.01em;
-  --letter-spacing-normal:   0;
-  --letter-spacing-wide-1:   0.04em;
-  --letter-spacing-wide-2:   0.10em;
-  --letter-spacing-caps:     0.16em;
+  /* Info */
+  --color-info:            #69B1E8;
+  --color-info-subtle:     #5A99C8;   /* Figma source */
+  --color-info-text:       #7CBBE9;
+  --color-info-bg:         rgba(105, 177, 232, 0.08);
 
 
-  /* ═══ TYPOGRAPHY — ROLE ALIASES ═══════════════════════════════════════ */
+  /* Queued */
+  --color-queued:          #8EA0C9;
+  --color-queued-bg:       #1A2830;
 
-  /* role/display — md (default page masthead) */
-  --role-display-family:         var(--font-family-mono);
-  --role-display-size:           var(--font-size-48);
-  --role-display-weight:         var(--font-weight-semibold);
-  --role-display-line-height:    var(--line-height-tight);
-  --role-display-letter-spacing: var(--letter-spacing-tight-2);
+  /* Idle */
+  --color-idle-fill:       #2E4445;   /* background fill for idle nodes */
+  --color-idle-text:       #649497;
+  --color-idle-bg:         #0B1A1C;
 
-  /* role/display-sm — operator dashboard mastheads (denser) */
-  --role-display-sm-family:         var(--font-family-mono);
-  --role-display-sm-size:           var(--font-size-40);
-  --role-display-sm-weight:         var(--font-weight-semibold);
-  --role-display-sm-line-height:    var(--line-height-tight);
-  --role-display-sm-letter-spacing: var(--letter-spacing-tight-2);
+  /* Danger extended */
+  --color-danger-hover:    #FE5D52;
+  --color-danger-active:   #E63B2F;
 
-  /* role/display-lg — executive report headers, narrative-first screens */
-  --role-display-lg-family:         var(--font-family-mono);
-  --role-display-lg-size:           var(--font-size-64);
-  --role-display-lg-weight:         var(--font-weight-semibold);
-  --role-display-lg-line-height:    var(--line-height-tight);
-  --role-display-lg-letter-spacing: var(--letter-spacing-tight-2);
+  /* Idle / neutral */
+  --color-neutral:         rgba(255, 255, 255, 0.08);
+  --color-neutral-text:    #8CADA7;
 
-  --role-title-family:           var(--font-family-mono);
-  --role-title-size:             var(--font-size-32);
-  --role-title-weight:           var(--font-weight-semibold);
-  --role-title-line-height:      var(--line-height-tight);
-  --role-title-letter-spacing:   var(--letter-spacing-tight-1);
+  /* ----------------------------------------------------------
+     COLOR — Data viz categorical palette (8 colors)
+     Use in order for multi-series charts. Colorblind-safe sequence.
+     Never use alone — always pair with a label.
+     ---------------------------------------------------------- */
+  --color-dv-1: #2ECEC0;   /* teal — primary series */
+  --color-dv-2: #E5C739;   /* amber — secondary */
+  --color-dv-3: #D11A6E;   /* magenta — tertiary */
+  --color-dv-4: #9988C2;   /* violet */
+  --color-dv-5: #5DB3F2;   /* sky */
+  --color-dv-6: #FF8B6E;   /* coral */
+  --color-dv-7: #A8DC4D;   /* lime */
+  --color-dv-8: #C794D8;   /* lavender */
 
-  /* role/subtitle — fills the gap between body and title */
-  --role-subtitle-family:           var(--font-family-mono);
-  --role-subtitle-size:             var(--font-size-24);
-  --role-subtitle-weight:           var(--font-weight-semibold);
-  --role-subtitle-line-height:      var(--line-height-tight);
-  --role-subtitle-letter-spacing:   var(--letter-spacing-tight-1);
+  /* Data viz — sequential (teal ramp, light → dark) */
+  --color-dv-seq-1:  #0F2A2C;
+  --color-dv-seq-2:  #194446;
+  --color-dv-seq-3:  #1F6B66;
+  --color-dv-seq-4:  #2ECEC0;   /* midpoint = brand teal */
+  --color-dv-seq-5:  #5BD9CC;
+  --color-dv-seq-6:  #85E3D9;
+  --color-dv-seq-7:  #A9F4EA;
 
-  --role-heading-family:         var(--font-family-mono);
-  --role-heading-size:           var(--font-size-20);
-  --role-heading-weight:         var(--font-weight-semibold);
-  --role-heading-line-height:    var(--line-height-normal);
-  --role-heading-letter-spacing: var(--letter-spacing-normal);
-
-  --role-body-family:            var(--font-family-mono);
-  --role-body-size:              var(--font-size-16);
-  --role-body-weight:            var(--font-weight-regular);
-  --role-body-line-height:       var(--line-height-normal);
-  --role-body-letter-spacing:    var(--letter-spacing-normal);
-
-  /* role/body-lg — Inter, executive-screen body */
-  --role-body-lg-family:            var(--font-family-sans);
-  --role-body-lg-size:              var(--font-size-18);
-  --role-body-lg-weight:            var(--font-weight-regular);
-  --role-body-lg-line-height:       var(--line-height-relaxed);
-  --role-body-lg-letter-spacing:    var(--letter-spacing-normal);
-
-  --role-body-sm-family:         var(--font-family-mono);
-  --role-body-sm-size:           var(--font-size-14);
-  --role-body-sm-weight:         var(--font-weight-regular);
-  --role-body-sm-line-height:    var(--line-height-normal);
-  --role-body-sm-letter-spacing: var(--letter-spacing-normal);
-
-  --role-secondary-family:         var(--font-family-mono);
-  --role-secondary-size:           var(--font-size-14);
-  --role-secondary-weight:         var(--font-weight-regular);
-  --role-secondary-line-height:    var(--line-height-normal);
-  --role-secondary-letter-spacing: var(--letter-spacing-normal);
-
-  --role-metric-display-family:         var(--font-family-mono);
-  --role-metric-display-size:           var(--font-size-56);
-  --role-metric-display-weight:         var(--font-weight-semibold);
-  --role-metric-display-line-height:    var(--line-height-tight);
-  --role-metric-display-letter-spacing: var(--letter-spacing-tight-2);
-
-  --role-metric-value-family:         var(--font-family-mono);
-  --role-metric-value-size:           var(--font-size-40);
-  --role-metric-value-weight:         var(--font-weight-semibold);
-  --role-metric-value-line-height:    var(--line-height-tight);
-  --role-metric-value-letter-spacing: var(--letter-spacing-tight-1);
-
-  --role-label-family:           var(--font-family-mono);
-  --role-label-size:             var(--font-size-12);
-  --role-label-weight:           var(--font-weight-medium);
-  --role-label-line-height:      var(--line-height-normal);
-  --role-label-letter-spacing:   var(--letter-spacing-wide-2);
-
-  --role-caps-family:            var(--font-family-mono);
-  --role-caps-size:              var(--font-size-12);
-  --role-caps-weight:            var(--font-weight-medium);
-  --role-caps-line-height:       var(--line-height-normal);
-  --role-caps-letter-spacing:    var(--letter-spacing-caps);
-
-  --role-button-family:          var(--font-family-mono);
-  --role-button-size:            var(--font-size-14);
-  --role-button-weight:          var(--font-weight-semibold);
-  --role-button-line-height:     var(--line-height-tight);
-  --role-button-letter-spacing:  var(--letter-spacing-wide-1);
-
-  --role-code-family:            var(--font-family-mono);
-  --role-code-size:              var(--font-size-14);
-  --role-code-weight:            var(--font-weight-regular);
-  --role-code-line-height:       var(--line-height-normal);
-  --role-code-letter-spacing:    var(--letter-spacing-normal);
-
-  --role-kbd-family:             var(--font-family-mono);
-  --role-kbd-size:               var(--font-size-11);
-  --role-kbd-weight:             var(--font-weight-medium);
-  --role-kbd-line-height:        var(--line-height-tight);
-  --role-kbd-letter-spacing:     var(--letter-spacing-normal);
-
-  --role-narrative-family:         var(--font-family-sans);
-  --role-narrative-size:           var(--font-size-18);
-  --role-narrative-weight:         var(--font-weight-regular);
-  --role-narrative-line-height:    var(--line-height-relaxed);
-  --role-narrative-letter-spacing: var(--letter-spacing-normal);
-
-  --role-narrative-lg-family:         var(--font-family-sans);
-  --role-narrative-lg-size:           var(--font-size-20);
-  --role-narrative-lg-weight:         var(--font-weight-regular);
-  --role-narrative-lg-line-height:    var(--line-height-relaxed);
-  --role-narrative-lg-letter-spacing: var(--letter-spacing-normal);
+  /* Data viz — diverging (cool → neutral → warm) */
+  --color-dv-div-cool-strong: #4A8DC9;
+  --color-dv-div-cool-weak:   #9BBFD9;
+  --color-dv-div-neutral:     #7A8888;
+  --color-dv-div-warm-weak:   #E8B68A;
+  --color-dv-div-warm-strong: #D67A4A;
 
 
-  /* ═══ ICON ════════════════════════════════════════════════════════════
-     Iconography uses Lucide (https://lucide.dev) loaded via CDN. Icons are
-     used sparingly — only where they add information text can't carry on
-     its own. Inline with mono text at 14px / stroke-width 2 by default.
-     ════════════════════════════════════════════════════════════════════ */
-  --icon-size:       14px;   /* default — pairs with body-sm / button / code (14px) */
-  --icon-size-sm:    12px;   /* inline with label / caps (12px) */
-  --icon-size-lg:    16px;   /* inline with body (16px) */
-  --icon-stroke:     2;      /* lucide stroke-width — never finer than 1.5 */
+  /* ----------------------------------------------------------
+     SPACING — 8pt base grid
+     All spacing is a multiple of 4px. Use tokens — never hardcode.
+
+     Rule: internal spacing (inside a component) must always be
+     ≤ external spacing (between components). When violated,
+     elements feel disconnected from their containers.
+     ---------------------------------------------------------- */
+  --space-1:   4px;    /* icon gaps, tight inline spacing */
+  --space-2:   8px;    /* button padding, badge pad, input gap */
+  --space-3:  12px;    /* form field gap, card inner gap */
+  --space-4:  16px;    /* default content padding */
+  --space-5:  24px;    /* card padding, section gap, grid gutter */
+  --space-6:  32px;    /* panel padding, between major sections */
+  --space-7:  48px;    /* large layout gaps */
+  --space-8:  64px;    /* page margin, hero padding */
+
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY
+     Typeface: Geist (sans) + Geist Mono (mono). Committed May 2026.
+     Do not substitute without updating Figma text styles.
+
+     SIZE SCALE — real px values matched to Figma text styles.
+     Not a ratio scale — actual values from the design audit.
+
+     Micro:
+       --text-9    9px   table/caps-sm
+       --text-10  10px   table/caps-md, table/cell-sm
+       --text-11  11px   ui/kbd, table/caps-lg, table/cell-md, ui/code-sm
+
+     Small:
+       --text-12  12px   body/xs, ui/label, ui/caps, heading/xs
+       --text-13  13px   table/cell-lg
+
+     Body:
+       --text-14  14px   body/sm, ui/code, ui/button, heading/group
+       --text-16  16px   body/md, heading/card-sm
+       --text-18  18px   body/narrative, heading/card
+
+     Heading:
+       --text-20  20px   heading/section, body/narrative-lg
+       --text-24  24px   heading/subtitle
+       --text-32  32px   heading/title
+
+     Display:
+       --text-40  40px   display/sm (editorial), metric/value (data)
+       --text-48  48px   display/md
+       --text-56  56px   metric/display
+       --text-64  64px   display/lg
+
+     Legacy aliases — backward compat, map to new scale:
+       --text-xs   → --text-11
+       --text-sm   → --text-12
+       --text-base → --text-14
+       --text-md   → --text-16
+       --text-lg   → --text-18
+       --text-xl   → --text-20
+       --text-2xl  → --text-24
+     ---------------------------------------------------------- */
+  --text-9:    0.5625rem;
+  --text-10:   0.625rem;
+  --text-11:   0.6875rem;
+  --text-12:   0.75rem;
+  --text-13:   0.8125rem;
+  --text-14:   0.875rem;
+  --text-16:   1rem;
+  --text-18:   1.125rem;
+  --text-20:   1.25rem;
+  --text-24:   1.5rem;
+  --text-32:   2rem;
+  --text-40:   2.5rem;
+  --text-48:   3rem;
+  --text-56:   3.5rem;
+  --text-64:   4rem;
+
+  /* Legacy aliases */
+  --text-xs:   var(--text-11);
+  --text-sm:   var(--text-12);
+  --text-base: var(--text-14);
+  --text-md:   var(--text-16);
+  --text-lg:   var(--text-18);
+  --text-xl:   var(--text-20);
+  --text-2xl:  var(--text-24);
+
+  /* ----------------------------------------------------------
+     LINE HEIGHT — unitless (standardized — no px values)
+     ---------------------------------------------------------- */
+  --leading-110:   1.10;   /* display, metric — tight */
+  --leading-138:   1.38;   /* table/cell-lg */
+  --leading-140:   1.40;   /* table/cell-sm */
+  --leading-145:   1.45;   /* table/cell-md, snug UI */
+  --leading-150:   1.50;   /* body, headings, most UI */
+  --leading-170:   1.70;   /* narrative text — exec persona */
+
+  /* Semantic aliases */
+  --leading-tight:   var(--leading-110);
+  --leading-snug:    var(--leading-145);
+  --leading-normal:  var(--leading-150);
+  --leading-relaxed: var(--leading-170);
+
+  /* ----------------------------------------------------------
+     LETTER SPACING — named by role, not number
+     ---------------------------------------------------------- */
+  --tracking-tightest:  -0.025em;  /* display/lg–md */
+  --tracking-tight:     -0.01em;   /* heading/title, subtitle */
+  --tracking-normal:     0;
+  --tracking-wide:      +0.04em;   /* ui/button (uppercase) */
+  --tracking-caps-sm:   +0.08em;   /* ui/label — 10% */
+  --tracking-caps-md:   +0.10em;   /* table/caps-md — 8% (corrected) */
+  --tracking-caps-lg:   +0.06em;   /* table/caps-lg — 6% */
+  --tracking-caps-xl:   +0.16em;   /* ui/caps — maximum */
+
+  /* ----------------------------------------------------------
+     TYPEFACES
+     ---------------------------------------------------------- */
+  --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* ----------------------------------------------------------
+     FONT WEIGHTS
+     weight/semibold = 600 (corrected from 700 in v0.1)
+     weight/bold = 700 (new — for table caps, button labels)
+     ---------------------------------------------------------- */
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+
+
+  /* ----------------------------------------------------------
+     BORDER RADIUS
+     Rule: nested elements always use a smaller radius than parent.
+     sm inside md, md inside lg, etc.
+     ---------------------------------------------------------- */
+  --radius-sm:   3px;     /* kbd, badge, tooltip */
+  --radius-md:   6px;     /* input, button, chip */
+  --radius-lg:   8px;     /* card, modal, panel */
+  --radius-xl:  12px;     /* drawer, large card */
+  --radius-full: 9999px;  /* pill, avatar, status dot */
+
+
+  /* ----------------------------------------------------------
+     SHADOWS / ELEVATION
+     Surface-first model: reach for a deeper surface token before
+     a shadow. Only use shadows for floating elements (dropdown,
+     modal, toast). Always pair a shadow with border/default.
+     ---------------------------------------------------------- */
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md:   0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.6);
+
+
+  /* ----------------------------------------------------------
+     ANIMATION
+     Animate only transform and opacity (GPU-accelerated).
+     Never animate width, height, top, left (layout reflow).
+     ---------------------------------------------------------- */
+  --duration-fast:    100ms;   /* button press, toggle, row hover */
+  --duration-base:    150ms;   /* tooltips, small state changes */
+  --duration-slow:    250ms;   /* panels, sidebars, expanding sections */
+  --duration-slower:  400ms;   /* page transitions */
+
+  --ease-out:     cubic-bezier(0.0, 0.0, 0.2, 1.0);  /* entering elements */
+  --ease-in:      cubic-bezier(0.4, 0.0, 1.0, 1.0);  /* leaving elements */
+  --ease-in-out:  cubic-bezier(0.4, 0.0, 0.2, 1.0);  /* repositioning */
+
+
+  /* ----------------------------------------------------------
+     LAYOUT CONSTANTS
+     Used by layout.css for app shell scaffolding.
+     ---------------------------------------------------------- */
+  --sidebar-width:            240px;
+  --sidebar-width-collapsed:   64px;
+  --topbar-height:             52px;
+  --content-max-width:       1280px;
+
 }
 
 
-/* ──────────────────────────────────────────────────────────────────────────
- * ROLE UTILITY CLASSES
- * ────────────────────────────────────────────────────────────────────────── */
+/* ============================================================
+   03 — BASE TYPOGRAPHY
+   ============================================================ */
 
-.role-display {
-  font-family:    var(--role-display-family);
-  font-size:      var(--role-display-size);
-  font-weight:    var(--role-display-weight);
-  line-height:    var(--role-display-line-height);
-  letter-spacing: var(--role-display-letter-spacing);
-}
-.role-display-sm {
-  font-family:    var(--role-display-sm-family);
-  font-size:      var(--role-display-sm-size);
-  font-weight:    var(--role-display-sm-weight);
-  line-height:    var(--role-display-sm-line-height);
-  letter-spacing: var(--role-display-sm-letter-spacing);
-}
-.role-display-lg {
-  font-family:    var(--role-display-lg-family);
-  font-size:      var(--role-display-lg-size);
-  font-weight:    var(--role-display-lg-weight);
-  line-height:    var(--role-display-lg-line-height);
-  letter-spacing: var(--role-display-lg-letter-spacing);
-}
-.role-subtitle {
-  font-family:    var(--role-subtitle-family);
-  font-size:      var(--role-subtitle-size);
-  font-weight:    var(--role-subtitle-weight);
-  line-height:    var(--role-subtitle-line-height);
-  letter-spacing: var(--role-subtitle-letter-spacing);
-}
-.role-body-lg {
-  font-family:    var(--role-body-lg-family);
-  font-size:      var(--role-body-lg-size);
-  font-weight:    var(--role-body-lg-weight);
-  line-height:    var(--role-body-lg-line-height);
-  letter-spacing: var(--role-body-lg-letter-spacing);
-}
-.role-title {
-  font-family:    var(--role-title-family);
-  font-size:      var(--role-title-size);
-  font-weight:    var(--role-title-weight);
-  line-height:    var(--role-title-line-height);
-  letter-spacing: var(--role-title-letter-spacing);
-}
-.role-heading {
-  font-family:    var(--role-heading-family);
-  font-size:      var(--role-heading-size);
-  font-weight:    var(--role-heading-weight);
-  line-height:    var(--role-heading-line-height);
-  letter-spacing: var(--role-heading-letter-spacing);
-}
-.role-body {
-  font-family:    var(--role-body-family);
-  font-size:      var(--role-body-size);
-  font-weight:    var(--role-body-weight);
-  line-height:    var(--role-body-line-height);
-  letter-spacing: var(--role-body-letter-spacing);
-}
-.role-body-sm {
-  font-family:    var(--role-body-sm-family);
-  font-size:      var(--role-body-sm-size);
-  font-weight:    var(--role-body-sm-weight);
-  line-height:    var(--role-body-sm-line-height);
-  letter-spacing: var(--role-body-sm-letter-spacing);
-}
-.role-secondary {
-  font-family:    var(--role-secondary-family);
-  font-size:      var(--role-secondary-size);
-  font-weight:    var(--role-secondary-weight);
-  line-height:    var(--role-secondary-line-height);
-  letter-spacing: var(--role-secondary-letter-spacing);
-}
-.role-metric-display {
-  font-family:    var(--role-metric-display-family);
-  font-size:      var(--role-metric-display-size);
-  font-weight:    var(--role-metric-display-weight);
-  line-height:    var(--role-metric-display-line-height);
-  letter-spacing: var(--role-metric-display-letter-spacing);
-  font-variant-numeric: tabular-nums;
-}
-.role-metric-value {
-  font-family:    var(--role-metric-value-family);
-  font-size:      var(--role-metric-value-size);
-  font-weight:    var(--role-metric-value-weight);
-  line-height:    var(--role-metric-value-line-height);
-  letter-spacing: var(--role-metric-value-letter-spacing);
-  font-variant-numeric: tabular-nums;
-}
-.role-label {
-  font-family:    var(--role-label-family);
-  font-size:      var(--role-label-size);
-  font-weight:    var(--role-label-weight);
-  line-height:    var(--role-label-line-height);
-  letter-spacing: var(--role-label-letter-spacing);
-  text-transform: uppercase;
-}
-.role-caps {
-  font-family:    var(--role-caps-family);
-  font-size:      var(--role-caps-size);
-  font-weight:    var(--role-caps-weight);
-  line-height:    var(--role-caps-line-height);
-  letter-spacing: var(--role-caps-letter-spacing);
-  text-transform: uppercase;
-}
-.role-button {
-  font-family:    var(--role-button-family);
-  font-size:      var(--role-button-size);
-  font-weight:    var(--role-button-weight);
-  line-height:    var(--role-button-line-height);
-  letter-spacing: var(--role-button-letter-spacing);
-  text-transform: uppercase;
-}
-.role-code {
-  font-family:    var(--role-code-family);
-  font-size:      var(--role-code-size);
-  font-weight:    var(--role-code-weight);
-  line-height:    var(--role-code-line-height);
-  letter-spacing: var(--role-code-letter-spacing);
-}
-.role-kbd {
-  font-family:    var(--role-kbd-family);
-  font-size:      var(--role-kbd-size);
-  font-weight:    var(--role-kbd-weight);
-  line-height:    var(--role-kbd-line-height);
-  letter-spacing: var(--role-kbd-letter-spacing);
-}
-.role-narrative {
-  font-family:    var(--role-narrative-family);
-  font-size:      var(--role-narrative-size);
-  font-weight:    var(--role-narrative-weight);
-  line-height:    var(--role-narrative-line-height);
-  letter-spacing: var(--role-narrative-letter-spacing);
-}
-.role-narrative-lg {
-  font-family:    var(--role-narrative-lg-family);
-  font-size:      var(--role-narrative-lg-size);
-  font-weight:    var(--role-narrative-lg-weight);
-  line-height:    var(--role-narrative-lg-line-height);
-  letter-spacing: var(--role-narrative-lg-letter-spacing);
-}
-
-
-/* ──────────────────────────────────────────────────────────────────────────
- * BASE
- * ────────────────────────────────────────────────────────────────────────── */
-
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--color-bg);
-  color: var(--color-text-primary);
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 2;
 }
 
 body {
-  font-family:    var(--role-body-family);
-  font-size:      var(--role-body-size);
-  font-weight:    var(--role-body-weight);
-  line-height:    var(--role-body-line-height);
-  letter-spacing: var(--role-body-letter-spacing);
+  font-family:  var(--font-sans);
+  font-size:    var(--text-14);
+  font-weight:  var(--weight-regular);
+  line-height:  var(--leading-normal);
+  color:        var(--color-text-primary);
+  background:   var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-variant-ligatures: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family:    var(--font-sans);
+  font-weight:    var(--weight-semibold);
+  line-height:    var(--leading-tight);
+  color:          var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+p {
+  line-height: var(--leading-normal);
+  color:       var(--color-text-secondary);
+}
+
+/* Monospace — used heavily for data, IDs, code, metrics */
+code, samp {
+  font-family:          var(--font-mono);
+  font-size:            var(--text-14);
+  color:                var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Keyboard shortcut badge */
+kbd {
+  font-family:    var(--font-mono);
+  font-size:      var(--text-11);
+  font-weight:    var(--weight-medium);
+  color:          var(--color-text-secondary);
+  background:     var(--color-surface-2);
+  border:         1px solid var(--color-border-kbd);
+  border-radius:  var(--radius-sm);
+  padding:        1px 5px;
+  line-height:    var(--leading-tight);
+  white-space:    nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Code block */
+pre {
+  font-family:    var(--font-mono);
+  font-size:      var(--text-14);
+  line-height:    var(--leading-relaxed);
+  color:          var(--color-text-primary);
+  background:     var(--color-surface-code);
+  border:         1px solid var(--color-border-subtle);
+  border-radius:  var(--radius-lg);
+  padding:        var(--space-4) var(--space-5);
+  overflow-x:     auto;
+  tab-size:       2;
+  font-variant-numeric: tabular-nums;
+}
+
+pre code {
+  font-size:   inherit;
+  background:  none;
+  border:      none;
+  padding:     0;
+}
+
+small {
+  font-size: var(--text-12);
+  color:     var(--color-text-tertiary);
+}
+
+strong, b {
+  font-weight: var(--weight-semibold);
+}
+
+a {
+  color:           var(--color-accent);
+  text-decoration: none;
+  transition:      color var(--duration-base) var(--ease-out);
+}
+
+a:hover {
+  color: var(--color-accent-hover);
 }
 
 
-/* ──────────────────────────────────────────────────────────────────────────
- * ICONS — Lucide via CDN
- *
- * Load once per page:
- *   <script src="https://unpkg.com/lucide@latest"></script>
- *   <script>lucide.createIcons();</script>
- *
- * Use sparsely. The system is text-led — reach for an icon only when it
- * carries information the surrounding text cannot (status indicators,
- * directional affordances, brand sigils). See SKILL.md → Icons.
- *
- * Inline:
- *   <i data-lucide="terminal"></i>            ← default 14px
- *   <i data-lucide="terminal" class="icon-sm"></i>
- *   <i data-lucide="terminal" class="icon-lg"></i>
- * ────────────────────────────────────────────────────────────────────────── */
+/* ============================================================
+   04 — ELEMENT RESETS
+   ============================================================ */
 
-[data-lucide],
-.lucide {
-  width:           var(--icon-size);
-  height:          var(--icon-size);
-  stroke-width:    var(--icon-stroke);
-  vertical-align:  -0.15em;
-  flex-shrink:     0;
-  display:         inline-block;
+ul, ol { list-style: none; }
+
+img, video, svg {
+  display:   block;
+  max-width: 100%;
 }
 
-.icon-sm { width: var(--icon-size-sm); height: var(--icon-size-sm); }
-.icon-lg { width: var(--icon-size-lg); height: var(--icon-size-lg); }
+button, input, select, textarea, optgroup {
+  font:  inherit;
+  color: inherit;
+  margin: 0;
+}
 
-/* Brand-tinted icons inherit currentColor — set color on the parent to
-   recolor. Reach for these accent classes when the icon is itself the
-   carrier of meaning (status, brand presence). */
-.icon-accent  { color: var(--color-accent); }
-.icon-aqua    { color: var(--color-accent-secondary); }
-.icon-subtle  { color: var(--color-accent-subtle); }
-.icon-faint   { color: var(--color-text-tertiary); }
+button {
+  cursor:      pointer;
+  border:      none;
+  background:  none;
+  padding:     0;
+  line-height: inherit;
+}
+
+button:disabled {
+  cursor:  not-allowed;
+  opacity: 0.4;
+}
+
+input, select, textarea {
+  background:    transparent;
+  border:        1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding:       var(--space-2) var(--space-3);
+  color:         var(--color-text-primary);
+  outline:       none;
+  width:         100%;
+  transition:    border-color var(--duration-base) var(--ease-out);
+  font-variant-numeric: tabular-nums;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow:   0 0 0 3px var(--color-accent-subtle);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+textarea {
+  resize:     vertical;
+  min-height: 80px;
+}
+
+table {
+  border-collapse: collapse;
+  width:           100%;
+}
+
+th {
+  font-family:    var(--font-mono);
+  font-weight:    var(--weight-bold);
+  font-size:      var(--text-11);
+  color:          var(--color-text-secondary);
+  text-align:     left;
+  letter-spacing: var(--tracking-caps-md);
+  text-transform: uppercase;
+  line-height:    var(--leading-145);
+}
+
+td {
+  font-family:          var(--font-mono);
+  font-size:            var(--text-11);
+  line-height:          var(--leading-145);
+  font-variant-numeric: tabular-nums;
+}
+
+th, td {
+  padding:       var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+
+hr {
+  border:     none;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+
+/* ============================================================
+   05 — TYPOGRAPHY STYLE CLASSES
+   One class per Figma text style (28 styles, v0.2).
+   Name matches Figma exactly. Use these to apply styles in HTML.
+
+   DISAMBIGUATION RULES (critical — see ✦ Type for full reference):
+     40px editorial  → .type-display-sm   (Geist Regular)
+     40px data value → .type-metric-value (Geist Mono Medium)
+     18px heading    → .type-heading-card (Geist Medium, 150% lh)
+     18px body text  → .type-body-narrative (Geist Regular, 170% lh)
+     16px heading    → .type-heading-card-sm (Geist Medium)
+     16px body text  → .type-body-md (Geist Regular)
+     14px heading    → .type-heading-group (Geist Medium)
+     14px body text  → .type-body-sm (Geist Regular — merged from body/secondary)
+     12px label      → .type-heading-xs (Geist Medium) — NEW
+     12px body text  → .type-body-xs (Geist Regular)
+   ============================================================ */
+
+/* --- Display --- */
+.type-display-lg {
+  font-family: var(--font-sans); font-size: var(--text-64);
+  font-weight: var(--weight-regular); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tightest);
+}
+.type-display-md {
+  font-family: var(--font-sans); font-size: var(--text-48);
+  font-weight: var(--weight-regular); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tightest);
+}
+.type-display-sm {
+  font-family: var(--font-sans); font-size: var(--text-40);
+  font-weight: var(--weight-regular); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tightest);
+}
+
+/* --- Heading --- */
+.type-heading-title {
+  font-family: var(--font-sans); font-size: var(--text-32);
+  font-weight: var(--weight-regular); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+.type-heading-subtitle {
+  font-family: var(--font-sans); font-size: var(--text-24);
+  font-weight: var(--weight-medium); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+.type-heading-section {
+  font-family: var(--font-sans); font-size: var(--text-20);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+}
+.type-heading-card {
+  /* 18px Medium — NOT body/narrative (same size, different weight + leading) */
+  font-family: var(--font-sans); font-size: var(--text-18);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+}
+.type-heading-card-sm {
+  /* 16px Medium — NOT body/md (same size, different weight) */
+  font-family: var(--font-sans); font-size: var(--text-16);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+}
+.type-heading-group {
+  font-family: var(--font-sans); font-size: var(--text-14);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+}
+.type-heading-xs {
+  /* NEW — form field labels, input annotations, validation messages */
+  font-family: var(--font-sans); font-size: var(--text-12);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-text-secondary);
+}
+
+/* --- Body --- */
+.type-body-narrative-lg {
+  font-family: var(--font-sans); font-size: var(--text-20);
+  font-weight: var(--weight-regular); line-height: var(--leading-relaxed);
+}
+.type-body-narrative {
+  /* MERGED: was body/narrative + body/lg — identical spec. Use for exec persona paragraphs. */
+  font-family: var(--font-sans); font-size: var(--text-18);
+  font-weight: var(--weight-regular); line-height: var(--leading-relaxed);
+}
+.type-body-md {
+  font-family: var(--font-sans); font-size: var(--text-16);
+  font-weight: var(--weight-regular); line-height: var(--leading-normal);
+}
+.type-body-sm {
+  /* MERGED: was body/sm + body/secondary — identical spec.
+     For de-emphasized content use color: var(--color-text-secondary) */
+  font-family: var(--font-sans); font-size: var(--text-14);
+  font-weight: var(--weight-regular); line-height: var(--leading-normal);
+}
+.type-body-xs {
+  font-family: var(--font-sans); font-size: var(--text-12);
+  font-weight: var(--weight-regular); line-height: var(--leading-normal);
+}
+
+/* --- Metric --- */
+.type-metric-display {
+  /* Use for hero KPI numbers on exec dashboard. NOT for editorial text. */
+  font-family: var(--font-mono); font-size: var(--text-56);
+  font-weight: var(--weight-medium); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tightest); font-variant-numeric: tabular-nums;
+}
+.type-metric-value {
+  /* 40px data value. NOT display/sm (same size — use Geist Mono for data, Geist for editorial) */
+  font-family: var(--font-mono); font-size: var(--text-40);
+  font-weight: var(--weight-medium); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight); font-variant-numeric: tabular-nums;
+}
+
+/* --- UI --- */
+.type-ui-button {
+  font-family: var(--font-mono); font-size: var(--text-14);
+  font-weight: var(--weight-bold); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+}
+.type-ui-label {
+  /* MERGED from ui/label — primary caps style for section headers, form groups */
+  font-family: var(--font-mono); font-size: var(--text-12);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-caps-sm); text-transform: uppercase;
+}
+.type-ui-caps {
+  /* Table column headers strictly. Higher tracking than ui/label. */
+  font-family: var(--font-mono); font-size: var(--text-12);
+  font-weight: var(--weight-medium); line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-caps-xl); text-transform: uppercase;
+}
+.type-ui-code {
+  font-family: var(--font-mono); font-size: var(--text-14);
+  font-weight: var(--weight-regular); line-height: var(--leading-relaxed);
+  font-variant-numeric: tabular-nums;
+}
+.type-ui-code-sm {
+  font-family: var(--font-mono); font-size: var(--text-11);
+  font-weight: var(--weight-regular); line-height: var(--leading-relaxed);
+  font-variant-numeric: tabular-nums;
+}
+.type-ui-kbd {
+  font-family: var(--font-mono); font-size: var(--text-11);
+  font-weight: var(--weight-medium); line-height: var(--leading-tight);
+}
+
+/* --- Table --- */
+.type-table-caps-lg {
+  font-family: var(--font-mono); font-size: var(--text-11);
+  font-weight: var(--weight-bold); line-height: var(--leading-145);
+  letter-spacing: var(--tracking-caps-lg); text-transform: uppercase;
+}
+.type-table-caps-md {
+  font-family: var(--font-mono); font-size: var(--text-10);
+  font-weight: var(--weight-bold); line-height: var(--leading-145);
+  letter-spacing: var(--tracking-caps-md); text-transform: uppercase;
+}
+.type-table-caps-sm {
+  font-family: var(--font-mono); font-size: var(--text-9);
+  font-weight: var(--weight-bold); line-height: var(--leading-140);
+  letter-spacing: var(--tracking-caps-md); text-transform: uppercase;
+}
+.type-table-cell-lg {
+  font-family: var(--font-mono); font-size: var(--text-13);
+  font-weight: var(--weight-regular); line-height: var(--leading-138);
+  font-variant-numeric: tabular-nums;
+}
+.type-table-cell-md {
+  font-family: var(--font-mono); font-size: var(--text-11);
+  font-weight: var(--weight-regular); line-height: var(--leading-145);
+  font-variant-numeric: tabular-nums;
+}
+.type-table-cell-sm {
+  font-family: var(--font-mono); font-size: var(--text-10);
+  font-weight: var(--weight-regular); line-height: var(--leading-140);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ============================================================
+   06 — LAYOUT UTILITIES
+   ============================================================ */
+
+.flex          { display: flex; }
+.flex-col      { flex-direction: column; }
+.flex-wrap     { flex-wrap: wrap; }
+.items-start   { align-items: flex-start; }
+.items-center  { align-items: center; }
+.items-end     { align-items: flex-end; }
+.justify-start    { justify-content: flex-start; }
+.justify-center   { justify-content: center; }
+.justify-end      { justify-content: flex-end; }
+.justify-between  { justify-content: space-between; }
+.flex-1        { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.gap-5 { gap: var(--space-5); }
+.gap-6 { gap: var(--space-6); }
+
+.grid  { display: grid; }
+.col-2 { grid-template-columns: repeat(2, 1fr); }
+.col-3 { grid-template-columns: repeat(3, 1fr); }
+.col-4 { grid-template-columns: repeat(4, 1fr); }
+
+.w-full  { width: 100%; }
+.h-full  { height: 100%; }
+.min-h-0 { min-height: 0; }
+
+.overflow-hidden { overflow: hidden; }
+.overflow-auto   { overflow: auto; }
+.overflow-x-auto { overflow-x: auto; }
+
+.relative { position: relative; }
+.absolute { position: absolute; }
+.sticky   { position: sticky; }
+
+/* Text utilities */
+.text-primary   { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary  { color: var(--color-text-tertiary); }
+.text-accent    { color: var(--color-accent); }
+.font-mono      { font-family: var(--font-mono); }
+.font-medium    { font-weight: var(--weight-medium); }
+.font-semibold  { font-weight: var(--weight-semibold); }
+.font-bold      { font-weight: var(--weight-bold); }
+.uppercase      { text-transform: uppercase; }
+.tabular        { font-variant-numeric: tabular-nums; }
+.truncate       { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Legacy text size utilities */
+.text-xs   { font-size: var(--text-xs); }
+.text-sm   { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-md   { font-size: var(--text-md); }
+.text-lg   { font-size: var(--text-lg); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+}
+
+
+/* ============================================================
+   07 — COMPONENT DEFAULTS
+   ============================================================ */
+
+/* --- Button --- */
+.btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--space-2);
+  height:          32px;
+  padding:         0 var(--space-4);
+  font-family:     var(--font-mono);
+  font-size:       var(--text-14);
+  font-weight:     var(--weight-bold);
+  letter-spacing:  var(--tracking-wide);
+  text-transform:  uppercase;
+  border-radius:   var(--radius-md);
+  white-space:     nowrap;
+  transition:      background var(--duration-base) var(--ease-out),
+                   color      var(--duration-base) var(--ease-out),
+                   border-color var(--duration-base) var(--ease-out),
+                   opacity    var(--duration-base) var(--ease-out);
+}
+.btn--sm { height: 28px; padding: 0 var(--space-3); font-size: var(--text-12); }
+.btn--lg { height: 40px; padding: 0 var(--space-5); font-size: var(--text-16); }
+
+
+/* --- Badge / Tag --- */
+.badge {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            var(--space-1);
+  padding:        2px var(--space-2);
+  font-family:    var(--font-mono);
+  font-size:      var(--text-11);
+  font-weight:    var(--weight-medium);
+  border-radius:  var(--radius-sm);
+  letter-spacing: var(--tracking-caps-sm);
+  text-transform: uppercase;
+  white-space:    nowrap;
+}
+
+
+/* --- Card --- */
+.card {
+  background:    var(--color-surface-1);
+  border-radius: var(--radius-lg);
+  padding:       var(--space-5);
+}
+
+
+/* --- Divider --- */
+.divider {
+  border:     none;
+  border-top: 1px solid var(--color-border-subtle);
+  margin:     var(--space-4) 0;
+}
+
+/* Group divider — pairs with .type-heading-group */
+.divider--group {
+  border-top-color: var(--color-border-default);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+
+/* --- Data value (monospace numbers, always tabular) --- */
+.data-value {
+  font-family:          var(--font-mono);
+  font-size:            var(--text-14);
+  color:                var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.data-value--hero {
+  /* Operator dashboard KPI — one per card */
+  font-size:      var(--text-40);
+  font-weight:    var(--weight-medium);
+  letter-spacing: var(--tracking-tight);
+}
+.data-value--display {
+  /* Executive hero stat — one per screen */
+  font-size:      var(--text-56);
+  font-weight:    var(--weight-medium);
+  letter-spacing: var(--tracking-tightest);
+}
+
+
+/* --- Status dot --- */
+.status-dot {
+  display:       inline-block;
+  width:         8px;
+  height:        8px;
+  border-radius: var(--radius-full);
+  flex-shrink:   0;
+}
+.status-dot--success { background: var(--color-success); }
+.status-dot--warning { background: var(--color-warning-text); }
+.status-dot--danger  { background: var(--color-danger); }
+.status-dot--neutral { background: var(--color-text-tertiary); }
+
+
+/* --- Code block (full treatment) --- */
+.code-block {
+  font-family:    var(--font-mono);
+  font-size:      var(--text-14);
+  line-height:    var(--leading-relaxed);
+  color:          var(--color-text-primary);
+  background:     var(--color-surface-code);
+  border:         1px solid var(--color-border-subtle);
+  border-radius:  var(--radius-lg);
+  padding:        var(--space-4) var(--space-5);
+  overflow-x:     auto;
+  tab-size:       2;
+  font-variant-numeric: tabular-nums;
+}
+.code-block--sm {
+  font-size:   var(--text-11);
+  padding:     var(--space-3) var(--space-4);
+}
+
+/* Syntax highlight roles (colors defined — values from brand palette) */
+.syn-keyword  { color: var(--color-accent); }
+.syn-string   { color: var(--color-success-text); }
+.syn-comment  { color: var(--color-text-tertiary); font-style: italic; }
+.syn-number   { color: var(--color-info-text); }
+.syn-operator { color: var(--color-text-secondary); }
+
+
+
+
+/* ============================================================
+   08 — ACCESSIBILITY
+   ============================================================ */
+
+:focus-visible {
+  outline:        2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto !important;
+  }
+}
+
+
+/* ============================================================
+   END — amalgamy-reset.css v0.2
+   Next files: amalgamy-layout.css · style-layer.css · components/
+   ============================================================ */
