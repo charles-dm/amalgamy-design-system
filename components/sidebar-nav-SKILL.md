@@ -117,7 +117,7 @@ The sidebar reads the parent class — no markup changes inside `.sidebar` itsel
 .sidebar {
   display:        flex;
   flex-direction: column;
-  width:          var(--sidebar-width);          /* 300px (v0.3) */
+  width:          var(--sidebar-width-expanded);          /* 300px (v0.3) */
   background:     var(--color-surface-1);
   border-right:   1px solid var(--color-border-default);
   overflow-y:     auto;
@@ -178,7 +178,7 @@ The sidebar reads the parent class — no markup changes inside `.sidebar` itsel
   display:         flex;
   align-items:     center;
   gap:             12px;
-  height:          44px;
+  height:          var(--sidebar-item-height);   /* 40px */
   padding:         0 16px;
   text-decoration: none;
   white-space:     nowrap;

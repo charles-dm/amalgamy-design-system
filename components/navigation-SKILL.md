@@ -424,12 +424,12 @@ A focused prototype showing one section's worth of navigation. No status bar, no
 At `data-density="compact"`:
 - Tab padding compresses to `8px 14px`
 - Sub-nav chips compress to `4px 10px`
-- Sidebar item height: stays 44px (the v0.3 sidebar is density-locked — operator screens and executive screens use the same item geometry)
+- Sidebar item height: stays 40px (`--sidebar-item-height`) (the v0.3 sidebar is density-locked — operator screens and executive screens use the same item geometry)
 
 At `data-density="spacious"`:
 - Tab padding grows to `12px 22px`
 - Sub-nav chips grow to `8px 16px`
-- Sidebar item height: stays 44px (same — sidebar geometry is fixed per v0.3)
+- Sidebar item height: stays 40px (`--sidebar-item-height`) (same — sidebar geometry is fixed per v0.3)
 
 Per the foundation skill's first-prompt defaults: standard density unless the user explicitly asks otherwise.
 

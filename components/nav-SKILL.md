@@ -83,7 +83,7 @@ File: R5IJ7h4lSqJq6smVlswkLQ · Page: 🧩 Components
 ```css
 .sidebar {
   grid-area:      sidebar;
-  width:          var(--sidebar-width);
+  width:          var(--sidebar-width-expanded);
   height:         100vh;
   background:     var(--color-surface-1);
   border-right:   1px solid var(--color-border-subtle);

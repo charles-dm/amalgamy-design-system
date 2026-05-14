@@ -73,7 +73,7 @@ html, body {
 
 .app-shell {
   display:        grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: var(--sidebar-width-expanded) 1fr;
   grid-template-rows:    var(--topbar-height) 1fr;
   grid-template-areas:
     "topbar  topbar"
@@ -122,7 +122,7 @@ html, body {
   align-items: center;
   gap:         var(--space-2);
   flex-shrink: 0;
-  width:       calc(var(--sidebar-width) - var(--space-5) - var(--space-4));
+  width:       calc(var(--sidebar-width-expanded) - var(--space-5) - var(--space-4));
   /* Aligns brand with sidebar nav items */
 }
 
@@ -186,7 +186,7 @@ html, body {
   grid-area:    sidebar;
   display:      flex;
   flex-direction: column;
-  width:        var(--sidebar-width);
+  width:        var(--sidebar-width-expanded);
   height:       100%;
   overflow-y:   auto;
   overflow-x:   hidden;
@@ -889,7 +889,7 @@ html, body {
     left:      0;
     bottom:    0;
     z-index:   200;
-    width:     var(--sidebar-width);
+    width:     var(--sidebar-width-expanded);
     /* style-layer.css adds background and shadow */
   }
 
