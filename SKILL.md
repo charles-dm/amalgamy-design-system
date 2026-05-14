@@ -492,12 +492,6 @@ CSS-only tooltip (`::after { content: attr(data-label) }`). No JS required.
 **`.status-dot`:** Live state that changes — Running, Queued, Failed, Idle.
 Always pair with text label. Never color alone (accessibility).
 
-**Workflow node states:**
-```
-```
-
-```
-
 ### Data display
 
 **`.data-value` (monospace + tabular-nums):**
