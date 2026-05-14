@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>Amalgamy · SidebarNav prototype</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- v0.3 token + layout foundation -->
+<link rel="stylesheet" href="../tokens/amalgamy-reset.css">
+<link rel="stylesheet" href="../tokens/amalgamy-layout.css">
+
+<style>
+  /* ────────────────────────────────────────────────────────────
+     SidebarNav prototype — v0.3 spec.
+     This file inlines the .sidebar-item CSS as defined in
+     components/sidebar-nav-SKILL.md so it can be opened standalone.
+     Once promoted, the same CSS should live in layout.css or a
+     dedicated sidebar-nav.css.
+     ──────────────────────────────────────────────────────────── */
+
+  /* Override .app-shell to position our prototype */
+  body { background: var(--color-bg); }
+  .demo-shell {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    height: 100vh;
+    transition: grid-template-columns 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ───── Sidebar shell ───── */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);   /* 300px in v0.3 */
+    background: var(--color-surface-1);
+    border-right: 1px solid var(--color-border-default);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .app-shell--sidebar-collapsed .sidebar {
+    width: var(--sidebar-width-collapsed);   /* 56px in v0.3 */
+  }
+
+  /* ───── Logo box ───── */
+  .sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: var(--topbar-height);   /* aligns with the topbar */
+    padding: 0 16px;
+    border-bottom: 1px solid var(--color-border-default);
+    overflow: hidden;
+  }
+  .sidebar__brand-mark {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--color-accent-hover);   /* #45D9CD — intentional, brighter than default */
+    flex-shrink: 0;
+    position: relative;
+  }
+  .sidebar__brand-mark::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    background: var(--color-accent);
+  }
+  .sidebar__brand-name {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.10em;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    transition: opacity 160ms 30ms ease-out, transform 160ms 30ms ease-out;
+  }
+  .app-shell--sidebar-collapsed .sidebar__brand {
+    justify-content: center;
+    padding: 0;
+  }
+  .app-shell--sidebar-collapsed .sidebar__brand-name {
+    opacity: 0;
+    transform: translateX(-6px);
+    width: 0;
+    pointer-events: none;
+  }
+
+  /* ───── Sections (no horizontal padding here) ───── */
+  .sidebar__nav,
+  .sidebar__bottom {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-2) 0;
+  }
+  .sidebar__bottom {
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  /* ───── Spacer (must be flex: 1 0 0, not flex: 1) ───── */
+  .sidebar__spacer {
+    flex: 1 0 0;
+    min-height: 1px;
+  }
+
+  /* ───── SidebarItem ───── */
+  .sidebar-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    padding: 0 16px;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 120ms ease-out, color 120ms ease-out;
+  }
+  .sidebar-item__icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--color-text-faint);
+    flex-shrink: 0;
+    transition: color 120ms ease-out;
+  }
+  .sidebar-item__label {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--color-text-secondary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 160ms 30ms ease-out,
+                transform 160ms 30ms cubic-bezier(0.4, 0, 0.2, 1),
+                color 120ms ease-out;
+  }
+
+  /* Hover */
+  .sidebar-item:hover:not(.sidebar-item--active) {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .sidebar-item:hover:not(.sidebar-item--active) .sidebar-item__icon,
+  .sidebar-item:hover:not(.sidebar-item--active) .sidebar-item__label {
+    color: var(--color-text-primary);
+  }
+
+  /* Active — box-shadow inset RIGHT indicator (not border-right) */
+  .sidebar-item--active {
+    background: var(--color-accent-muted-bg);   /* #082223 */
+    box-shadow: inset -2px 0 0 0 var(--color-accent);
+  }
+  .sidebar-item--active .sidebar-item__icon,
+  .sidebar-item--active .sidebar-item__label {
+    color: var(--color-accent);
+  }
+
+  /* Disabled */
+  .sidebar-item--disabled {
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  /* Collapsed — hide labels via opacity+translate (animated), shrink padding */
+  .app-shell--sidebar-collapsed .sidebar-item {
+    padding: 0;
+    justify-content: center;
+  }
+  .app-shell--sidebar-collapsed .sidebar-item__label {
+    opacity: 0;
+    transform: translateX(-6px);
+    width: 0;
+    pointer-events: none;
+  }
+
+  /* Collapsed tooltip — CSS-only via data-label attribute */
+  .app-shell--sidebar-collapsed .sidebar-item::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 10px;
+    background: var(--color-surface-3);
+    border: 1px solid var(--color-border-default);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease-out;
+    z-index: 10;
+  }
+  .app-shell--sidebar-collapsed .sidebar-item:hover::after {
+    opacity: 1;
+  }
+
+  /* ───── Main pane (demo content) ───── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--color-bg);
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    height: var(--topbar-height);
+    padding: 0 var(--space-6);
+    border-bottom: 1px solid var(--color-border-default);
+    background: var(--color-surface-1);
+  }
+  .topbar__toggle {
+    background: transparent;
+    border: 1px solid var(--color-border-default);
+    color: var(--color-text-secondary);
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  .topbar__toggle:hover {
+    border-color: var(--color-border-strong);
+    color: var(--color-text-primary);
+  }
+  .topbar__crumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+  }
+  .topbar__crumb .sep { color: var(--color-text-faint); }
+  .topbar__crumb .here { color: var(--color-text-primary); }
+
+  .page-body {
+    padding: var(--space-7) var(--space-6);
+    max-width: 1080px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .page-body h1 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    color: var(--color-text-primary);
+    margin: 0 0 12px;
+  }
+  .page-body p {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    margin: 0 0 18px;
+    max-width: 60ch;
+  }
+
+  /* Spec callout */
+  .spec {
+    margin-top: 32px;
+    padding: 18px 22px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border-default);
+    border-left: 2px solid var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+  }
+  .spec b {
+    color: var(--color-accent);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 10px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .spec code {
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+  }
+
+  /* Hint pill in the topbar */
+  .topbar__hint {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.06em;
+  }
+  .topbar__hint kbd {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border: 1px solid var(--color-border-kbd);
+    color: var(--color-text-secondary);
+    margin: 0 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-shell app-shell" id="app">
+
+  <!-- ═════════════════════════════ SIDEBAR ═════════════════════════════ -->
+  <aside class="sidebar" aria-label="Primary navigation">
+
+    <!-- Logo box -->
+    <div class="sidebar__brand">
+      <span class="sidebar__brand-mark"></span>
+      <span class="sidebar__brand-name">AMALGAMY</span>
+    </div>
+
+    <!-- Primary nav (max 5) -->
+    <nav class="sidebar__nav" role="navigation">
+      <a class="sidebar-item sidebar-item--active" href="#fleet"
+         data-label="Fleet" aria-current="page">
+        <i class="ph-bold ph-cpu sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Fleet</span>
+      </a>
+      <a class="sidebar-item" href="#jobs" data-label="Jobs">
+        <i class="ph ph-list-bullets sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Jobs</span>
+      </a>
+      <a class="sidebar-item" href="#policies" data-label="Policies">
+        <i class="ph ph-shield-check sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Policies</span>
+      </a>
+      <a class="sidebar-item" href="#reports" data-label="Reports">
+        <i class="ph ph-chart-line sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Reports</span>
+      </a>
+      <a class="sidebar-item" href="#audit" data-label="Audit">
+        <i class="ph ph-file-text sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Audit</span>
+      </a>
+    </nav>
+
+    <!-- REQUIRED spacer: flex: 1 0 0, not flex: 1 -->
+    <div class="sidebar__spacer" aria-hidden="true"></div>
+
+    <!-- Bottom items -->
+    <nav class="sidebar__bottom" aria-label="Account">
+      <a class="sidebar-item" href="#settings" data-label="Settings">
+        <i class="ph ph-gear-six sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Settings</span>
+      </a>
+      <a class="sidebar-item" href="#account" data-label="Account">
+        <i class="ph ph-user sidebar-item__icon" aria-hidden="true"></i>
+        <span class="sidebar-item__label">Account</span>
+      </a>
+    </nav>
+
+  </aside>
+
+  <!-- ═════════════════════════════ MAIN ═════════════════════════════ -->
+  <main class="main">
+
+    <header class="topbar">
+      <button class="topbar__toggle" id="toggle" type="button" aria-label="Toggle sidebar">
+        <i class="ph ph-sidebar-simple" aria-hidden="true"></i>
+      </button>
+      <span class="topbar__crumb">
+        launchhpc <span class="sep">/</span> cluster-a <span class="sep">/</span>
+        <span class="here">fleet</span>
+      </span>
+      <span class="topbar__hint">
+        toggle: <kbd>⌘</kbd><kbd>B</kbd>
+      </span>
+    </header>
+
+    <div class="page-body">
+
+      <h1>SidebarNav — v0.3 prototype</h1>
+      <p>
+        Click any item to set it active. Click the toggle in the topbar
+        (or press <kbd style="font-family:var(--font-mono);font-size:11px;padding:1px 5px;border:1px solid var(--color-border-default);color:var(--color-text-secondary);">⌘B</kbd>)
+        to collapse the sidebar. Hover an item while collapsed to see the
+        CSS-only tooltip.
+      </p>
+
+      <div class="spec">
+        <b>Active item — exact treatment</b>
+        background: <code>var(--color-accent-muted-bg)</code> · <code>#082223</code><br>
+        box-shadow: <code>inset -2px 0 0 0 var(--color-accent)</code> — right indicator, not border-right<br>
+        icon + label color: <code>var(--color-accent)</code> · <code>#2ECEC0</code>
+      </div>
+
+      <div class="spec">
+        <b>Collapse transition</b>
+        width-only · <code>220ms cubic-bezier(0.4, 0, 0.2, 1)</code><br>
+        label reveal: opacity + <code>translateX(-6px → 0)</code> · <code>160ms delay 30ms</code><br>
+        never animate height, top, left, or transform: scaleX
+      </div>
+
+      <div class="spec">
+        <b>Logo box border</b>
+        uses <code>--color-accent-hover</code> (#45D9CD), <em>not</em> <code>--color-accent</code> (#2ECEC0).<br>
+        Intentional — the logo box is high-emphasis and uses the brighter token.
+      </div>
+
+      <div class="spec">
+        <b>Spacer rule</b>
+        <code>flex: 1 0 0; min-height: 1px;</code> — not <code>flex: 1</code> alone.<br>
+        The explicit <code>flex-shrink: 0</code> prevents collapse when the
+        nav content is tall (which would push the bottom items up into the
+        primary section).
+      </div>
+
+      <div class="spec">
+        <b>Collapsed tooltip</b>
+        CSS-only. Each item carries <code>data-label="..."</code>.<br>
+        <code>.sidebar-item::after { content: attr(data-label) }</code> in
+        the collapsed state. No JavaScript.
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  // Toggle sidebar collapse
+  const app = document.getElementById('app');
+  const toggle = document.getElementById('toggle');
+
+  function toggleSidebar() {
+    app.classList.toggle('app-shell--sidebar-collapsed');
+  }
+
+  toggle.addEventListener('click', toggleSidebar);
+
+  // Keyboard shortcut: ⌘B / Ctrl+B
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+    }
+  });
+
+  // Click items to set active — exactly one active at all times
+  document.querySelectorAll('.sidebar-item').forEach((item) => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar-item--active').forEach((a) => {
+        a.classList.remove('sidebar-item--active');
+        a.removeAttribute('aria-current');
+      });
+      item.classList.add('sidebar-item--active');
+      item.setAttribute('aria-current', 'page');
+    });
+  });
+</script>
+
+</body>
+</html>

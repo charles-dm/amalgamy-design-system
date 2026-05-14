@@ -360,8 +360,8 @@
      LAYOUT CONSTANTS
      Used by layout.css for app shell scaffolding.
      ---------------------------------------------------------- */
-  --sidebar-width:            240px;
-  --sidebar-width-collapsed:   64px;
+  --sidebar-width:            300px;   /* v0.3 — was 240px */
+  --sidebar-width-collapsed:   56px;   /* v0.3 — was 64px */
   --topbar-height:             52px;
   --content-max-width:       1280px;
 

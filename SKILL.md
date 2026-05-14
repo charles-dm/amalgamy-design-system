@@ -536,7 +536,7 @@ not the UI. The URL is the bridge to the full ledger view.
 
 Sidebar shows current location with `.nav-item--active`. Exactly one active
 item at all times. Clicking nav item: instant, no animation.
-Sidebar collapse: `.app-shell--collapsed`, 240px → 64px.
+Sidebar collapse: `.app-shell--collapsed`, 300px → 56px (v0.3).
 
 The sidebar active border is `box-shadow: inset -2px 0 0 0 var(--teal)`.
 Sidebar collapse transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1).
@@ -618,7 +618,7 @@ Do not load all component files — only the ones the current session requires.
 | `components/input-form-SKILL.md` | Any form — job submission, policy config, search |
 | `components/card-SKILL.md` | Metric cards, detail panels, modals, alert boxes |
 | `components/nav-SKILL.md` | Topbar, tabs, breadcrumbs, app shell (sidebar now in sidebar-nav-skill.md) |
-| `components/sidebar-nav-skill.md` | SidebarNav collapsed + expanded, SidebarItem states |
+| `components/sidebar-nav-SKILL.md` | SidebarNav collapsed + expanded, SidebarItem states |
 | `components/sidebar-nav.html` | Interactive HTML prototype of SidebarNav |
 | `components/feedback-SKILL.md` | Inline alerts, toasts, tooltips, empty states |
 | `components/icons-SKILL.md` | Any icon use — Phosphor via CDN, size + weight conventions |
