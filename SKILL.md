@@ -442,6 +442,51 @@ Keep to 3–4 words maximum.
 **Disabled state rule:** Only disable when you can explain why. If you can't
 surface the reason, keep enabled and show an error on attempt.
 
+### Sidebar navigation
+
+SidebarNav is the primary wayfinding component for the LaunchHPC
+platform. Use the pre-built component; do not construct ad-hoc nav lists.
+
+**Collapsed vs expanded:**
+- Collapsed (56px): icon-only. Use when horizontal space is constrained
+  or user has explicitly collapsed.
+- Expanded (300px): icon + label. Default state for most screens.
+
+**Active item rule:** Exactly one item active at all times.
+Use `sidebar-item--active` class. Set `aria-current="page"` on the
+active anchor. Never mark two items active simultaneously.
+
+**Active item treatment (exact from Figma):**
+```
+background: var(--teal-muted-bg)         ← #082223
+box-shadow: inset -2px 0 0 0 var(--teal) ← right border, not border-right
+icon color: var(--teal)
+label color: var(--teal)
+```
+
+**Logo box border:** Uses brand/teal/hover (#45D9CD), NOT brand/teal/default.
+This is intentional — the logo box is high-emphasis and uses the brighter token.
+
+**Spacer rule:** The spacer between NavItems and BottomItems must be
+`flex: 1 0 0; min-height: 1px` — not `flex: 1` alone. The flex-shrink: 0
+prevents collapse when content is tall.
+
+**Collapsed tooltip:** Each item must have `data-label="..."` for the
+CSS-only tooltip (`::after { content: attr(data-label) }`). No JS required.
+
+**Item sizing:**
+- Icon: always 24×24px regardless of collapsed/expanded state
+- Icon color: var(--text-faint) at rest — bound to text/faint variable
+- Label: Geist Mono Medium 12px, uppercase, ls=1.2px
+- Label color: var(--text-secondary) at rest, var(--teal) when active
+
+**Do not:**
+- Use border-right for the active indicator — use box-shadow inset
+- Add horizontal padding to NavItems/BottomItems container — padding
+  lives on each individual SidebarItem (px-[16px] when expanded)
+- Hardcode nav labels — they come from route config
+- Place more than 5 items in the primary nav section
+
 ### Status indicators
 
 **`.status-dot`:** Live state that changes — Running, Queued, Failed, Idle.
@@ -492,6 +537,11 @@ not the UI. The URL is the bridge to the full ledger view.
 Sidebar shows current location with `.nav-item--active`. Exactly one active
 item at all times. Clicking nav item: instant, no animation.
 Sidebar collapse: `.app-shell--collapsed`, 240px → 64px.
+
+The sidebar active border is `box-shadow: inset -2px 0 0 0 var(--teal)`.
+Sidebar collapse transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1).
+Label reveal on expand: opacity + translateX(-6px → 0), 160ms delay 30ms.
+Never animate the sidebar with height, top, or left — width only.
 
 ### Loading states
 
@@ -567,7 +617,9 @@ Do not load all component files — only the ones the current session requires.
 | `components/table-SKILL.md` | Any list of comparable items — fleet, job queue, audit log |
 | `components/input-form-SKILL.md` | Any form — job submission, policy config, search |
 | `components/card-SKILL.md` | Metric cards, detail panels, modals, alert boxes |
-| `components/nav-SKILL.md` | Sidebar, topbar, tabs, breadcrumbs, app shell |
+| `components/nav-SKILL.md` | Topbar, tabs, breadcrumbs, app shell (sidebar now in sidebar-nav-skill.md) |
+| `components/sidebar-nav-skill.md` | SidebarNav collapsed + expanded, SidebarItem states |
+| `components/sidebar-nav.html` | Interactive HTML prototype of SidebarNav |
 | `components/feedback-SKILL.md` | Inline alerts, toasts, tooltips, empty states |
 | `components/icons-SKILL.md` | Any icon use — Phosphor via CDN, size + weight conventions |
 
@@ -602,6 +654,26 @@ amalgamy/
 ---
 
 ## 9. Change log
+
+### v0.3 — May 2026
+
+**Components added:**
+- SidebarNav/Collapsed (56px) + SidebarNav/Expanded (300px)
+- SidebarItem — 16 variants (Type × State × Expanded)
+- BreadcrumbItem — 8 variants (Type × State) + Breadcrumb/Separator
+- FormField Type=select — chevron-down TrailingSlot wired via Slot/FieldIcon
+- FormField HelpText — boolean property, body/xs style, state-aware color
+
+**Component changes:**
+- Button primary → teal (#2ECEC0), aqua primary removed
+- Button md height corrected: 40px (paddingTop=13, paddingBottom=12)
+- Icon component added to buttons via INSTANCE_SWAP property
+- Icon Color=inverse — background fill bug fixed (fills cleared)
+
+**Token corrections:**
+- Logo box border: brand/teal/hover (#45D9CD) not brand/teal/default
+- Expanded sidebar width: 300px (not 240px as previously documented)
+- Active item border: 2px inset box-shadow (not 1.5px)
 
 ### v0.2 — May 2026
 
