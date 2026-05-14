@@ -164,124 +164,111 @@ Lives **inside the status bar** at the top of full-screen views. Documented in t
 - **Three segments is typical, four is the cap.** Deeper than that → use a sidebar instead, or compress the middle: `launchhpc / … / fleet`.
 - **Segments are clickable** (each parent navigates up one level), but they look like text — the click affordance is implicit, not visual. Hover state may lift to `--color-text-primary` but no underline.
 
-## 3. Vertical Sidebar
+## 3. Vertical Sidebar (v0.3 — `.sidebar` / `.sidebar-item`)
 
 The full-app-shell pattern. Used when the prototype has 5+ destinations that need to be visible at all times.
 
-### Structure
+> **The canonical spec for SidebarNav lives in [`sidebar-nav-SKILL.md`](sidebar-nav-SKILL.md).** That file holds the full variants table, HTML anatomy, CSS, conventions, and animation rules. Load it when building or refining a sidebar.
+>
+> The summary below documents the same shape so you can compose a screen without leaving this file. If the two ever disagree, `sidebar-nav-SKILL.md` wins.
+
+### Shape
+
+- **Expanded** (default): `300px` wide. Icon + label per item.
+- **Collapsed**: `56px` wide. Icon only. Toggle via `.app-shell--sidebar-collapsed` on the parent.
+- **Width-only transition** between states: `220ms cubic-bezier(0.4, 0, 0.2, 1)`. Never animate `height`, `top`, `left`, or `transform: scaleX`.
+
+```
+┌───────────────┐
+│ ▢  AMALGAMY   │   ← Logo box — border uses --color-accent-hover
+├───────────────┤      (intentional: brighter than --color-accent)
+│ ▦  Fleet      │ ◀ active item · box-shadow: inset -2px 0 0 0 var(--color-accent)
+│ ☰  Jobs       │                · background: var(--color-accent-muted-bg)
+│ ⛨  Policies   │                · icon + label color: var(--color-accent)
+│ ⌜  Reports    │
+│ ⎉  Audit      │   ← Max 5 in the primary section
+│               │
+│  (spacer)     │   ← flex: 1 0 0; min-height: 1px (NOT flex: 1)
+│               │
+│ ⚙  Settings   │
+│ ☻  Account    │   ← bottom section, pinned via the spacer
+└───────────────┘
+```
+
+### Minimal markup
 
 ```html
-<aside class="nav">
-  <div class="nav-mark">
-    <div class="row"><span class="dot"></span>AMALGAMY · LAUNCHHPC</div>
-    <div class="sub">cluster-a · console</div>
-  </div>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Primary navigation">
 
-  <div class="nav-section">Operations</div>
-  <a href="#" class="nav-link active"><span class="num">[01]</span>Fleet</a>
-  <a href="#" class="nav-link"><span class="num">[02]</span>Jobs</a>
-  <a href="#" class="nav-link"><span class="num">[03]</span>Queue</a>
+    <div class="sidebar__brand">
+      <span class="sidebar__brand-mark"></span>
+      <span class="sidebar__brand-name">AMALGAMY</span>
+    </div>
 
-  <div class="nav-section">Governance</div>
-  <a href="#" class="nav-link"><span class="num">[04]</span>Policies</a>
-  <a href="#" class="nav-link"><span class="num">[05]</span>Tenants</a>
-  <a href="#" class="nav-link"><span class="num">[06]</span>Audit</a>
+    <nav class="sidebar__nav">
+      <a class="sidebar-item sidebar-item--active" href="/fleet"
+         data-label="Fleet" aria-current="page">
+        <i class="ph-bold ph-cpu sidebar-item__icon"></i>
+        <span class="sidebar-item__label">Fleet</span>
+      </a>
+      <a class="sidebar-item" href="/jobs" data-label="Jobs">
+        <i class="ph ph-list-bullets sidebar-item__icon"></i>
+        <span class="sidebar-item__label">Jobs</span>
+      </a>
+      <!-- … up to 5 primary items -->
+    </nav>
 
-  <div class="nav-section">System</div>
-  <a href="#" class="nav-link"><span class="num">[07]</span>Reports</a>
-  <a href="#" class="nav-link"><span class="num">[08]</span>Settings</a>
-</aside>
+    <div class="sidebar__spacer" aria-hidden="true"></div>
+
+    <nav class="sidebar__bottom" aria-label="Account">
+      <a class="sidebar-item" href="/settings" data-label="Settings">
+        <i class="ph ph-gear-six sidebar-item__icon"></i>
+        <span class="sidebar-item__label">Settings</span>
+      </a>
+    </nav>
+
+  </aside>
+
+  <main class="main"> … </main>
+</div>
 ```
 
-### Token bindings
+### Conventions (must-knows)
 
-```css
-.nav {
-  width: 240px;
-  background: var(--color-surface-1);
-  border-right: 1px solid var(--color-border-strong);
-  padding: 32px 0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-}
+- **Exactly one active item at all times** — `.sidebar-item--active` + `aria-current="page"`. Both visual and aria signals must agree.
+- **Active right-indicator is `box-shadow: inset -2px 0 0 0 var(--color-accent)`** — NOT `border-right`. Border would shift the content; the inset shadow draws on top of the item without reflow.
+- **Active background is `--color-accent-muted-bg` (#082223)** — the system's "teal-muted bg" wash. Not `--color-surface-2`.
+- **Logo box border uses `--color-accent-hover` (#45D9CD)** — intentionally brighter than `--color-accent`. The logo earns the higher-emphasis token.
+- **Spacer must be `flex: 1 0 0; min-height: 1px`** — `flex: 1` alone collapses when content is tall.
+- **Icons are `24×24`** regardless of collapsed/expanded state. At rest `--color-text-faint`; on active `--color-accent`.
+- **Labels are Geist Mono Medium 12px, uppercase, letter-spacing 1.2px.** Mono on the sidebar — terminal-derived signal.
+- **`data-label="…"` on every item.** Powers the collapsed-state tooltip via CSS-only `::after { content: attr(data-label) }`. No JS.
+- **No horizontal padding on `.sidebar__nav` or `.sidebar__bottom`.** Padding lives on each `.sidebar-item` (16px when expanded). Container padding shifts the active indicator inward.
+- **Max 5 primary items.** Group into a second section or move to topbar tabs.
+- **Labels come from route config** — never hardcoded inline.
 
-.nav-mark {
-  padding: 0 24px 24px;
-  border-bottom: 1px solid var(--color-border-strong);
-  margin-bottom: 16px;
-}
-.nav-mark .row {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-11);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide-1);
-  color: var(--color-text-primary);
-}
-.nav-mark .row .dot {
-  width: 8px; height: 8px;
-  background: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(46, 206, 192, 0.18);
-}
-.nav-mark .sub {
-  margin-top: 8px;
-  font-size: var(--font-size-10);
-  color: var(--color-text-tertiary);
-  letter-spacing: var(--letter-spacing-wide-1);
-  text-transform: uppercase;
-}
+### Motion (collapse / expand)
 
-.nav-section {
-  padding: 16px 24px 6px;
-  font-size: var(--font-size-9);
-  color: var(--color-text-tertiary);
-  letter-spacing: var(--letter-spacing-caps);
-  text-transform: uppercase;
-  font-weight: var(--font-weight-semibold);
-}
-
-.nav-link {
-  display: flex; align-items: center; gap: 10px;
-  padding: 7px 24px;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-12);
-  text-decoration: none;
-  border-left: 2px solid transparent;
-}
-.nav-link:hover {
-  color: var(--color-text-primary);
-  background: var(--color-surface-2);
-}
-.nav-link.active {
-  color: var(--color-accent);
-  border-left-color: var(--color-accent);
-  background: var(--color-surface-2);
-}
-.nav-link .num {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-10);
-  letter-spacing: var(--letter-spacing-wide-1);
-}
-.nav-link:hover .num,
-.nav-link.active .num { color: var(--color-accent-subtle); }
-```
-
-### Conventions
-
-- **240px wide.** Wider than that and the sidebar starts to dominate; narrower and the labels truncate.
-- **Three-part structure**: a mark/header at the top, a list of sections (each with an uppercase section label and 2–4 links), and an active state. No footer chrome.
-- **Brand mark at the top** mirrors the status-bar mark — square accent dot + uppercase wordmark. Adds a one-line subtitle (`cluster-a · console`) to ground the user in *which* environment.
-- **Section labels** (`OPERATIONS`, `GOVERNANCE`, `SYSTEM`) are in `role-caps` style — wide tracking, tertiary text. They don't link; they're labels.
-- **Numbered links** (`[01] Fleet`, `[02] Jobs`) are part of the spec-sheet voice. Numbering resets within sections or runs continuously across all sections — pick one and hold it. Continuous numbering reads more like a console; section-reset reads more like documentation.
-- **Active state has three signals**: text color shifts to `--color-accent`, a 2px left border in `--color-accent` appears, and the background lifts to `--color-surface-2`. Don't drop any of them — the redundancy is intentional for scannability.
-- **Hover state lifts text to primary and background to surface-2**, but does NOT add the left border. The left border is reserved for "you are here," not "you are hovering."
-- **The sidebar is sticky.** It stays in place as the main content area scrolls.
+- **Width-only**, 220ms `cubic-bezier(0.4, 0, 0.2, 1)`.
+- **Label reveal**: `opacity 0→1` + `transform: translateX(-6px → 0)`, 160ms, **delay 30ms** (so labels appear after the sidebar has begun widening).
+- **Icon does not animate**. Fixed 24×24 anchor.
 
 ### When NOT to use a sidebar
 
-If the prototype has fewer than 5 destinations, use horizontal tabs instead. A 3-link sidebar reads as overkill — the chrome dominates the content. Sidebars earn their cost when there are enough destinations that horizontal tabs would wrap or scroll.
+Fewer than 5 destinations → use horizontal tabs instead. A 3-link sidebar reads as overkill; the chrome dominates the content. Sidebars earn their cost when horizontal tabs would wrap or scroll.
+
+### Legacy `.nav` / `.nav-link` (deprecated)
+
+Earlier prototypes used a `.nav` + `.nav-link` pattern with a 240px width, left-border active indicator, `.nav-section` group labels, and `[NN]` numbered links. That treatment shipped in `index.html` and is still wired in `tokens/amalgamy-layout.css`. **Do not introduce new references.** New work uses `.sidebar` / `.sidebar-item` per `sidebar-nav-SKILL.md`. Migration table:
+
+| Legacy `.nav-link` | v0.3 `.sidebar-item` |
+|---|---|
+| Active: left border + surface-2 bg + accent text | Active: right inset box-shadow + muted-bg + accent text |
+| Width: 240px | Width: 300px expanded / 56px collapsed |
+| Icon: none (numbered prefix `[01]`) | Icon: Phosphor, 24×24 |
+| Label: sans Mono 12px regular | Label: Geist Mono Medium 12px uppercase ls=1.2px |
+| Tooltip when narrow: n/a (no collapse state) | CSS-only via `data-label` |
 
 ## 4. Sub-nav
 
@@ -424,9 +411,10 @@ A focused prototype showing one section's worth of navigation. No status bar, no
 ## Common mistakes
 
 - **Treating tabs like buttons.** This is the most common failure mode. Filling the active tab with teal, using uppercase labels, applying `role-button` styling — all of it makes the tab read as a button (a thing you click to do something) instead of a tab (the indicator that says "this is the page you're on"). Tabs use lowercase labels at body size, regular weight when inactive, and an underline-only active state. The whole row should feel quiet.
-- **Aqua active states.** Tabs and sidebar links use teal (`--color-accent`) when active. Aqua is for primary CTAs only.
+- **Aqua active states.** Tabs and sidebar items use teal (`--color-accent`) when active. Aqua is for primary CTAs only.
 - **Rounded tabs or pills.** Hard edges only. The system has no `border-radius` tokens.
-- **Drop shadows on the sidebar.** Use the right border (`1px solid --color-border-strong`) for separation, not a shadow.
+- **Drop shadows on the sidebar.** Use the right border (`1px solid --color-border-default`) for separation, not a shadow. (Note: this is the sidebar's outer right edge — the active-item indicator is a different mechanic, an inset box-shadow on the item itself.)
+- **`border-right` for the sidebar active indicator.** Use `box-shadow: inset -2px 0 0 0 var(--color-accent)` instead — `border-right` shifts content and breaks the right-edge alignment.
 - **Mixing the two sub-nav flavors.** Filter chips and segmented control look superficially similar but have different jobs. If users pick one option from a set of mutually-exclusive choices → segmented. If users filter a list (and might combine filters) → chips.
 - **Putting a description under the nav header.** Same trap as the masthead — the nav header is a spec-sheet header, not a marketing page hero. Brand mark + one-line uppercase subtitle is the ceiling.
 - **Inventing numbered tabs when the user didn't provide them.** Numbers belong on tabs only when the order is meaningful (steps in a wizard, a defined workflow). Don't sprinkle them on arbitrary sibling pages — they read as forced.
@@ -435,16 +423,20 @@ A focused prototype showing one section's worth of navigation. No status bar, no
 
 At `data-density="compact"`:
 - Tab padding compresses to `8px 14px`
-- Sidebar link padding compresses to `5px 24px`
 - Sub-nav chips compress to `4px 10px`
+- Sidebar item height: stays 44px (the v0.3 sidebar is density-locked — operator screens and executive screens use the same item geometry)
 
 At `data-density="spacious"`:
 - Tab padding grows to `12px 22px`
-- Sidebar link padding grows to `9px 24px`
-- Sidebar width can grow to 280px
+- Sub-nav chips grow to `8px 16px`
+- Sidebar item height: stays 44px (same — sidebar geometry is fixed per v0.3)
 
 Per the foundation skill's first-prompt defaults: standard density unless the user explicitly asks otherwise.
 
 ## Reference
 
-The vertical sidebar pattern is rendered live in `index.html` (the design system index page). The horizontal tabs and inline sub-nav patterns are rendered in `examples/sovereign-terminal-style-tile.html` (section 04). The composition variants and a worked sub-nav example are in `examples/navigation-patterns.html`.
+The **v0.3 sidebar** is rendered live in [`sidebar-nav.html`](sidebar-nav.html) (interactive — toggle, hover, click items to set active). The full spec, including variants table and migration notes from legacy `.nav-link`, lives in [`sidebar-nav-SKILL.md`](sidebar-nav-SKILL.md).
+
+The **legacy `.nav` / `.nav-link`** sidebar still ships in `index.html` (the design system index page) for backward compatibility. Do not use as a model for new screens.
+
+The **horizontal tabs** and inline sub-nav patterns are rendered in `examples/sovereign-terminal-style-tile.html` (section 04). The composition variants and a worked sub-nav example are in `examples/navigation-patterns.html`.
