@@ -16,17 +16,23 @@ File: R5IJ7h4lSqJq6smVlswkLQ · Page: 🧩 Components
 ### Variant (visual style)
 | Value | Use |
 |---|---|
-| `primary` | Single most important action per section — Submit Job, Apply Policy, Confirm |
-| `secondary` | Supporting actions — Cancel, Back, Export |
+| `primary` | Single most important action per section. Teal fill (#2ECEC0). One per screen section. |
 | `outlined` | Low-emphasis actions that need a border — View Details, Learn More |
-| `filled` | Alternative to primary for non-CTA contexts (tab bars, toolbars) |
+| `filled` | Alternative surface fill — tab bars, toolbars, non-CTA contexts |
 | `destructive` | Irreversible actions — Delete, Remove, Revoke. Always confirm first. |
 
+> **Note:** The `secondary` (aqua) variant was removed in May 2026.
+> `primary` is now teal (#2ECEC0). If you have instances using
+> `variant=secondary`, update them to `variant=primary`.
+
 ### Size
-| Value | Height | Use |
-|---|---|---|
-| `md` | 40px | Default. Page headers, modal footers, form submit |
-| `sm` | 32px | Toolbar actions, table row inline actions, dense contexts |
+| Value | Height | Padding | Use |
+|---|---|---|---|
+| `md` | 40px | `paddingTop: 13px, paddingBottom: 12px` | Default. Page headers, modal footers, form submit |
+| `sm` | 32px | `paddingTop: 7px, paddingBottom: 7px` | Toolbar actions, table row inline actions, dense contexts |
+
+> **Note:** `md` is 40px via asymmetric padding (13+12) because text renders
+> at 15px line-height. Symmetric 12+12 gives 39px — visually incorrect.
 
 ### Pattern
 | Value | Use |
@@ -34,6 +40,31 @@ File: R5IJ7h4lSqJq6smVlswkLQ · Page: 🧩 Components
 | `label` | Text only. Default. |
 | `label-icon` | Icon left or right of label. Leading icon adds meaning; trailing icon signals behavior. |
 | `icon-only` | No text label. Only use when the icon is universally understood (✕ close, + add). Always add `aria-label`. |
+
+### Icon instances in buttons
+
+The Icon component (2675:8397) is placed as a live instance inside all
+`label-icon` and `icon-only` button variants via `INSTANCE_SWAP` property.
+
+**Icon sizing per button size:**
+- `md` button → `Icon Size=sm` (16×16px)
+- `sm` button → `Icon Size=xs` (12×12px)
+
+**Icon color per button variant:**
+- `primary` (teal bg) → `Color=inverse` — dark #051315 icon on teal fill
+- `destructive` (red bg) → `Color=inverse` — same logic
+- `outlined` → `Color=default` — light #EAF1EC icon on dark bg
+- `filled` → `Color=default`
+
+**Weight:** Light throughout — matches the terminal/developer aesthetic.
+
+**Color=inverse note:** The inverse icon variants had a background fill bug
+(dark #051315 frame fill). Fixed in May 2026 — fills cleared on all 8
+inverse variants. The icon color comes from strokes only, not fills.
+
+**INSTANCE_SWAP property:** The `icon` property on the Button component set
+lets designers swap which specific icon appears from the right panel without
+detaching the button instance. Default icon: ArrowsClockwise (Light).
 
 ### State
 Managed by CSS — do not set manually in HTML. Interactive states are:

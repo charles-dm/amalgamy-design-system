@@ -203,6 +203,102 @@ File: R5IJ7h4lSqJq6smVlswkLQ · Page: 🧩 Components
 
 ---
 
+## Breadcrumb
+
+> Figma: BreadcrumbItem (3322:1749) · Breadcrumb/Separator (3322:1750)
+> 8 variants + 5 assembled example trails
+
+### BreadcrumbItem variants
+
+| Type | State | Color | Treatment |
+|---|---|---|---|
+| `link` | `default` | text/tertiary #8CADA7 | no underline |
+| `link` | `hover` | brand/teal #2ECEC0 | underline |
+| `link` | `active` | teal/subtle #1F908A | underline |
+| `link` | `disabled` | text/faint #78948F at 40% opacity | no underline |
+| `current` | `default` | text/primary #EAF1EC | no underline, non-interactive |
+| `current` | `hover` | text/primary #EAF1EC | no change (current is static) |
+| `current` | `disabled` | text/faint #78948F at 40% opacity | — |
+
+**Text style:** `body/sm` — Geist Regular 14px, 150% line-height.
+All text nodes bound to color variables via `componentPropertyReferences`.
+
+### Separator
+
+Forward slash `/` — not a chevron. Vector path: `M 10 16 L 6 4`.
+Stroke: `text/faint` (#78948F), stroke-weight: 1px, round cap.
+Frame size: 16×20px.
+
+### HTML scaffold
+
+```html
+<!-- 3-level breadcrumb trail -->
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb" role="list">
+    <li>
+      <a class="breadcrumb__item breadcrumb__item--link" href="/workflows">
+        Workflows
+      </a>
+    </li>
+    <li class="breadcrumb__sep" aria-hidden="true">/</li>
+    <li>
+      <a class="breadcrumb__item breadcrumb__item--link" href="/workflows/test-run-2">
+        Test Run 2
+      </a>
+    </li>
+    <li class="breadcrumb__sep" aria-hidden="true">/</li>
+    <li>
+      <span class="breadcrumb__item breadcrumb__item--current" aria-current="page">
+        Monitor
+      </span>
+    </li>
+  </ol>
+</nav>
+```
+
+### CSS
+
+```css
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  padding: 0; margin: 0;
+}
+.breadcrumb__item--link {
+  font: 400 14px/1.5 var(--font-sans);
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  padding: 2px 0;
+  transition: color 120ms;
+}
+.breadcrumb__item--link:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.breadcrumb__item--current {
+  font: 400 14px/1.5 var(--font-sans);
+  color: var(--color-text-primary);
+}
+.breadcrumb__sep {
+  font: 400 14px/1 var(--font-sans);
+  color: var(--color-text-faint);
+  user-select: none;
+}
+```
+
+### Rules
+
+- The last item is always `Type=current` — never a link
+- Never use a chevron as separator — always a forward slash
+- Always wrap in `<nav aria-label="Breadcrumb">` with `<ol role="list">`
+- Separator items get `aria-hidden="true"`
+- Current item gets `aria-current="page"`
+- Maximum 4 levels before truncating with `…` — deeper trails confuse
+
+---
+
 ## Topbar
 
 ```html

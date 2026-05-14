@@ -97,10 +97,18 @@
      ---------------------------------------------------------- */
   --color-accent:          #2ECEC0;   /* primary actions, active states, links */
   --color-accent-subtle:   #1F908A;   /* brand/teal/subtle — Figma source */
-  --color-accent-hover:    #45D9CD;
+  --color-accent-hover:    #45D9CD;   /* brand/teal/hover — used by logo box border */
   --color-accent-active:   #27AFA3;
   --color-accent-muted-bg: #082223;
   --color-accent-disabled: #2E827C;   /* brand/teal/disabled — Figma source */
+
+  /* NOTE: Logo box border uses /hover (#45D9CD) not /default (#2ECEC0).
+     This is intentional — the logo is high-emphasis and uses the brighter token. */
+
+  /* Sidebar-specific — exact from Figma variable collection */
+  --sidebar-width-collapsed: 56px;
+  --sidebar-width-expanded:  300px;
+  --sidebar-item-height:     40px;
 
   --color-aqua:            #A9F4EA;   /* brand/aqua/default */
   --color-aqua-hover:      #B3F5ED;   /* brand/aqua/hover */
