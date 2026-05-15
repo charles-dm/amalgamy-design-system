@@ -392,8 +392,10 @@ Frame size: 16×20px.
 
 Use when a single page has 2–5 distinct views of the same subject.
 
+**Active treatment:** 2px `--color-accent` line on **top** of the active tab, plus a tinted surface fill that lifts it off the row, plus text-primary color and a step to medium weight. The top indicator reads as an activation light; the fill reads as warmth. Inactive tabs reserve a 2px transparent top so layout doesn't shift on selection. Tabs are *page positions*, not buttons.
+
 ```html
-<!-- Bottom border variant (most common — content pages) -->
+<!-- Top border variant (canonical — Figma node 1970:8336) -->
 <div class="tabs" role="tablist" aria-label="Node detail">
   <button class="tab tab--active" role="tab"
           aria-selected="true" aria-controls="panel-overview" id="tab-overview">
@@ -424,9 +426,10 @@ Use when a single page has 2–5 distinct views of the same subject.
 
 ```css
 .tabs {
-  display:       flex;
+  display:       inline-flex;
+  align-items:   stretch;
   gap:           0;
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-strong);   /* row floor */
   margin-bottom: var(--space-5);
 }
 .tab {
@@ -439,21 +442,25 @@ Use when a single page has 2–5 distinct views of the same subject.
   font-size:   var(--text-14);
   font-weight: var(--weight-regular);
   color:       var(--color-text-secondary);
-  background:  none;
+  background:  transparent;
   border:      none;
-  border-bottom: 2px solid transparent;
+  border-right: 1px solid var(--color-border-strong);    /* cell divider */
+  border-top:  2px solid transparent;                    /* reserve for active indicator */
   cursor:      pointer;
   white-space: nowrap;
   transition:  color var(--duration-base) var(--ease-out),
-               border-color var(--duration-base) var(--ease-out);
-  margin-bottom: -1px; /* overlap container border */
+               border-color var(--duration-base) var(--ease-out),
+               background var(--duration-base) var(--ease-out);
 }
-.tab:hover    { color: var(--color-text-primary); }
+.tab:last-child { border-right: none; }
+.tab:hover { color: var(--color-text-primary); }
 .tab--active,
 .tab[aria-selected="true"] {
   color:        var(--color-text-primary);
   font-weight:  var(--weight-medium);
-  border-bottom-color: var(--color-accent);
+  border-top-color: var(--color-accent);                 /* TOP indicator */
+  /* Tinted teal-deep wash to lift the active cell off the row */
+  background:   color-mix(in srgb, var(--color-accent-subtle) 10%, transparent);
 }
 .tab:disabled { opacity: 0.4; cursor: not-allowed; }
 .tab__count   {
@@ -462,7 +469,15 @@ Use when a single page has 2–5 distinct views of the same subject.
   color:       inherit;
   opacity:     0.7;
 }
+.tab--active .tab__count,
+.tab[aria-selected="true"] .tab__count { color: var(--color-accent); opacity: 1; }
 ```
+
+> **Note:** Earlier prototypes used a bottom-border underline for the active
+> indicator. That treatment is deprecated as of May 2026 in favor of the
+> top indicator + tinted fill (Figma node 1970:8336). Migrate any
+> `border-bottom-color` active rules to `border-top-color` + the tinted
+> background fill.
 
 ---
 
